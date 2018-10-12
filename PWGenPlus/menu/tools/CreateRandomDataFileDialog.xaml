@@ -1,0 +1,43 @@
+﻿<Window x:Class="PWGenPlus.menu.tools.CreateRandomDataFileDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PWGenPlus.menu.tools"
+        xmlns:PWGenPlus = "clr-namespace:PWGenPlus"
+        mc:Ignorable="d"
+        Title="Create Random Data File" MinWidth="355" WindowStartupLocation="CenterOwner" Style="{DynamicResource DialogWindowStyle}">
+
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Save" Executed="SaveCmdExecuted" CanExecute="SaveCmdCanExecute"/>
+        <CommandBinding Command="ApplicationCommands.Close" Executed="CloseCmdExecuted" CanExecute="CloseCmdCanExecute"/>
+    </Window.CommandBindings>
+
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="4"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto" MinHeight="25"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="4" MaxWidth="4"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="4" MaxWidth="4"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="4" MaxWidth="4"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Label x:Name="fileNameLabel" Content="File name:" HorizontalContentAlignment="Right" MinWidth="65"/>
+        <TextBox x:Name="fileNameTextBox" Grid.Column="1" MinWidth="210" Grid.ColumnSpan="5" VerticalContentAlignment="Center"/>
+        <Button x:Name="browseButton" Content="..." Grid.Column="7" MinWidth="30" Command="ApplicationCommands.Save"/>
+        <Label x:Name="fileSizeLabel" Content="File size:" HorizontalContentAlignment="Right" MinWidth="65" Grid.Row="2"/>
+        <PWGenPlus:NumberBox x:Name="fileSizeNumericBox" MinWidth="75" Grid.Row="2" Grid.Column="1" />
+        <ComboBox x:Name="sizeUnitComboBox" Grid.Column="3" Grid.Row="2" MinWidth="90" ItemsSource="{Binding Source={x:Static local:FileSizeUtil.FileSizeUnitEnumDictionary}}" DisplayMemberPath="Key" SelectedValue="{Binding EnumValue}" SelectedValuePath="Value" SelectedIndex="0"/>
+        <Button x:Name="createFileButton" MinWidth="105" Grid.Row="4" Grid.Column="3" Content="Create file" Click="CreateFileButton_Click"/>
+        <Button x:Name="closeButton" Content="Close"  Command="ApplicationCommands.Close" d:LayoutOverrides="Width" MinWidth="75" Grid.ColumnSpan="3" Grid.Column="5" Grid.Row="4"/>
+    </Grid>
+</Window>

@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/DialogStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/IconButtonStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/CheckTreeViewStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/GroupBoxStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/NumberBoxStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/PasswordViewStyleDictionary .xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/HelpButtonStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Images/help.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Images/fileBrowse.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/FileBrowseButtonStyleDictionary.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

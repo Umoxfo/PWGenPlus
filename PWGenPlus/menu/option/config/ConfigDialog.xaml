@@ -1,0 +1,80 @@
+﻿<Window x:Name="configWindow" x:Class="PWGenPlus.menu.option.config.ConfigurationDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PWGenPlus.menu.option.config"
+        xmlns:PWGenPlus="clr-namespace:PWGenPlus"
+        mc:Ignorable="d"
+        Title="Configuration" MinWidth="445" MinHeight="295" WindowStartupLocation="CenterOwner" Style="{DynamicResource DialogWindowStyle}">
+    <Window.Resources>
+        <Style TargetType="{x:Type Grid}">
+            <Setter Property="Margin" Value="8"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="8"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl MinWidth="410" MinHeight="220">
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="65" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="16" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="16" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="4" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Label x:Name="changeFontLabel" Content="Change font for the GUI controls:" Grid.ColumnSpan="2" />
+                    <Button x:Name="selectFontButton" Grid.Row="1" Content="Select Font" Click="SelectFontButton_Click" />
+                    <Label x:Name="fontSampleLabel" Content="Test" Grid.Column="1" Grid.Row="1" d:LayoutOverrides="Height" />
+                    <CheckBox x:Name="autoClearClipCheckBox" Content="Clear clipboard automatically after the following time (seconds):" Grid.Row="3" Grid.ColumnSpan="2" />
+                    <PWGenPlus:NumericUpDown Grid.Row="4" />
+                    <CheckBox x:Name="showSysTrayIconConstCheckBox" Content="Show system tray icon constantly" Grid.Row="6" Grid.ColumnSpan="2" />
+                    <CheckBox x:Name="minimizeToSysTrayCheckBox" Content="Minimize program to system tray" Grid.Row="8" Grid.ColumnSpan="2" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Hotkey" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" MinWidth="65" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="16" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <CheckBox x:Name="activateHotKeyCheckBox" Content="Associate the following hotkey with PWGen:" Grid.ColumnSpan="2" Margin="0,0,0,4" />
+                    <TextBox x:Name="hotkeyTextBox" Grid.Row="1" TextWrapping="Wrap" Width="120"/>
+                    <GroupBox x:Name="groupBox" Header="Actions" Grid.Row="3" Grid.ColumnSpan="2">
+                        <StackPanel>
+                            <CheckBox x:Name="hotkeyShowMainWinCheckBox" Content="Show/restore main window" Margin="0,0,0,8" />
+                            <ComboBox x:Name="hotkeyActionsComboBox" ItemsSource="{Binding Source={x:Static local:Hotkey.HotkeyActionsEnumDictionary}}" DisplayMemberPath="Value" SelectedValue="{Binding EnumValue, Mode=TwoWay}" SelectedValuePath="Key" SelectedIndex="4"/>
+                        </StackPanel>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Files">
+                <StackPanel Margin="8">
+                    <Label x:Name="fileEncodingLabel" Content="Character encoding of text files:"/>
+                    <ComboBox x:Name="fileEncodingComboBox" MinWidth="145" HorizontalAlignment="Left" ItemsSource="{Binding Source={x:Static local:FileEncording.EncordingEnumDictionary}}" DisplayMemberPath="Value" SelectedValue="{Binding EnumValue, Mode=TwoWay}" SelectedValuePath="Key" SelectedIndex="0"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Update" IsEnabled="False" />
+        </TabControl>
+        <PWGenPlus:CommonButtonPanel Width="176" Grid.Row="2" HorizontalAlignment="Right"/>
+    </Grid>
+</Window>

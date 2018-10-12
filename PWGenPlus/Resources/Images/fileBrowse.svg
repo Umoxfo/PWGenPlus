@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 25 25.004879" version="1.1" width="25" height="25.004879" id="svg78" sodipodi:docname="fileBrowse.svg" inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <title id="title133">Find</title>
+  <metadata id="metadata84">
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Find</dc:title>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/by/4.0/" />
+        <dc:description>The orignal icon made by &lt;a href=&quot;https://icons8.com&quot;&gt;Icons8&lt;/a&gt; and converted to Microsoft XAML format by Inkscape.</dc:description>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/by/4.0/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <defs id="defs82" />
+  <sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1920" inkscape:window-height="1017" id="namedview80" showgrid="true" fit-margin-top="0" fit-margin-left="0" fit-margin-right="0" fit-margin-bottom="0" inkscape:zoom="33.993366" inkscape:cx="12.5" inkscape:cy="11.325739" inkscape:window-x="-8" inkscape:window-y="-8" inkscape:window-maximized="1" inkscape:current-layer="svg78" inkscape:snap-midpoints="true">
+    <inkscape:grid type="xygrid" id="grid127" originx="1.1920374e-007" originy="5.8266615e-006" />
+  </sodipodi:namedview>
+  <path inkscape:connector-curvature="0" id="path67" d="M 9.9921873,0 C 4.4740377,0 0,4.4740377 0,9.9921873 c 0,5.5181507 4.4740377,9.9921877 9.9921873,9.9921877 2.3119037,0 4.4338347,-0.792907 6.1269537,-2.111328 L 23.234375,24.988281 25,23.220703 17.884766,16.105469 C 19.196537,14.414654 19.984375,12.297638 19.984375,9.9921873 19.984375,4.4740377 15.510338,0 9.9921873,0 Z" style="fill:#616161;stroke-width:0.62451208" />
+  <path inkscape:connector-curvature="0" id="path71" d="m 17.77176,19.572112 1.766198,-1.766199 5.430329,5.432768 -1.766199,1.766198 z" style="fill:#37474f;stroke-width:0.62451208" />
+  <path inkscape:connector-curvature="0" id="path73" d="m 18.110851,9.9921935 c 0,4.4838025 -3.634855,8.1186575 -8.1186575,8.1186575 -4.4838014,0 -8.1186572,-3.634855 -8.1186572,-8.1186575 0,-4.4838014 3.6348558,-8.1186572 8.1186572,-8.1186572 4.4838025,0 8.1186575,3.6348558 8.1186575,8.1186572 z" style="fill:#64b5f6;stroke-width:0.62451208;image-rendering:auto" />
+  <path inkscape:connector-curvature="0" id="path75" d="m 14.300352,6.3695356 c -1.061183,-1.2490242 -2.622464,-1.997951 -4.3081585,-1.997951 -1.6856949,0 -3.2469752,0.7489268 -4.3081574,1.997951 -0.2512687,0.2512687 -0.187842,0.6879388 0.06099,0.8757808 0.2512662,0.2488287 0.6879363,0.185402 0.8757783,-0.063427 0.8733408,-1.0001949 2.0589383,-1.5612803 3.3713892,-1.5612803 1.3124514,0 2.4980484,0.5610854 3.3713894,1.5612803 0.126854,0.1244147 0.312256,0.2488293 0.500098,0.2488293 0.124414,0 0.312256,-0.06099 0.375683,-0.1244146 0.248829,-0.2488294 0.248829,-0.6854995 0.06099,-0.9367682 z" style="fill:#bbdefb;stroke-width:0.62451208" />
+</svg>

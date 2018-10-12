@@ -1,0 +1,42 @@
+﻿<Window x:Name="fontChooseWindow" x:Class="PWGenPlus.menu.option.config.FontDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:PWGenPlus="clr-namespace:PWGenPlus"
+        mc:Ignorable="d"
+        Title="Font Chooser" MinHeight="455" WindowStartupLocation="CenterOwner" Style="{DynamicResource DialogWindowStyle}">
+    <Grid Margin="8,0,8,8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="8" />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="240" />
+            <ColumnDefinition Width="6" />
+            <ColumnDefinition MinWidth="240" />
+            <ColumnDefinition Width="6" />
+            <ColumnDefinition Width="Auto" MinWidth="90" />
+        </Grid.ColumnDefinitions>
+        <Label x:Name="fontFamilyLabel" Content="_Font Family:" HorizontalContentAlignment="Center" />
+        <TextBox x:Name="fontFamilyTextBox" Grid.Row="1"/>
+        <ListBox x:Name="fontFamilyListBox" Grid.Row="2" Grid.RowSpan="5" />
+        <Label x:Name="typefaceLabel" Content="_Typeface:" Grid.Column="2" HorizontalContentAlignment="Center" />
+        <ListBox x:Name="typefaceListBox" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" />
+        <Label x:Name="sizeLabel" Content="_Size:" Grid.Column="4" HorizontalContentAlignment="Center" />
+        <TextBox x:Name="sizeTextBox" Grid.Column="4" Grid.Row="1"/>
+        <ListBox x:Name="sizeListBox" Grid.Column="4" Grid.Row="2" />
+        <Label x:Name="previewLabel" Content="Preview:" Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="3" />
+        <TextBox x:Name="textBox" Grid.Column="2" Grid.Row="4" Text="The quick brown fox jumps over the lazy dog" HorizontalContentAlignment="Center" Grid.ColumnSpan="3" FontSize="16" />
+        <Label x:Name="languageLabel" Content="_Language:" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="2" />
+        <ComboBox x:Name="languageComboBox" Grid.Column="2" Grid.Row="6" Grid.ColumnSpan="3" />
+        <PWGenPlus:CommonButtonPanel Grid.Row="8" Grid.ColumnSpan="5" HorizontalAlignment="Right"/>
+    </Grid>
+</Window>

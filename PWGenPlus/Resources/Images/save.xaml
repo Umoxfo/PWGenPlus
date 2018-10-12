@@ -1,0 +1,81 @@
+﻿<DrawingGroup xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <DrawingGroup x:Name="DrawingLayer">
+    <DrawingGroup.ClipGeometry>
+      <RectangleGeometry Rect="0,0,25,25.543478" />
+    </DrawingGroup.ClipGeometry>
+    <GeometryDrawing>
+      <GeometryDrawing.Pen>
+        <Pen Brush="#00FFFFFF" Thickness="1" />
+      </GeometryDrawing.Pen>
+      <GeometryDrawing.Geometry>
+        <RectangleGeometry Rect="0,0,25,25.543478" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="polygon954">
+      <GeometryDrawing.Brush>
+        <SolidColorBrush Color="#FF424A60" Opacity="1" Transform="0.54347826,0,0,0.54347826,-0.27173913,1.2084961E-08" />
+      </GeometryDrawing.Brush>
+      <GeometryDrawing.Geometry>
+        <PathGeometry FillRule="Nonzero" Transform="0.54347826,0,0,0.54347826,-0.27173913,1.2084961E-08" Figures="M46.5,47L46.5,47 0.5,47 0.5,0 38.5,0 46.5,8z" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="rect956" Brush="#FFC7CAC7">
+      <GeometryDrawing.Geometry>
+        <RectangleGeometry RadiusX="0" RadiusY="0" Rect="4.8913,0,14.1304,8.6957" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="polygon960">
+      <GeometryDrawing.Brush>
+        <SolidColorBrush Color="#FFE7ECED" Opacity="1" Transform="0.54347826,0,0,0.54347826,-0.27173913,1.2084961E-08" />
+      </GeometryDrawing.Brush>
+      <GeometryDrawing.Geometry>
+        <PathGeometry FillRule="Nonzero" Transform="0.54347826,0,0,0.54347826,-0.27173913,1.2084961E-08" Figures="M24.5,16L24.5,16 9.5,16 9.5,0 16.5,0z" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="path958" Brush="#FF424A60">
+      <GeometryDrawing.Geometry>
+        <PathGeometry FillRule="Nonzero" Figures="M14.130435,1.630435L14.130435,7.065217 17.391304,7.065217 17.391304,1.630435z M15.217391,2.717391L16.304348,2.717391 16.304348,5.978261 15.217391,5.978261z" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="rect962" Brush="#FFE7ECED">
+      <GeometryDrawing.Geometry>
+        <RectangleGeometry RadiusX="0" RadiusY="0" Rect="3.8043,14.1304,16.8478,11.413" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="rect964" Brush="#FFEBBA16">
+      <GeometryDrawing.Geometry>
+        <RectangleGeometry RadiusX="0" RadiusY="0" Rect="3.8043,14.1304,16.8478,6.5418" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="path966" Brush="#FFFFFFFF">
+      <GeometryDrawing.Geometry>
+        <PathGeometry FillRule="Nonzero" Figures="M6.5217391,16.847826L10.326087,16.847826C10.62663,16.847826 10.869565,16.604891 10.869565,16.304348 10.869565,16.003804 10.62663,15.760869 10.326087,15.760869L6.5217391,15.760869C6.2211957,15.760869 5.9782609,16.003804 5.9782609,16.304348 5.9782609,16.604891 6.2211957,16.847826 6.5217391,16.847826z" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="path968" Brush="#FFFFFFFF">
+      <GeometryDrawing.Geometry>
+        <PathGeometry FillRule="Nonzero" Figures="M11.956522,17.934782L6.5217391,17.934782C6.2211957,17.934782 5.9782609,18.177717 5.9782609,18.478261 5.9782609,18.778804 6.2211957,19.021739 6.5217391,19.021739L11.956522,19.021739C12.257065,19.021739 12.5,18.778804 12.5,18.478261 12.5,18.177717 12.257065,17.934782 11.956522,17.934782z" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <GeometryDrawing x:Name="path970" Brush="#FFFFFFFF">
+      <GeometryDrawing.Geometry>
+        <PathGeometry FillRule="Nonzero" Figures="M13.972826,18.092391C13.771739,17.891304 13.407609,17.891304 13.206522,18.092391 13.103261,18.195108 13.043478,18.330978 13.043478,18.478261 13.043478,18.625 13.102718,18.760869 13.201087,18.86413 13.303804,18.96196 13.439674,19.021739 13.586957,19.021739 13.733696,19.021739 13.869565,18.961959 13.972826,18.86413 14.070656,18.760869 14.130435,18.619565 14.130435,18.478261 14.130435,18.336956 14.070655,18.195108 13.972826,18.092391z" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+    <DrawingGroup x:Name="g974" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g976" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g978" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g980" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g982" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g984" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g986" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g988" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g990" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g992" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g994" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g996" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g998" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g1000" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+    <DrawingGroup x:Name="g1002" Opacity="1" Transform="1,0,0,1,-0.5,-21.456522" />
+  </DrawingGroup>
+</DrawingGroup>
