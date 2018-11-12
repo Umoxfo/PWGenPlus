@@ -5,13 +5,13 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/Style/DialogStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Style/GroupBoxStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Style/NumberBoxStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Style/PasswordViewStyleDictionary .xaml"/>
-                <ResourceDictionary Source="/Resources/Style/IconButtonStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Style/HelpButtonStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Style/FileBrowseButtonStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/DialogStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/GroupBoxStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/NumberBoxStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/PasswordViewStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/IconButtonStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/HelpButtonStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/FileBrowseButtonStyleDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <!--<wpf:ChangeCultureCommand x:Key="ChangeCultureCommand"/>-->
         </ResourceDictionary>

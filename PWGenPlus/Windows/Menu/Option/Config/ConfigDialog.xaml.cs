@@ -19,22 +19,22 @@
 
 using System.Windows;
 
-namespace PWGenPlus.Dialog
+namespace PWGenPlus.Windows.Menu.Option.Config
 {
     /// <summary>
-    /// PasswordEnter.xaml の相互作用ロジック
+    /// Configlation.xaml の相互作用ロジック
     /// </summary>
-    public partial class PasswordEnterDialog : Window
+    public partial class ConfigurationDialog : Window
     {
-        public PasswordEnterDialog()
+        public ConfigurationDialog()
         {
             InitializeComponent();
         }
 
-        private void RevealModeCheckBox_Checked(object sender, RoutedEventArgs e)
+        private void SelectFontButton_Click(object sender, RoutedEventArgs e)
         {
-            passwordBox.PasswordChar = '\0';
-            //passwordBox.UseSystemPasswordChar = false;
-         }
+            FontDialog fontDialog = new FontDialog();
+            fontDialog.Show();
+        }//SelectFontButton_Click
     }
 }

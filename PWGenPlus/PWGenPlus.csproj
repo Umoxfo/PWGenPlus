@@ -78,103 +78,91 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Resources\Control\IconButton.xaml.cs">
+    <Compile Include="GUI\Controls\IconButton.xaml.cs">
       <DependentUpon>IconButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Control\PasswordViewItem.xaml.cs">
-      <DependentUpon>PasswordViewItem.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Control\SaveButton.xaml.cs">
+    <Compile Include="GUI\Controls\SaveButton.xaml.cs">
       <DependentUpon>SaveButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Control\InfoButton.xaml.cs">
+    <Compile Include="GUI\Controls\InfoButton.xaml.cs">
       <DependentUpon>InfoButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Control\NumberBox.xaml.cs">
+    <Compile Include="GUI\Controls\NumberBox.xaml.cs">
       <DependentUpon>NumberBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Control\NumericUpDown.xaml.cs">
+    <Compile Include="GUI\Controls\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Dialog\PasswordEnterDialog.xaml.cs">
+    <Compile Include="GUI\Dialogs\PasswordEnterDialog.xaml.cs">
       <DependentUpon>PasswordEnterDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Dialog\PopupWindow.xaml.cs">
+    <Compile Include="GUI\Dialogs\PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="menu\file\ProfileEditorDialog.xaml.cs">
+    <Compile Include="Windows\Menu\File\ProfileEditorDialog.xaml.cs">
       <DependentUpon>ProfileEditorDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="menu\option\config\ConfigDialog.xaml.cs">
+    <Compile Include="Windows\Menu\Option\Config\ConfigDialog.xaml.cs">
       <DependentUpon>ConfigDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="menu\option\config\Configuration.cs" />
-    <Compile Include="menu\option\config\FontDialog.xaml.cs">
+    <Compile Include="Windows\Menu\Option\Config\Configuration.cs" />
+    <Compile Include="Windows\Menu\Option\Config\FontDialog.xaml.cs">
       <DependentUpon>FontDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Resources\Control\CommonButtonPanel.xaml.cs">
+    <Compile Include="GUI\Controls\CommonButtonPanel.xaml.cs">
       <DependentUpon>CommonButtonPanel.xaml</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="menu\tools\CreateTrigramFileDialog.xaml.cs">
+    <Compile Include="Windows\Menu\Tools\CreateTrigramFileDialog.xaml.cs">
       <DependentUpon>CreateTrigramFileDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="menu\tools\CreateRandomDataFileDialog.xaml.cs">
+    <Compile Include="Windows\Menu\Tools\CreateRandomDataFileDialog.xaml.cs">
       <DependentUpon>CreateRandomDataFileDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="menu\tools\MPPasswordGeneratorDialogWindow.xaml.cs">
+    <Compile Include="Windows\Menu\Tools\MPPasswordGeneratorDialogWindow.xaml.cs">
       <DependentUpon>MPPasswordGeneratorDialogWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="Resources\Control\IconButton.xaml">
+    <Page Include="GUI\Controls\IconButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Style\FileBrowseButtonStyleDictionary.xaml">
+    <Page Include="Resources\Styles\CheckTreeViewStyleDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Style\HelpButtonStyleDictionary.xaml">
+    <Page Include="Resources\Styles\FileBrowseButtonStyleDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Style\PasswordViewStyleDictionary .xaml">
+    <Page Include="Resources\Styles\HelpButtonStyleDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Style\NumberBoxStyleDictionary.xaml">
+    <Page Include="Resources\Styles\NumberBoxStyleDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\Control\PasswordViewItem.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Control\SaveButton.xaml">
+    <Page Include="GUI\Controls\SaveButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Control\InfoButton.xaml">
+    <Page Include="GUI\Controls\InfoButton.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Style\CheckTreeViewStyleDictionary.xaml">
+    <Page Include="GUI\Controls\NumberBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\Control\NumberBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Control\NumericUpDown.xaml">
+    <Page Include="GUI\Controls\NumericUpDown.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Style\GroupBoxStyleDictionary.xaml">
+    <Page Include="Resources\Styles\GroupBoxStyleDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Style\IconButtonStyleDictionary.xaml">
+    <Page Include="Resources\Styles\IconButtonStyleDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -182,48 +170,52 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Resource>
-    <Page Include="Resources\Dialog\PasswordEnterDialog.xaml">
+    <Page Include="GUI\Dialogs\PasswordEnterDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\Dialog\PopupWindow.xaml">
+    <Page Include="GUI\Dialogs\PopupWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="menu\tools\CreateTrigramFileDialog.xaml">
+    <Page Include="Resources\Styles\PasswordViewStyleDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="menu\tools\MPPasswordGeneratorDialogWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\Style\DialogStyleDictionary.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="menu\file\ProfileEditorDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="menu\option\config\ConfigDialog.xaml">
+    <Page Include="Windows\Menu\Tools\CreateTrigramFileDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="menu\option\config\FontDialog.xaml">
+    <Page Include="Windows\Menu\Tools\MPPasswordGeneratorDialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Styles\DialogStyleDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\Menu\File\ProfileEditorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\Menu\Option\Config\ConfigDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\Control\CommonButtonPanel.xaml">
+    <Page Include="Windows\Menu\Option\Config\FontDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="GUI\Controls\CommonButtonPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-    <Page Include="menu\tools\CreateRandomDataFileDialog.xaml">
+    <Page Include="Windows\Menu\Tools\CreateRandomDataFileDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -231,7 +223,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -249,7 +241,7 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DefaultEntries.cs" />
+    <Compile Include="GUI\DefaultEntries.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -291,5 +283,6 @@
       <Version>1.0.21-alpha</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

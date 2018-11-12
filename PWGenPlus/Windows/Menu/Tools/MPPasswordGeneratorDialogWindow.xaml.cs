@@ -18,9 +18,10 @@
  */
 
 using System.Windows;
-using PWGenPlus.Dialog;
 
-namespace PWGenPlus.menu.tools
+using PWGenPlus.GUI.Dialogs;
+
+namespace PWGenPlus.Windows.Menu.Tools
 {
     /// <summary>
     /// MPPasswordGeneratorDialogWindow.xaml の相互作用ロジック

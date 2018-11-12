@@ -19,7 +19,7 @@
 
 using System.Windows;
 
-namespace PWGenPlus.menu.option.config
+namespace PWGenPlus.Windows.Menu.Option.Config
 {
     /// <summary>
     /// FontDialog.xaml の相互作用ロジック

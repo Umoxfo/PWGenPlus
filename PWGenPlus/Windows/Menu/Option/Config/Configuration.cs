@@ -19,7 +19,7 @@
 
 using System.Collections.Generic;
 
-namespace PWGenPlus.menu.option.config
+namespace PWGenPlus.Windows.Menu.Option.Config
 {
     internal static class Hotkey
     {

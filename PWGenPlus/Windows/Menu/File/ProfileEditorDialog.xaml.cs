@@ -19,7 +19,7 @@
 
 using System.Windows;
 
-namespace PWGenPlus.menu.file
+namespace PWGenPlus.Windows.Menu.File
 {
     /// <summary>
     /// Window1.xaml の相互作用ロジック

@@ -1,9 +1,9 @@
-﻿<Window x:Class="PWGenPlus.menu.tools.CreateRandomDataFileDialog"
+﻿<Window x:Class="PWGenPlus.Windows.Menu.Tools.CreateRandomDataFileDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PWGenPlus.menu.tools"
+        xmlns:local="clr-namespace:PWGenPlus.Windows.Menu.Tools"
         xmlns:PWGenPlus = "clr-namespace:PWGenPlus"
         mc:Ignorable="d"
         Title="Create Random Data File" MinWidth="355" WindowStartupLocation="CenterOwner" Style="{DynamicResource DialogWindowStyle}">

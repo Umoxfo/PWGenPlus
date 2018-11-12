@@ -17,25 +17,21 @@
  * along with PWGenPlus.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
 using Microsoft.Win32;
 
-using PasswordGenerator;
 using PasswordGenerator.Settings;
 
-using PWGenPlus.Dialog;
-using PWGenPlus.menu.file;
-using PWGenPlus.menu.option.config;
-using PWGenPlus.menu.tools;
+using PWGenPlus.GUI.Dialogs;
+using PWGenPlus.Windows.Menu.File;
+using PWGenPlus.Windows.Menu.Option.Config;
+using PWGenPlus.Windows.Menu.Tools;
 
-namespace PWGenPlus
+namespace PWGenPlus.Windows
 {
     /// <summary>
     /// MainWindow.xaml の相互作用ロジック
@@ -63,9 +59,9 @@ namespace PWGenPlus
             }.ShowDialog();
         }//OpenProfileEditor_Click
 
-        void CloseCmdExecuted(object target, ExecutedRoutedEventArgs e) => this.Close();
+        private void CloseCmdExecuted(object target, ExecutedRoutedEventArgs e) => this.Close();
 
-        void CloseCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+        private void CloseCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
         private void EncryptClipboardMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -175,9 +171,9 @@ namespace PWGenPlus
                 // Password Encoding
                 if (passwordEncordTreeViewItem.IsExpanded)
                 {
-                    passwordSettings.HexLower = hexLowerRadioButton.IsChecked ?? false;
-                    passwordSettings.HexUpper = hexUpperRadioButton.IsChecked ?? false;
-                    passwordSettings.Base64 = base64RadioButton.IsChecked ?? false;
+                    //passwordSettings.HexLower = hexLowerRadioButton.IsChecked ?? false;
+                    //passwordSettings.HexUpper = hexUpperRadioButton.IsChecked ?? false;
+                    //passwordSettings.Base64 = base64RadioButton.IsChecked ?? false;
                 }//if
 
                 //Escape Dubious Symbols
@@ -186,8 +182,8 @@ namespace PWGenPlus
                 // Password Encoding
                 if (pronunceablePasswordTreeViewItem.IsExpanded)
                 {
-                    passwordSettings.Phonetic = phoneticRadioButton.IsChecked ?? false;
-                    passwordSettings.Phoneticx = phoneticxRadioButton.IsChecked ?? false;
+                    //passwordSettings.Phonetic = phoneticRadioButton.IsChecked ?? false;
+                    //passwordSettings.Phoneticx = phoneticxRadioButton.IsChecked ?? false;
                 }//if
             }//if
 
