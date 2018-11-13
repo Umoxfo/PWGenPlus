@@ -16,6 +16,10 @@
                         <Setter Property="IsEditable" Value="True"/>
                         <Setter Property="SelectedIndex" Value="0"/>
                     </Style>
+            <Style TargetType="{x:Type GroupBox}">
+                <Setter Property="Padding" Value="8,4,0,0"/>
+                <Setter Property="Template" Value="{StaticResource CheckGroupBoxTemplate}"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Window.CommandBindings>
@@ -112,7 +116,7 @@
             </Grid.RowDefinitions>
 
             <!-- Characters -->
-            <GroupBox x:Name="characterGroupBox" Grid.ColumnSpan="3" Template="{DynamicResource GroupBoxControlTemplate}"  >
+            <GroupBox x:Name="characterGroupBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
                     <CheckBox x:Name="charCheckBox" Content="Characters (Pass*word*)" IsChecked="True"/>
                 </GroupBox.Header>
@@ -171,7 +175,7 @@
             </GroupBox>
 
             <!-- Words -->
-            <GroupBox x:Name="wordsGroupBox" Grid.Row="2" Grid.ColumnSpan="3" Template="{DynamicResource GroupBoxControlTemplate}">
+            <GroupBox x:Name="wordsGroupBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
                     <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)"/>
                 </GroupBox.Header>
@@ -207,7 +211,7 @@
             </GroupBox>
 
             <!--Format-->
-            <GroupBox x:Name="passwordFormatGroupBox" Grid.Row="4" Grid.ColumnSpan="3" Template="{DynamicResource GroupBoxControlTemplate}">
+            <GroupBox x:Name="passwordFormatGroupBox" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="1">
                 <GroupBox.Header>
                     <CheckBox x:Name="passwordFormatCheckBox" Content="Password format"/>
                 </GroupBox.Header>
