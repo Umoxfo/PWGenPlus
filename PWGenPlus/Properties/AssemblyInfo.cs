@@ -29,7 +29,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Umoxfo")]
 [assembly: AssemblyProduct("PWGenPlus")]
-[assembly: AssemblyCopyright("Copyright © 2018 Makoto Sakaguchi")]
+[assembly: AssemblyCopyright("Copyright © 2018-2019 Makoto Sakaguchi")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

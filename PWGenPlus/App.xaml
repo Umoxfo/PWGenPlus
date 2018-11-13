@@ -14,7 +14,6 @@
                 <ResourceDictionary Source="/Resources/Images/HelpButtonStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Images/FileBrowseButtonStyleDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <!--<wpf:ChangeCultureCommand x:Key="ChangeCultureCommand"/>-->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

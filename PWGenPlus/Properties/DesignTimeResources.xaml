@@ -1,14 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/DialogStyleDictionary.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/IconButtonStyleDictionary.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/CheckTreeViewStyleDictionary.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/GroupBoxStyleDictionary.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/NumberBoxStyleDictionary.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/PasswordViewStyleDictionary .xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/HelpButtonStyleDictionary.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Images/help.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Images/fileBrowse.xaml"/>
-        <ResourceDictionary Source="/PWGenPlus;component/Resources/Style/FileBrowseButtonStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/DialogStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/IconButtonDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/GroupBoxStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/NumberBoxStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/PasswordViewStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/CheckExpanderStyleDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/Icons/HelpButtonDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/Icons/InfoButtonDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Styles/Icons/HelpButtonDictionary.xaml"/>
+        <ResourceDictionary Source="/PWGenPlus;component/Resources/Images/Icons.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

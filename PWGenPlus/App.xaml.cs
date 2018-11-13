@@ -18,8 +18,6 @@
  */
 
 using System.Windows;
-using NGettext.Wpf;
-using NGettext.Wpf.EnumTranslation;
 
 namespace PWGenPlus
 {
@@ -36,13 +34,6 @@ namespace PWGenPlus
 
         private static void CompositionRoot()
         {
-            var cultureTracker = new CultureTracker();
-            ChangeCultureCommand.CultureTracker = cultureTracker;
-            var localizer = new Localizer(cultureTracker, "PWGenPlus");
-            GettextExtension.Localizer = localizer;
-            TrackCurrentCultureBehavior.CultureTracker = cultureTracker;
-            LocalizeEnumConverter.EnumLocalizer = new EnumLocalizer(localizer);
-            Translation.Localizer = localizer;
         }
     }
 }
