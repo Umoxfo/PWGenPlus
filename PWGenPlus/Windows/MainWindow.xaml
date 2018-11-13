@@ -5,20 +5,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:PWGenPlus"
+        xmlns:Password="clr-namespace:Umoxfo.Security.Password.Settings;assembly=PasswordGenerator"
+        xmlns:local1="clr-namespace:PWGenPlus.Windows"
         mc:Ignorable="d"
         Title="PWGenPlus" SizeToContent="WidthAndHeight" Topmost="{Binding IsChecked, ElementName=alwaysOnTopMenuItem}" MinHeight="530" MinWidth="800">
 
     <Window.Resources>
         <ResourceDictionary>
-                    <Style TargetType="{x:Type ComboBox}">
-                        <Setter Property="IsEditable" Value="True"/>
-                        <Setter Property="SelectedIndex" Value="0"/>
-                    </Style>
             <Style TargetType="{x:Type GroupBox}">
                 <Setter Property="Padding" Value="8,4,0,0"/>
                 <Setter Property="Template" Value="{StaticResource CheckGroupBoxTemplate}"/>
+            </Style>
+            <Style TargetType="{x:Type ComboBox}">
+                <Setter Property="IsEditable" Value="True"/>
+                <Setter Property="SelectedIndex" Value="0"/>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -122,7 +123,7 @@
             <!-- Characters -->
             <GroupBox x:Name="characterGroupBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="charCheckBox" Content="Characters (Pass*word*)" IsChecked="True"/>
+                    <CheckBox x:Name="charCheckBox" Content="Characters (Pass*word*)" IsChecked="True" Checked="CheckBox_Checked"/>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding IsChecked, ElementName=charCheckBox}">
                     <Grid.ColumnDefinitions>
@@ -157,7 +158,7 @@
                     <CheckBox x:Name="lowerCaseCheckBox" Grid.Row="4" Grid.ColumnSpan="5" Content="Lower-case Letters (a - z)"/>
                     <CheckBox x:Name="numbersCheckBox" Grid.Row="6" Grid.ColumnSpan="5" Content="Numbers (0 - 9)"/>
                     <CheckBox x:Name="symbolsCheckBox" Grid.Row="8" Grid.ColumnSpan="2" Content="Symbols (!, @, #, $, ...)"/>
-                    <Button x:Name="symbolsHelpButton" Grid.Column="2" Grid.Row="8" Style="{StaticResource HelpButtonStyle}"/>
+                    <Button x:Name="symbolsHelpButton" Grid.Row="8" Grid.Column="2" Style="{StaticResource HelpButtonStyle}"/>
                     <CheckBox x:Name="customCharSetCheckBox" Grid.Row="10" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Others (your characters):"/>
                     <TextBox x:Name="customCharacterTextBox" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" IsEnabled="{Binding IsChecked, ElementName=customCharSetCheckBox}" ToolTip="E.g. ~!@#$%^&amp;*(),.=+&lt;&gt;"/>
                     <Expander x:Name="passwordEncordExpander" Grid.Row="12" Grid.ColumnSpan="5" Header="Password Encode" Template="{StaticResource CheckExpanderTemplate}">
@@ -167,8 +168,8 @@
                             <RadioButton x:Name="hexUpperRadioButton" Content="Hex (0 - F)" Tag="{x:Static Password:PasswordEncoding.HexUpper}"/>
                         </UniformGrid>
                     </Expander>
-                    <CheckBox x:Name="escapeDubiousCheckBox" Grid.Row="14" Grid.ColumnSpan="3" Content="Escape Dubious Symbols" Height="16" VerticalAlignment="Top"/>
-                    <Button x:Name="escapeDubiousHelpButton" Grid.Column="3" Grid.Row="14" Style="{StaticResource HelpButtonStyle}"/>
+                    <CheckBox x:Name="escapeDubiousCheckBox" Grid.Row="14" Grid.ColumnSpan="3" Content="Escape Dubious Symbols"/>
+                    <Button x:Name="escapeDubiousHelpButton" Grid.Row="14" Grid.Column="3" Style="{StaticResource HelpButtonStyle}"/>
                     <Expander x:Name="phoneticPasswordExpander" Grid.Row="16" Grid.ColumnSpan="5" Header="Pronouncing" Template="{StaticResource CheckExpanderTemplate}">
                         <UniformGrid Columns="1">
                             <RadioButton x:Name="phoneticRadioButton" Content="Phonetic"/>
@@ -181,9 +182,9 @@
             <!-- Words -->
             <GroupBox x:Name="wordsGroupBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)"/>
+                    <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)" Checked="CheckBox_Checked"/>
                 </GroupBox.Header>
-                <Grid IsEnabled="{Binding IsChecked, ElementName=wordCheckBox}" Grid.IsSharedSizeScope="True">
+                <Grid Grid.IsSharedSizeScope="True" IsEnabled="{Binding IsChecked, ElementName=wordCheckBox}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="5"/>
@@ -203,19 +204,19 @@
                     </Grid.RowDefinitions>
                     <Label x:Name="wordCountLabel" VerticalContentAlignment="Center" Content="Word count:"/>
                     <local:NumericUpDown x:Name="wordCountIntegerUpDown" Grid.Column="1" Grid.ColumnSpan="3"/>
-                    <Label x:Name="wordListLabel" Grid.ColumnSpan="2" Grid.Row="2" Content="Word-list file:"/>
-                    <ComboBox x:Name="wordListComoBox" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="2" ItemsSource="{Binding Source={x:Static local:DefaultEntries.WordListFile}}"/>
-                    <Button x:Name="fileBrowseButton" Grid.Column="7" Grid.Row="2" Style="{StaticResource FileBrowseButtonStyle}"/>
-                    <CheckBox x:Name="specifyLengthCheckBox" Grid.ColumnSpan="3" Grid.Row="4" VerticalContentAlignment="Center" Content="Specify length*:"/>
-                    <local:NumberBox x:Name="specifyLengthNumericBox" Grid.Column="3" Grid.Row="4" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
-                    <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Column="5" Grid.ColumnSpan="3" Grid.Row="4" VerticalContentAlignment="Center" Content="Combine words with characters" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
+                    <Label x:Name="wordListLabel" Grid.Row="2" Grid.ColumnSpan="2" Content="Word-list file:"/>
+                    <ComboBox x:Name="wordListComoBox" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="4" ItemsSource="{Binding Source={x:Static local:DefaultEntries.WordListFile}}"/>
+                    <Button x:Name="fileBrowseButton" Grid.Row="2" Grid.Column="7" Style="{StaticResource FileBrowseButtonStyle}"/>
+                    <CheckBox x:Name="specifyLengthCheckBox" Grid.Row="4" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Specify length*:"/>
+                    <local:NumberBox x:Name="specifyLengthNumericBox" Grid.Row="4" Grid.Column="3" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
+                    <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Row="4" Grid.Column="5" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Combine words with characters" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
                 </Grid>
             </GroupBox>
 
             <!--Format-->
-            <GroupBox x:Name="passwordFormatGroupBox" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="1">
+            <GroupBox x:Name="passwordFormatGroupBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="passwordFormatCheckBox" Content="Password format"/>
+                    <CheckBox x:Name="passwordFormatCheckBox" Content="Password format" Checked="CheckBox_Checked"/>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding IsChecked, ElementName=passwordFormatCheckBox}">
                     <Grid.ColumnDefinitions>
@@ -228,7 +229,7 @@
                 </Grid>
             </GroupBox>
 
-            <Border BorderBrush="Black" BorderThickness="0,0.375" Grid.Row="5" Grid.ColumnSpan="3" VerticalAlignment="Center"/>
+            <Border BorderBrush="Black" BorderThickness="0,0.375" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center"/>
 
             <!-- Password Generation -->
             <Label x:Name="passwordQuantityLabel" Foreground="Navy" Grid.Row="7" Grid.Column="1" FontWeight="Bold" Content="Quantity:"/>
@@ -240,7 +241,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="generatePasswordButton" Content="Generate" Click="GeneratePasswordButton_Click"/>
-                <Button x:Name="advancedOptionButton" Content="Advanced" Grid.Column="2"/>
+                <Button x:Name="advancedOptionButton" Grid.Column="2" Content="Advanced"/>
             </Grid>
         </Grid>
         <Border BorderBrush="Black" BorderThickness="0.25,0"/>
