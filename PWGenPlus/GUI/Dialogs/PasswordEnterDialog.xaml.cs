@@ -22,7 +22,7 @@ using System.Windows;
 namespace PWGenPlus.GUI.Dialogs
 {
     /// <summary>
-    /// PasswordEnter.xaml の相互作用ロジック
+    /// PasswordEnter.xaml
     /// </summary>
     public partial class PasswordEnterDialog : Window
     {

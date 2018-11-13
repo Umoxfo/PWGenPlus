@@ -22,7 +22,7 @@ using System.Windows;
 namespace PWGenPlus.Windows.Menu.File
 {
     /// <summary>
-    /// Window1.xaml の相互作用ロジック
+    /// Window1.xaml
     /// </summary>
     public partial class ProfileEditorDialog : Window
     {
