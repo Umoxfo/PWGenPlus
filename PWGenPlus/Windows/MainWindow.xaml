@@ -8,7 +8,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:PWGenPlus"
         mc:Ignorable="d"
-        Title="PWGenPlus" SizeToContent="WidthAndHeight" Topmost="{Binding IsChecked, ElementName=alwaysOnTopMenuItem}" MinHeight="535">
+        Title="PWGenPlus" SizeToContent="WidthAndHeight" Topmost="{Binding IsChecked, ElementName=alwaysOnTopMenuItem}" MinHeight="530" MinWidth="800">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -97,13 +97,16 @@
                 <MenuItem Header="About PWGenPlus..."/>
             </MenuItem>
         </Menu>
-        <Grid x:Name="passwordSettingsGrid" Margin="8" Grid.IsSharedSizeScope="True">
+        <Grid x:Name="passwordSettingsGrid" Grid.IsSharedSizeScope="True">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="8"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="8"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition Height="Auto"/>
@@ -113,6 +116,7 @@
                 <RowDefinition SharedSizeGroup="rowItem"/>
                 <RowDefinition Height="8"/>
                 <RowDefinition SharedSizeGroup="rowItem"/>
+                <RowDefinition Height="8"/>
             </Grid.RowDefinitions>
 
             <!-- Characters -->
@@ -129,7 +133,7 @@
                         <ColumnDefinition Width="98*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="4"/>
                         <RowDefinition/>
                         <RowDefinition Height="4"/>
@@ -155,8 +159,7 @@
                     <CheckBox x:Name="symbolsCheckBox" Grid.Row="8" Grid.ColumnSpan="2" Content="Symbols (!, @, #, $, ...)"/>
                     <Button x:Name="symbolsHelpButton" Grid.Column="2" Grid.Row="8" Style="{StaticResource HelpButtonStyle}"/>
                     <CheckBox x:Name="customCharSetCheckBox" Grid.Row="10" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Others (your characters):"/>
-                    <TextBox x:Name="customCharacterTextBox" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" IsEnabled="{Binding IsChecked, ElementName=customCharSetCheckBox}"/>
-                    <CheckBox x:Name="eacapeDubiousCheckBox" Grid.Row="14" Grid.ColumnSpan="3" Content="Escape Dubious Symbols"/>
+                    <TextBox x:Name="customCharacterTextBox" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" IsEnabled="{Binding IsChecked, ElementName=customCharSetCheckBox}" ToolTip="E.g. ~!@#$%^&amp;*(),.=+&lt;&gt;"/>
                     <Expander x:Name="passwordEncordExpander" Grid.Row="12" Grid.ColumnSpan="5" Header="Password Encode" Template="{StaticResource CheckExpanderTemplate}">
                         <UniformGrid Columns="1">
                             <RadioButton x:Name="base64RadioButton" Content="Base64" Tag="{x:Static Password:PasswordEncoding.Base64}"/>
@@ -164,6 +167,7 @@
                             <RadioButton x:Name="hexUpperRadioButton" Content="Hex (0 - F)" Tag="{x:Static Password:PasswordEncoding.HexUpper}"/>
                         </UniformGrid>
                     </Expander>
+                    <CheckBox x:Name="escapeDubiousCheckBox" Grid.Row="14" Grid.ColumnSpan="3" Content="Escape Dubious Symbols" Height="16" VerticalAlignment="Top"/>
                     <Button x:Name="escapeDubiousHelpButton" Grid.Column="3" Grid.Row="14" Style="{StaticResource HelpButtonStyle}"/>
                     <Expander x:Name="phoneticPasswordExpander" Grid.Row="16" Grid.ColumnSpan="5" Header="Pronouncing" Template="{StaticResource CheckExpanderTemplate}">
                         <UniformGrid Columns="1">
@@ -191,13 +195,11 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition SharedSizeGroup="rowItem" Height="26*"/>
+                        <RowDefinition SharedSizeGroup="rowItem"/>
                         <RowDefinition Height="4"/>
-                        <RowDefinition SharedSizeGroup="rowItem" Height="26*"/>
+                        <RowDefinition SharedSizeGroup="rowItem"/>
                         <RowDefinition Height="4"/>
-                        <RowDefinition SharedSizeGroup="rowItem" Height="26*"/>
-                        <RowDefinition Height="21*"/>
-                        <RowDefinition Height="37*"/>
+                        <RowDefinition SharedSizeGroup="rowItem"/>
                     </Grid.RowDefinitions>
                     <Label x:Name="wordCountLabel" VerticalContentAlignment="Center" Content="Word count:"/>
                     <local:NumericUpDown x:Name="wordCountIntegerUpDown" Grid.Column="1" Grid.ColumnSpan="3"/>
@@ -229,9 +231,9 @@
             <Border BorderBrush="Black" BorderThickness="0,0.375" Grid.Row="5" Grid.ColumnSpan="3" VerticalAlignment="Center"/>
 
             <!-- Password Generation -->
-            <Label x:Name="passwordQuantityLabel" Foreground="Navy" Grid.Row="6" FontWeight="Bold" Content="Quantity:" />
-            <Grid Grid.ColumnSpan="3" Grid.Row="8">
+            <Label x:Name="passwordQuantityLabel" Foreground="Navy" Grid.Row="7" Grid.Column="1" FontWeight="Bold" Content="Quantity:"/>
             <local:NumberBox x:Name="passwordsQuantityNumericBox" Grid.Row="7" Grid.Column="2" Value="100"/>
+            <Grid Grid.ColumnSpan="3" Grid.Row="9" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="5"/>
