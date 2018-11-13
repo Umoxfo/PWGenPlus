@@ -17,30 +17,19 @@
  * along with PasswordGenerator.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-using PasswordGenerator.Utils;
+using Umoxfo.Security.Password.Utils;
 
-namespace PasswordGenerator
+namespace Umoxfo.Security.Password
 {
     /// <summary>
     /// This class represents a password
     /// </summary>
     public class Password
     {
-        private string _actualPassword;
-
         /// <summary>
         /// The actual password in plain text
         /// </summary>
-        public string ActualPassword
-        {
-            get => _actualPassword;
-            set
-            {
-                _actualPassword = value;
-                Length = value.Length;
-                Strength = PasswordStrength.CheckStrength(value);
-            }
-        }
+        public string ActualPassword { get; set; }
 
         /// <summary>
         /// The length of the password
@@ -51,6 +40,13 @@ namespace PasswordGenerator
         /// The strength of a password, indicated by a number ranging from 0 to 6.
         /// The higher the score, the stronger the password
         /// </summary>
-        public int Strength { get; private set; }
+        public double Strength { get; private set; }
+
+        public Password(string actualPassword)
+        {
+            ActualPassword = actualPassword;
+            Length = actualPassword.Length;
+            Strength = PasswordStrength.CheckStrength(actualPassword);
+        }
     }
 }
