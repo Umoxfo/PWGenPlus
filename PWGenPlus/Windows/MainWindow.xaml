@@ -155,7 +155,7 @@
                     <CheckBox x:Name="lowerCaseCheckBox" Grid.Row="4" Grid.ColumnSpan="5" Content="Lower-case Letters (a - z)"/>
                     <CheckBox x:Name="numbersCheckBox" Grid.Row="6" Grid.ColumnSpan="5" Content="Numbers (0 - 9)"/>
                     <CheckBox x:Name="symbolsCheckBox" Grid.Row="8" Grid.ColumnSpan="2" Content="Symbols (!, @, #, $, ...)"/>
-                    <local:IconButton x:Name="symbolsHelpButton" Grid.Column="2" Grid.Row="8" Style="{DynamicResource HelpButtonStyle}"/>
+                    <Button x:Name="symbolsHelpButton" Grid.Column="2" Grid.Row="8" Style="{StaticResource HelpButtonStyle}"/>
                     <CheckBox x:Name="customCharSetCheckBox" Grid.Row="10" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Others (your characters):"/>
                     <TextBox x:Name="customCharacterTextBox" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" IsEnabled="{Binding IsChecked, ElementName=customCharSetCheckBox}"/>
                     <TreeView x:Name="enableCharTtreeView" Grid.Row="12" Grid.ColumnSpan="5" Template="{DynamicResource CheckTreeViewControlTemplate}">
@@ -166,9 +166,9 @@
                         </TreeViewItem>
                     </TreeView>
                     <CheckBox x:Name="eacapeDubiousCheckBox" Grid.Row="14" Grid.ColumnSpan="3" Content="Escape Dubious Symbols"/>
-                    <local:IconButton x:Name="escapeDubiousHelpButton" Grid.Column="3" Grid.Row="14" Style="{DynamicResource HelpButtonStyle}"/>
                     <TreeView x:Name="phoneticPasswordTreeView" Grid.Row="16" Grid.ColumnSpan="5" Template="{DynamicResource CheckTreeViewControlTemplate}">
                         <TreeViewItem x:Name="pronunceablePasswordTreeViewItem" Header="Pronounceable Password" Template="{DynamicResource CheckTreeViewItemControlTemplate}">
+                    <Button x:Name="escapeDubiousHelpButton" Grid.Column="3" Grid.Row="14" Style="{StaticResource HelpButtonStyle}"/>
                             <RadioButton x:Name="phoneticRadioButton" Content="Phonetic"/>
                             <RadioButton x:Name="phoneticxRadioButton" Content="Phoneticx"/>
                         </TreeViewItem>
@@ -205,7 +205,7 @@
                     <local:NumericUpDown x:Name="wordCountIntegerUpDown" Grid.Column="1" Grid.ColumnSpan="3"/>
                     <Label x:Name="wordListLabel" Grid.ColumnSpan="2" Grid.Row="2" Content="Word-list file:"/>
                     <ComboBox x:Name="wordListComoBox" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="2" ItemsSource="{Binding Source={x:Static local:DefaultEntries.WordListFile}}"/>
-                    <local:IconButton x:Name="fileBrowseButton" Grid.Column="7" Grid.Row="2" Style="{DynamicResource FileBrowseButtonStyle}"/>
+                    <Button x:Name="fileBrowseButton" Grid.Column="7" Grid.Row="2" Style="{StaticResource FileBrowseButtonStyle}"/>
                     <CheckBox x:Name="specifyLengthCheckBox" Grid.ColumnSpan="3" Grid.Row="4" VerticalContentAlignment="Center" Content="Specify length*:"/>
                     <local:NumberBox x:Name="specifyLengthNumericBox" Grid.Column="3" Grid.Row="4" MinWidth="66" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
                     <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Column="5" Grid.ColumnSpan="3" Grid.Row="4" VerticalContentAlignment="Center" Content="Combine words with characters" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
@@ -224,7 +224,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <ComboBox x:Name="passwordFormatComoBox" ItemsSource="{Binding Source={x:Static local:DefaultEntries.FormatList}}"/>
-                    <local:IconButton x:Name="passwordFormatHelpButton" Grid.Column="2" VerticalAlignment="Center" Style="{DynamicResource HelpButtonStyle}"/>
+                    <Button x:Name="passwordFormatHelpButton" Grid.Column="2" VerticalAlignment="Center" Style="{StaticResource HelpButtonStyle}"/>
                 </Grid>
             </GroupBox>
 

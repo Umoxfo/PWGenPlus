@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:local="clr-namespace:PWGenPlus"
                     mc:Ignorable="d">
     <DataTemplate x:Key="FileBrowseButtonTemplate">
         <Canvas x:Name="FileBrowse" MinWidth="25" MinHeight="25.004879" RenderTransformOrigin="0.5,0.5">
@@ -17,8 +16,9 @@
         </Canvas>
     </DataTemplate>
 
-    <Style x:Key="FileBrowseButtonStyle" TargetType="{x:Type local:IconButton}">
+    <Style x:Key="FileBrowseButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="ToolTip" Value="File Browse"/>
+        <Setter Property="Template" Value="{StaticResource IconButtonControlTemplate}"/>
         <Setter Property="ContentTemplate" Value="{StaticResource FileBrowseButtonTemplate}"/>
     </Style>
 </ResourceDictionary>

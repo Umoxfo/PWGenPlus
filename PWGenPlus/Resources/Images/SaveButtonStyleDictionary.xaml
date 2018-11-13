@@ -1,11 +1,9 @@
-﻿<Button x:Class="PWGenPlus.SaveButton"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        mc:Ignorable="d"
-        ToolTip="Generate password list to file" Template="{DynamicResource IconButtonControlTemplate}">
-    <Button.Content>
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    mc:Ignorable="d">
+    <DataTemplate x:Key="SaveButtonTemplate">
         <Canvas x:Name="Save" MinWidth="25" MinHeight="25.543478" RenderTransformOrigin="0.5,0.5">
             <Canvas.RenderTransform>
                 <TranslateTransform X="0" Y="0"/>
@@ -28,5 +26,11 @@
             <Rectangle Canvas.Left="3.8043478" Canvas.Top="14.130434" Width="16.847826" Height="6.5418477" x:Name="rect964" Fill="#FFEBBA16" StrokeThickness="0.54347825"/>
             <Path x:Name="path970" Data="M7.611196,2.181 C7.7525001,2.181 7.8938041,2.231272 7.994348,2.331814 8.0921769,2.4345324 8.151957,2.57638 8.151957,2.7176859 8.151957,2.858988 8.0921779,3.0002921 7.994348,3.1035541 7.8910871,3.2013838 7.755218,3.261162 7.608479,3.261162 7.4611964,3.261162 7.3253264,3.2013838 7.2226091,3.1035541 7.1242404,3.0002921 7.0650001,2.864424 7.0650001,2.7176859 7.0650001,2.5704024 7.124783,2.4345324 7.2280441,2.331814 7.328588,2.231272 7.469892,2.181&#xA;7.611196,2.181 z M0.54347801,2.174 L5.9782611,2.174 C6.2788039,2.174 6.5217391,2.4169352 6.5217391,2.7174799 6.5217391,3.0180227 6.2788039,3.260956 5.9782611,3.260956 L0.54347801,3.260956 C0.2429347,3.260956 0,3.0180227 0,2.7174799 0,2.4169352 0.2429347,2.174 0.54347801,2.174 z M0.54347801,0 L4.347826,0 C4.6483688,0 4.891304,0.24293423 4.891304,0.54347897 4.891304,0.8440218 4.6483688,1.086957 4.347826,1.086957 L0.54347801,1.086957 C0.2429347,1.086957 0,0.8440218 0,0.54347897 0,0.24293423 0.2429347,0 0.54347801,0 z" Fill="#FFFFFFFF" Canvas.Left="5.978" Stretch="Fill" StrokeThickness="0.54347825" Canvas.Top="15.761"/>
         </Canvas>
-    </Button.Content>
-</Button>
+    </DataTemplate>
+
+    <Style x:Key="SaveButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="ToolTip" Value="Save file"/>
+        <Setter Property="Template" Value="{StaticResource IconButtonControlTemplate}"/>
+        <Setter Property="ContentTemplate" Value="{StaticResource SaveButtonTemplate}"/>
+    </Style>
+</ResourceDictionary>
