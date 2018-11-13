@@ -24,7 +24,7 @@ using System.Windows.Controls;
 namespace PWGenPlus
 {
     /// <summary>
-    /// NumericUpDown.xaml の相互作用ロジック
+    /// NumericUpDown.xaml
     /// </summary>
     public partial class NumericUpDown : UserControl
     {
@@ -73,6 +73,7 @@ namespace PWGenPlus
 
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            // Method intentionally left empty.
         }
 
         private static object CoerceValue(DependencyObject d, object baseValue)

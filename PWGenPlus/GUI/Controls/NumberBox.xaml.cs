@@ -24,9 +24,9 @@ using System.Windows.Controls;
 namespace PWGenPlus
 {
     /// <summary>
-    /// NumberBox.xaml の相互作用ロジック
+    /// NumberBox.xaml
     /// </summary>
-    public partial class NumberBox : UserControl
+    public partial class NumberBox : TextBox
     {
         #region MinValue Property
         private static readonly DependencyPropertyKey MinValuePropertyKey =
@@ -73,6 +73,7 @@ namespace PWGenPlus
 
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            // Method intentionally left empty.
         }
 
         private static object CoerceValue(DependencyObject d, object baseValue)
@@ -98,7 +99,16 @@ namespace PWGenPlus
         #endregion
 
         [Browsable(false)]
-        public new string Content { get; set; }
+        public new double SelectionOpacity { get; set; }
+
+        [Browsable(false)]
+        public new bool SpellCheck { get; set; }
+
+        [Browsable(true)]
+        public new string Text { get; set; }
+
+        [Browsable(false)]
+        public new int UndoLimit { get; set; }
 
         public NumberBox()
         {

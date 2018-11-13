@@ -205,7 +205,7 @@
                     <ComboBox x:Name="wordListComoBox" Grid.Column="2" Grid.ColumnSpan="4" Grid.Row="2" ItemsSource="{Binding Source={x:Static local:DefaultEntries.WordListFile}}"/>
                     <Button x:Name="fileBrowseButton" Grid.Column="7" Grid.Row="2" Style="{StaticResource FileBrowseButtonStyle}"/>
                     <CheckBox x:Name="specifyLengthCheckBox" Grid.ColumnSpan="3" Grid.Row="4" VerticalContentAlignment="Center" Content="Specify length*:"/>
-                    <local:NumberBox x:Name="specifyLengthNumericBox" Grid.Column="3" Grid.Row="4" MinWidth="66" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
+                    <local:NumberBox x:Name="specifyLengthNumericBox" Grid.Column="3" Grid.Row="4" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
                     <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Column="5" Grid.ColumnSpan="3" Grid.Row="4" VerticalContentAlignment="Center" Content="Combine words with characters" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}"/>
                 </Grid>
             </GroupBox>
@@ -230,8 +230,8 @@
 
             <!-- Password Generation -->
             <Label x:Name="passwordQuantityLabel" Foreground="Navy" Grid.Row="6" FontWeight="Bold" Content="Quantity:" />
-            <local:NumberBox x:Name="passwordsQuantityNumericBox" Grid.Row="6" Grid.Column="1" MinWidth="66" Value="100" Height="25.96" VerticalAlignment="Bottom"/>
             <Grid Grid.ColumnSpan="3" Grid.Row="8">
+            <local:NumberBox x:Name="passwordsQuantityNumericBox" Grid.Row="7" Grid.Column="2" Value="100"/>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="5"/>
