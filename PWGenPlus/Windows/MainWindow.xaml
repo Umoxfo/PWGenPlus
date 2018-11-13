@@ -20,27 +20,6 @@
                         <Setter Property="SelectedIndex" Value="0"/>
                     </Style>
 
-                    <DataTemplate x:Key="PasswordViewTemplate">
-                        <Border BorderBrush="Black" Margin="8" Padding="4" BorderThickness="1">
-                            <Grid MinWidth="14" MinHeight="22">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Task Name:"/>
-                                <!--<TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=TaskName}" />-->
-                                <TextBlock Grid.Row="1" Text="Description:"/>
-                                <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Description}"/>-->
-                                <TextBlock Grid.Row="2" Text="Priority:"/>
-                                <!--<TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Priority}"/>-->
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -263,29 +242,7 @@
                 <Button x:Name="generatePasswordButton" Content="Generate" Click="GeneratePasswordButton_Click"/>
                 <Button x:Name="advancedOptionButton" Content="Advanced" Grid.Column="2"/>
             </Grid>
+            <ListBox x:Name="passwordViewListBox" Width="{Binding ActualWidth, ElementName=passwordView}" Grid.Row="1" Style="{StaticResource PasswordViewStyle}" ItemsSource="{Binding Passwords, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local1:MainWindow}}}" />
         </Grid>
-        <ListView x:Name="listView" DockPanel.Dock="Right" Style="{DynamicResource PasswordViewStyle}" RenderTransformOrigin="0.5,0.5" Width="275">
-            <ListView.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="-1"/>
-                    <SkewTransform/>
-                    <RotateTransform/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </ListView.RenderTransform>
-            <!--<ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Password"/>
-                    <GridViewColumn Header="Length"/>
-                    <GridViewColumn x:Name="GvcStrength" Header="Strength">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <ProgressBar Maximum="7" Value="{Binding Strength, Mode=OneWay}" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>-->
-        </ListView>
     </DockPanel>
 </Window>

@@ -17,6 +17,7 @@
  * along with PWGenPlus.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -39,6 +40,8 @@ namespace PWGenPlus.Windows
     public partial class MainWindow : Window
     {
         private readonly OpenFileDialog _openFileDialog;
+
+        public ObservableCollection<Password> Passwords { get; set; } = new ObservableCollection<Password>();
 
         public MainWindow()
         {
@@ -219,6 +222,10 @@ namespace PWGenPlus.Windows
 
             // Set the amount of passwords to generate
             passwordSettings.Quantity = passwordsQuantityNumericBox.Value;
+
+            PWGenController.GeneratePasswords(passwordSettings).ForEach(p => Passwords.Add(p));
+
+            passwordViewListBox.MaxWidth = double.PositiveInfinity;
         }//GeneratePasswordButton_Click
     }
 }
