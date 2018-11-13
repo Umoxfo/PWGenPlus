@@ -242,7 +242,40 @@
                 <Button x:Name="generatePasswordButton" Content="Generate" Click="GeneratePasswordButton_Click"/>
                 <Button x:Name="advancedOptionButton" Content="Advanced" Grid.Column="2"/>
             </Grid>
-            <ListBox x:Name="passwordViewListBox" Width="{Binding ActualWidth, ElementName=passwordView}" Grid.Row="1" Style="{StaticResource PasswordViewStyle}" ItemsSource="{Binding Passwords, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local1:MainWindow}}}" />
+        </Grid>
+        <Border BorderBrush="Black" BorderThickness="0.25,0"/>
+        <!-- Password View -->
+        <Grid x:Name="passwordView" Height="{Binding ActualHeight, ElementName=passwordSettingsGrid}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="passwordViewControl" Background="#FFACA9AA" MinHeight="35" Grid.ColumnSpan="2" Grid.IsSharedSizeScope="True">
+                <Grid.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="MinWidth" Value="45"/>
+                        <Setter Property="MinHeight" Value="27"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="4"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="4"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition SharedSizeGroup="columnItem"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition SharedSizeGroup="columnItem"/>
+                    <ColumnDefinition Width="5"/>
+                    <ColumnDefinition SharedSizeGroup="columnItem"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="copyButton" Grid.Column="1" Content="Copy" Grid.Row="1"/>
+                <Button x:Name="saveButton" Grid.Column="3" Content="Save" Grid.Row="1"/>
+                <Button x:Name="clearButton" Grid.Column="5" Content="Clear" Grid.Row="1"/>
+            </Grid>
+            <ListBox x:Name="passwordViewListBox" Width="{Binding ActualWidth, ElementName=passwordView}" Grid.Row="1" Style="{StaticResource PasswordViewStyle}" ItemsSource="{Binding Passwords, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local1:MainWindow}}}"/>
         </Grid>
     </DockPanel>
 </Window>
