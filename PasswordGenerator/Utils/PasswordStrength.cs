@@ -17,40 +17,54 @@
  * along with PasswordGenerator.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace PasswordGenerator.Utils
+namespace Umoxfo.Security.Password.Utils
 {
-    internal class PasswordStrength
+    internal static class PasswordStrength
     {
-        private PasswordStrength()
-        {
-        }
+        private const double MAX_SCORE = 40.000d;
+        private const double SECTION_POINTS = (MAX_SCORE - 5.000) / 3;
 
         /// <summary>
         /// Check how a strong a password is. The higher the score, the stronger the password
         /// </summary>
         /// <param name="password">The password that needs to be evaluated</param>
         /// <returns>Returns the score of a password</returns>
-        public static int CheckStrength(string password)
+        public static double CheckStrength(string password)
         {
-            int score = 1;
+            double score = 0.000d;
+            double points = SECTION_POINTS / 3;
 
             if (string.IsNullOrEmpty(password)) return 0;
 
             // Password Length
             int passwordLength = password.Length;
-            if (passwordLength < 2) return 0;
-            if (passwordLength < 4) return score;
-            if (passwordLength >= 8) score++;
-            if (passwordLength >= 10) score++;
-            if (passwordLength >= 14) score++;
+            if (passwordLength < 10) return 0;
+            if (passwordLength < 12) return 1;
+            if (passwordLength >= 16) score += points + 1;
+            if (passwordLength >= 20) score += points;
+            if (passwordLength >= 24) score += points;
 
-            if (Regex.Match(password, @"\d", RegexOptions.ECMAScript).Success) score++;
-            if (Regex.Match(password, @"[a-z]", RegexOptions.ECMAScript).Success && Regex.Match(password, @"[A-Z]", RegexOptions.ECMAScript).Success) score++;
-            if (Regex.Match(password, @"[:,µ,;, ,<,>,+,!,@,#,$,%,^,&,*,?,_,~,-,£,(,);\[,\],⟨,⟩]", RegexOptions.ECMAScript).Success) score++;
+            // Password Complexity
+            if (HasDigit(password)) score += points;
+            if (HasLowerAndUpperLetter(password)) score += points;
+            if (HasSpecialCharacter(password)) score += points;
+
+            // Not more than 2 identical characters
+            if (Regex.IsMatch(password, @"^(?!(.)\1{2,}).*$")) score += SECTION_POINTS;
+
+            // Unique character rate
+            score += (password.Distinct().Count() / passwordLength) * 5.00d;
 
             return score;
         }//CheckStrength
+
+        private static bool HasDigit(string password) => password.Any(x => char.IsDigit(x));
+
+        private static bool HasLowerAndUpperLetter(string password) => password.Any(x => char.IsLower(x)) && password.Any(x => char.IsUpper(x));
+
+        private static bool HasSpecialCharacter(string password) => password.Any(x => char.IsSymbol(x) || char.IsPunctuation(x) || char.IsSeparator(x));
     }
 }
