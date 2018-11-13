@@ -17,13 +17,14 @@
  * along with PasswordGenerator.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-namespace PasswordGenerator.Settings
+namespace Umoxfo.Security.Password.Settings
 {
     public enum PasswordEncoding
     {
-        HEX_LOWER,
-        HEX_UPPER,
-        BASE64
+        Character,
+        Base64,
+        HexLower,
+        HexUpper
     }
 
     public enum PronounceablePassword
@@ -39,14 +40,9 @@ namespace PasswordGenerator.Settings
         /* Character */
         #region Character Properties
         /// <summary>
-        /// The minimum length of a password
+        /// The length of a password
         /// </summary>
-        public int MinLength { get; set; }
-
-        /// <summary>
-        /// The maximum length of a password
-        /// </summary>
-        public int MaxLength { get; set; }
+        public int Length { get; set; }
 
         /// <summary>
         /// The character set that can be used to generate passwords

@@ -20,22 +20,26 @@
 using System.Collections.ObjectModel;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
 using Microsoft.Win32;
-
-using PasswordGenerator.Settings;
 
 using PWGenPlus.GUI.Dialogs;
 using PWGenPlus.Windows.Menu.File;
 using PWGenPlus.Windows.Menu.Option.Config;
 using PWGenPlus.Windows.Menu.Tools;
 
+using Umoxfo.Security.Password;
+using Umoxfo.Security.Password.Generator;
+using Umoxfo.Security.Password.Settings;
+
 namespace PWGenPlus.Windows
 {
     /// <summary>
-    /// MainWindow.xaml の相互作用ロジック
+    /// MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -124,45 +128,51 @@ namespace PWGenPlus.Windows
             }.ShowDialog();
         }//CreateTrigramFileMenuItem_Click
 
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (generatePasswordButton != null)
+            {
+                generatePasswordButton.IsEnabled = true;
+            }//if
+        }//CheckBox_Checked
+
         private void GeneratePasswordButton_Click(object sender, RoutedEventArgs e)
         {
-            PasswordSettings passwordSettings = new PasswordSettings();
+            passwordViewListBox.MaxWidth = passwordView.ActualWidth;
 
-            // Character
+            PasswordSettings passwordSettings = new PasswordSettings();
+            #region Password Settings
+            #region Character
             if (charCheckBox.IsChecked ?? false)
             {
-                // Set the password length
-                int passwordLength = charLengthIntegerUpDown.Value;
-                if (passwordLength > 0)
-                {
-                    passwordSettings.MaxLength = passwordLength;
-                }//if
+                // Password length
+                passwordSettings.Length = charLengthIntegerUpDown.Value;
 
-                // Set the character set
+                #region Character set
                 StringBuilder sb = new StringBuilder();
 
                 // Uppercase
                 if (upperCaseCheckBox.IsChecked ?? false)
                 {
-                    sb.Append(DefaultEntries.CharacterSet.UppercaseLetters);
+                    sb.Append(DefaultEntries.CharacterSet.UPPERCASE_LETTERS);
                 }//if
 
                 // Lowercase
                 if (lowerCaseCheckBox.IsChecked ?? false)
                 {
-                    sb.Append(DefaultEntries.CharacterSet.LowercaseLetters);
+                    sb.Append(DefaultEntries.CharacterSet.LOWERCASE_LETTERS);
                 }//if
 
                 // Numbers
                 if (numbersCheckBox.IsChecked ?? false)
                 {
-                    sb.Append(DefaultEntries.CharacterSet.Numbers);
+                    sb.Append(DefaultEntries.CharacterSet.NUMBERS);
                 }//if
 
                 // Symbols
                 if (symbolsCheckBox.IsChecked ?? false)
                 {
-                    sb.Append(DefaultEntries.CharacterSet.Symbols);
+                    sb.Append(DefaultEntries.CharacterSet.SPECIAL_CHARACTERS);
                 }//if
 
                 // Custom Characters
@@ -171,26 +181,48 @@ namespace PWGenPlus.Windows
                     sb.Append(customCharacterTextBox.Text);
                 }//if
 
-                // Password Encoding
-                if (passwordEncordTreeViewItem.IsExpanded)
+                // Escape Dubious Characters
+                if (escapeDubiousCheckBox.IsChecked ?? false)
                 {
-                    //passwordSettings.HexLower = hexLowerRadioButton.IsChecked ?? false;
-                    //passwordSettings.HexUpper = hexUpperRadioButton.IsChecked ?? false;
-                    //passwordSettings.Base64 = base64RadioButton.IsChecked ?? false;
+                    char[] dubiousChars = DefaultEntries.CharacterSet.AMBIGUOUS.ToCharArray();
+                    for (int i = 0; i < dubiousChars.Length; i++)
+                    {
+                        sb.Replace(dubiousChars[i], '\u200B');
+                    }//for
                 }//if
 
-                //Escape Dubious Symbols
-                passwordSettings.ExcludeDuplicates = eacapeDubiousCheckBox.IsChecked ?? false;
+                passwordSettings.CharSet = sb.ToString();
+                #endregion
 
                 // Password Encoding
-                if (pronunceablePasswordTreeViewItem.IsExpanded)
+                if (passwordEncordExpander.IsExpanded)
                 {
-                    //passwordSettings.Phonetic = phoneticRadioButton.IsChecked ?? false;
-                    //passwordSettings.Phoneticx = phoneticxRadioButton.IsChecked ?? false;
+                    UniformGrid uniformGrid = passwordEncordExpander.Content as UniformGrid;
+                    foreach (RadioButton rb in uniformGrid.Children)
+                    {
+                        if (rb.IsChecked ?? false)
+                        {
+                            passwordSettings.Encoding = (PasswordEncoding)rb.Tag;
+                        }//if
+                    }//foreach
+                }//if
+
+                // Password Encoding
+                if (phoneticPasswordExpander.IsExpanded)
+                {
+                    if (phoneticRadioButton.IsChecked ?? false)
+                    {
+                        passwordSettings.Pronunciation = PronounceablePassword.Phonetic;
+                    }
+                    else
+                    {
+                        passwordSettings.Pronunciation = PronounceablePassword.Phoneticx;
+                    }//if-else
                 }//if
             }//if
+            #endregion
 
-            // Words
+            #region Words
             if (wordCheckBox.IsChecked ?? false)
             {
                 // Set the number of words used for the password
@@ -213,6 +245,7 @@ namespace PWGenPlus.Windows
                     passwordSettings.CombineWords = cmbineWordsCharsCeckBox.IsChecked ?? false;
                 }//if
             }//if
+            #endregion
 
             // Password Format
             if (passwordFormatCheckBox.IsChecked ?? false)
@@ -222,6 +255,7 @@ namespace PWGenPlus.Windows
 
             // Set the amount of passwords to generate
             passwordSettings.Quantity = passwordsQuantityNumericBox.Value;
+            #endregion
 
             PWGenController.GeneratePasswords(passwordSettings).ForEach(p => Passwords.Add(p));
 
