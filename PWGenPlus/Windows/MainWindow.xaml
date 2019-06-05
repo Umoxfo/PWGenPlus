@@ -25,6 +25,7 @@
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Close" Executed="CloseCmdExecuted" CanExecute="CloseCmdCanExecute"/>
+        <CommandBinding Command="{x:Static window:MainWindow.GeneratePasswordCommand}" Executed="GeneratePasswordCommandExecuted" CanExecute="GeneratePasswordCommandCanExecute"/>
     </Window.CommandBindings>
 
     <DockPanel>
@@ -240,7 +241,7 @@
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="generatePasswordButton" Content="Generate" Click="GeneratePasswordButton_Click"/>
+                <Button x:Name="generatePasswordButton" Command="{x:Static window:MainWindow.GeneratePasswordCommand}" Content="Generate"/>
                 <Button x:Name="advancedOptionButton" Grid.Column="2" Content="Advanced"/>
             </Grid>
         </Grid>

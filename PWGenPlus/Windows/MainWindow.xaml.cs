@@ -45,6 +45,8 @@ namespace PWGenPlus.Windows
     {
         private readonly OpenFileDialog _openFileDialog;
 
+        public static readonly RoutedCommand GeneratePasswordCommand = new RoutedCommand();
+
         public ObservableCollection<Password> Passwords { get; set; } = new ObservableCollection<Password>();
 
         public MainWindow()
@@ -69,6 +71,148 @@ namespace PWGenPlus.Windows
         private void CloseCmdExecuted(object target, ExecutedRoutedEventArgs e) => this.Close();
 
         private void CloseCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+
+        #region GeneratePasswordCommand
+        private void GeneratePasswordCommandExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+
+            PasswordSettings passwordSettings = new PasswordSettings();
+
+            #region Password Settings
+
+            #region Character
+
+            if (charCheckBox.IsChecked ?? false)
+            {
+                // Password length
+                passwordSettings.Length = charLengthIntegerUpDown.Value;
+
+                #region Character set
+
+                StringBuilder sb = new StringBuilder();
+
+                // Uppercase
+                if (upperCaseCheckBox.IsChecked ?? false)
+                {
+                    sb.Append(DefaultEntries.CharacterSet.UPPERCASE_LETTERS);
+                }//if
+
+                // Lowercase
+                if (lowerCaseCheckBox.IsChecked ?? false)
+                {
+                    sb.Append(DefaultEntries.CharacterSet.LOWERCASE_LETTERS);
+                }//if
+
+                // Numbers
+                if (numbersCheckBox.IsChecked ?? false)
+                {
+                    sb.Append(DefaultEntries.CharacterSet.NUMBERS);
+                }//if
+
+                // Symbols
+                if (symbolsCheckBox.IsChecked ?? false)
+                {
+                    sb.Append(DefaultEntries.CharacterSet.SPECIAL_CHARACTERS);
+                }//if
+
+                // Custom Characters
+                if (customCharSetCheckBox.IsChecked ?? false)
+                {
+                    sb.Append(customCharacterTextBox.Text);
+                }//if
+
+                // Escape Dubious Characters
+                if (escapeDubiousCheckBox.IsChecked ?? false)
+                {
+                    char[] dubiousChars = DefaultEntries.CharacterSet.AMBIGUOUS.ToCharArray();
+
+                    foreach (char c in dubiousChars)
+                    {
+                        sb.Replace(c, '\u200B');
+                    }//foreach
+                }//if
+
+                passwordSettings.CharSet = sb.ToString();
+
+                #endregion Character set
+
+                // Password Encoding
+                if (passwordEncordExpander.IsExpanded)
+                {
+                    VirtualizingStackPanel uniformGrid = passwordEncordExpander.Content as VirtualizingStackPanel;
+
+                    foreach (RadioButton rb in uniformGrid.Children)
+                    {
+                        if (rb.IsChecked ?? false)
+                        {
+                            passwordSettings.Encoding = (PasswordEncoding)rb.Tag;
+                        }//if
+                    }//foreach
+                }//if
+
+                // Password Encoding
+                if (phoneticPasswordExpander.IsExpanded)
+                {
+                    if (phoneticRadioButton.IsChecked ?? false)
+                    {
+                        passwordSettings.Pronunciation = PronounceablePassword.Phonetic;
+                    }
+                    else
+                    {
+                        passwordSettings.Pronunciation = PronounceablePassword.Phoneticx;
+                    }//if-else
+                }//if
+            }//if
+
+            #endregion Character
+
+            #region Words
+
+            if (wordCheckBox.IsChecked ?? false)
+            {
+                // Set the number of words used for the password
+                int wordCount = wordCountIntegerUpDown.Value;
+                if (wordCount > 0)
+                {
+                    passwordSettings.WordCounts = wordCount;
+                }//if
+
+                // Set the word list file used for the password
+                passwordSettings.WordList = wordListComoBox.SelectedValue;
+
+                // Whether set the length range for the passphrases or not
+                if (specifyLengthCheckBox.IsChecked ?? false)
+                {
+                    // Set the length range for the passphrases
+                    passwordSettings.SpecifyLength = specifyLengthNumericBox.Value;
+
+                    // Generate passwords as a combination of words with characters
+                    passwordSettings.CombineWords = cmbineWordsCharsCeckBox.IsChecked ?? false;
+                }//if
+            }//if
+
+            #endregion Words
+
+            // Password Format
+            if (passwordFormatCheckBox.IsChecked ?? false)
+            {
+                passwordSettings.PasswordFormat = passwordFormatComoBox.SelectedValue.ToString();
+            }//if
+
+            // Set the amount of passwords to generate
+            passwordSettings.Quantity = passwordsQuantityNumericBox.Value;
+
+            #endregion Password Settings
+
+            PWGenController.GeneratePasswords(passwordSettings).ForEach(p => Passwords.Add(p));
+
+            // Scroll to the last item
+            passwordViewListBox.ScrollIntoView(passwordViewListBox.Items.GetItemAt(passwordViewListBox.Items.Count - 1));
+        }//ExecutedGeneratePasswordCommand
+
+        // CanExecuteRoutedEventHandler that only returns true if the source is a control.
+        private void GeneratePasswordCommandCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = e.Source is Control;
+        #endregion GeneratePasswordCommand
 
         private void EncryptClipboardMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -135,131 +279,5 @@ namespace PWGenPlus.Windows
                 generatePasswordButton.IsEnabled = true;
             }//if
         }//CheckBox_Checked
-
-        private void GeneratePasswordButton_Click(object sender, RoutedEventArgs e)
-        {
-            passwordViewListBox.MaxWidth = passwordView.ActualWidth;
-
-            PasswordSettings passwordSettings = new PasswordSettings();
-            #region Password Settings
-            #region Character
-            if (charCheckBox.IsChecked ?? false)
-            {
-                // Password length
-                passwordSettings.Length = charLengthIntegerUpDown.Value;
-
-                #region Character set
-                StringBuilder sb = new StringBuilder();
-
-                // Uppercase
-                if (upperCaseCheckBox.IsChecked ?? false)
-                {
-                    sb.Append(DefaultEntries.CharacterSet.UPPERCASE_LETTERS);
-                }//if
-
-                // Lowercase
-                if (lowerCaseCheckBox.IsChecked ?? false)
-                {
-                    sb.Append(DefaultEntries.CharacterSet.LOWERCASE_LETTERS);
-                }//if
-
-                // Numbers
-                if (numbersCheckBox.IsChecked ?? false)
-                {
-                    sb.Append(DefaultEntries.CharacterSet.NUMBERS);
-                }//if
-
-                // Symbols
-                if (symbolsCheckBox.IsChecked ?? false)
-                {
-                    sb.Append(DefaultEntries.CharacterSet.SPECIAL_CHARACTERS);
-                }//if
-
-                // Custom Characters
-                if (customCharSetCheckBox.IsChecked ?? false)
-                {
-                    sb.Append(customCharacterTextBox.Text);
-                }//if
-
-                // Escape Dubious Characters
-                if (escapeDubiousCheckBox.IsChecked ?? false)
-                {
-                    char[] dubiousChars = DefaultEntries.CharacterSet.AMBIGUOUS.ToCharArray();
-                    for (int i = 0; i < dubiousChars.Length; i++)
-                    {
-                        sb.Replace(dubiousChars[i], '\u200B');
-                    }//for
-                }//if
-
-                passwordSettings.CharSet = sb.ToString();
-                #endregion
-
-                // Password Encoding
-                if (passwordEncordExpander.IsExpanded)
-                {
-                    UniformGrid uniformGrid = passwordEncordExpander.Content as UniformGrid;
-                    foreach (RadioButton rb in uniformGrid.Children)
-                    {
-                        if (rb.IsChecked ?? false)
-                        {
-                            passwordSettings.Encoding = (PasswordEncoding)rb.Tag;
-                        }//if
-                    }//foreach
-                }//if
-
-                // Password Encoding
-                if (phoneticPasswordExpander.IsExpanded)
-                {
-                    if (phoneticRadioButton.IsChecked ?? false)
-                    {
-                        passwordSettings.Pronunciation = PronounceablePassword.Phonetic;
-                    }
-                    else
-                    {
-                        passwordSettings.Pronunciation = PronounceablePassword.Phoneticx;
-                    }//if-else
-                }//if
-            }//if
-            #endregion
-
-            #region Words
-            if (wordCheckBox.IsChecked ?? false)
-            {
-                // Set the number of words used for the password
-                int wordCount = wordCountIntegerUpDown.Value;
-                if (wordCount > 0)
-                {
-                    passwordSettings.WordCounts = wordCount;
-                }//if
-
-                // Set the word list file used for the password
-                passwordSettings.WordList = wordListComoBox.SelectedValue;
-
-                // Whether set the length range for the passphrases or not
-                if (specifyLengthCheckBox.IsChecked ?? false)
-                {
-                    // Set the length range for the passphrases
-                    passwordSettings.SpecifyLength = specifyLengthNumericBox.Value;
-
-                    // Generate passwords as a combination of words with characters
-                    passwordSettings.CombineWords = cmbineWordsCharsCeckBox.IsChecked ?? false;
-                }//if
-            }//if
-            #endregion
-
-            // Password Format
-            if (passwordFormatCheckBox.IsChecked ?? false)
-            {
-                passwordSettings.PasswordFormat = passwordFormatComoBox.SelectedValue.ToString();
-            }//if
-
-            // Set the amount of passwords to generate
-            passwordSettings.Quantity = passwordsQuantityNumericBox.Value;
-            #endregion
-
-            PWGenController.GeneratePasswords(passwordSettings).ForEach(p => Passwords.Add(p));
-
-            passwordViewListBox.MaxWidth = double.PositiveInfinity;
-        }//GeneratePasswordButton_Click
     }
 }
