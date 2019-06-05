@@ -326,3 +326,10 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
+
+# CodeNav extention
+CodeNav.json
+
+# Sample Word list
+PasswordGenerator/doc/dicewarewordlist.pdf
+PasswordGenerator/doc/diceware.wordlist.asc
