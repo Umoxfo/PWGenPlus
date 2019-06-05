@@ -10,9 +10,10 @@
                 <ResourceDictionary Source="/Resources/Styles/GroupBoxStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/NumberBoxStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/PasswordViewStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Styles/IconButtonStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Images/HelpButtonStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Images/FileBrowseButtonStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/IconButtonDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/Icons/FileBrowseButtonDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/Icons/HelpButtonDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Images/Icons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
