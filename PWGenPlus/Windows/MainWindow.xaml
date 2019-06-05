@@ -279,7 +279,7 @@
                 <Button x:Name="saveButton" Grid.Column="3" Content="Save" Grid.Row="1"/>
                 <Button x:Name="clearButton" Grid.Column="5" Content="Clear" Grid.Row="1"/>
             </Grid>
-            <ListBox x:Name="passwordViewListBox" Width="{Binding ActualWidth, ElementName=passwordView}" Grid.Row="1" Style="{StaticResource PasswordViewStyle}" ItemsSource="{Binding Passwords, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local1:MainWindow}}}"/>
+            <ListBox x:Name="passwordViewListBox" Style="{DynamicResource PasswordListBoxStyle}" d:LayoutOverrides="Width" Grid.Row="1"/>
         </Grid>
     </DockPanel>
 </Window>

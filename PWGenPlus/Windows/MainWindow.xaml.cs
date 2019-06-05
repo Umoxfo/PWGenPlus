@@ -58,6 +58,8 @@ namespace PWGenPlus.Windows
                 FilterIndex = 0,
                 Filter = "All files (*.*)|*.*|Text files (*.txt)|*.txt|Trigram files (*.tgm)|*.tgm"
             };
+
+            passwordViewListBox.ItemsSource = Passwords;
         }
 
         private void OpenProfileEditorMenuItem_Click(object sender, RoutedEventArgs e)
