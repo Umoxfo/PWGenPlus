@@ -166,18 +166,19 @@
                     <CheckBox x:Name="customCharSetCheckBox" Grid.Row="10" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Others (your characters):" IsChecked="{Binding CustomCharSet, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                     <TextBox x:Name="customCharacterTextBox" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" Text="{Binding CustomCharacters, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" IsEnabled="{Binding IsChecked, ElementName=customCharSetCheckBox}" ToolTip="E.g. ~!@#$%^&amp;*(),.=+&lt;&gt;"/>
                     <Expander x:Name="passwordEncordExpander" Grid.Row="12" Grid.ColumnSpan="5" Header="Password Encode" Template="{StaticResource CheckExpanderTemplate}" IsExpanded="{Binding PasswordEncode, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" VerticalContentAlignment="Center">
+                        <VirtualizingStackPanel>
                             <RadioButton x:Name="base64RadioButton" Content="Base64" Tag="{x:Static Password:PasswordEncoding.Base64}" IsChecked="True"/>
                             <RadioButton x:Name="hexLowerRadioButton" Content="hex (0 - f)" Tag="{x:Static Password:PasswordEncoding.HexLower}"/>
                             <RadioButton x:Name="hexUpperRadioButton" Content="Hex (0 - F)" Tag="{x:Static Password:PasswordEncoding.HexUpper}"/>
-                        </UniformGrid>
+                        </VirtualizingStackPanel>
                     </Expander>
-                        <UniformGrid Columns="1">
                     <CheckBox x:Name="escapeDubiousCheckBox" Grid.Row="14" Grid.ColumnSpan="3" Content="Exclude Dubious Symbols" IsChecked="{Binding ExcludeDubious, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                     <Button x:Name="escapeDubiousHelpButton" Grid.Row="14" Grid.Column="3" Style="{StaticResource HelpButtonStyle}" Margin="5,0,0,0"/>
                     <Expander x:Name="phoneticPasswordExpander" Grid.Row="16" Grid.ColumnSpan="5" Header="Pronouncing" Template="{StaticResource CheckExpanderTemplate}" IsExpanded="{Binding Pronouncting, Source={x:Static properties:Settings.Default}, Mode=TwoWay}">
+                        <VirtualizingStackPanel>
                             <RadioButton x:Name="phoneticRadioButton" Content="Phonetic"/>
                             <RadioButton x:Name="phoneticxRadioButton" Content="Phoneticx"/>
-                        </UniformGrid>
+                        </VirtualizingStackPanel>
                     </Expander>
                 </Grid>
             </GroupBox>
