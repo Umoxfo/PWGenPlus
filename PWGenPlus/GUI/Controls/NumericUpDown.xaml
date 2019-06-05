@@ -14,8 +14,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <TextBox x:Name="numberBox" Grid.RowSpan="2" Text="{Binding Value, ElementName=numericUpDown, NotifyOnValidationError=True, ValidatesOnDataErrors=True, ValidatesOnExceptions=True}" Style="{StaticResource NumberBoxStyle}"/>
-        <!--<local:NumberBox x:Name="numberBox" Grid.RowSpan="2" Value="{Binding Value, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:NumericUpDown}}}"/>-->
         <RepeatButton x:Name="numberButtonUp" Grid.Column="1" FontFamily="Marlett" FontSize="8" Content="5" Click="NumberButtonUp_Click"/>
-        <RepeatButton x:Name="numberButtonDown" Grid.Column="1" Grid.Row="1" FontFamily="Marlett" FontSize="8" Content="6" Click="NumberButtonDown_Click"/>
+        <RepeatButton x:Name="numberButtonDown" Grid.Row="1" Grid.Column="1" FontFamily="Marlett" FontSize="8" Content="6" Click="NumberButtonDown_Click"/>
     </Grid>
 </UserControl>

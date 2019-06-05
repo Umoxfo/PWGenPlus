@@ -2,33 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:local="clr-namespace:PWGenPlus"
                     mc:Ignorable="d">
-    <Style x:Key="ExpanderHeaderFocusVisual">
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Border>
-                        <Rectangle Margin="0" SnapsToDevicePixels="true" Stroke="Black" StrokeThickness="1" StrokeDashArray="1 2"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <ControlTemplate x:Key="CheckExpanderTemplate" TargetType="{x:Type Expander}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <CheckBox x:Name="HeaderSite" Grid.ColumnSpan="2" Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}" FocusVisualStyle="{StaticResource ExpanderHeaderFocusVisual}" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-            <ContentPresenter x:Name="ExpandSite" Grid.Row="1" Grid.Column="1" Focusable="false" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Visibility="Collapsed" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-        </Grid>
+        <StackPanel>
+            <CheckBox x:Name="HeaderSite" Content="{TemplateBinding Header}" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" ContentTemplate="{TemplateBinding HeaderTemplate}" ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"/>
+            <ContentPresenter x:Name="ExpandSite" Margin="20,0,0,0" Focusable="false" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Visibility="Collapsed"/>
+        </StackPanel>
         <ControlTemplate.Triggers>
             <Trigger Property="IsExpanded" Value="true">
                 <Setter Property="Visibility" TargetName="ExpandSite" Value="Visible"/>
@@ -38,13 +17,4 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-    <Style x:Key="CheckExpanderStyle" TargetType="{x:Type Expander}">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Template" Value="{DynamicResource CheckExpanderTemplate}"/>
-    </Style>
 </ResourceDictionary>
