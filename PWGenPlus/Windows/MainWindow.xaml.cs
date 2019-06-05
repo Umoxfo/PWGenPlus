@@ -75,6 +75,7 @@ namespace PWGenPlus.Windows
         #region GeneratePasswordCommand
         private void GeneratePasswordCommandExecuted(object target, ExecutedRoutedEventArgs e)
         {
+            Properties.Settings.Default.Save();
 
             PasswordSettings passwordSettings = new PasswordSettings();
 
@@ -279,5 +280,11 @@ namespace PWGenPlus.Windows
                 generatePasswordButton.IsEnabled = true;
             }//if
         }//CheckBox_Checked
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+            base.OnClosing(e);
+        }
     }
 }

@@ -15,13 +15,12 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with PWGenPlus.  If not, see <https://www.gnu.org/licenses/>.
-using System.Collections.Generic;
 
 namespace PWGenPlus
 {
     internal static class DefaultEntries
     {
-        public static class CharacterSet
+        internal static class CharacterSet
         {
             public const string UPPERCASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             public const string LOWERCASE_LETTERS = "abcdefghijklmnopqrstuvwxyz";
@@ -30,8 +29,6 @@ namespace PWGenPlus
             public const string BRACKETS = "()[]{}<>";
             public const string AMBIGUOUS = "1Iil!|0Oo`'\",;.:\\/";
         }//CharacterSet
-
-        public static readonly List<string> WordListFile = new List<string> { "<Default>" };
 
         public static readonly string[] FormatList =
         {
