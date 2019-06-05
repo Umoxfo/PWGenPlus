@@ -19,7 +19,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -35,9 +34,9 @@ namespace Umoxfo.Security.Password.Generator
         /// Generate a list of passwords
         /// </summary>
         /// <returns>A list of passwords</returns>
-        public static List<Password> GeneratePasswords(PasswordSettings settings)
+        public static List<Password> GeneratePasswords(in PasswordSettings settings)
         {
-            ReadOnlyCollection<char> characterSet = Array.AsReadOnly(settings.CharSet.Distinct().ToArray());
+            char[] characterSet = settings.CharSet.Distinct().ToArray();
             int length = settings.Length;
             PasswordEncoding passwordEncoding = settings.Encoding;
 
@@ -45,14 +44,13 @@ namespace Umoxfo.Security.Password.Generator
             HashSet<string> duplicateCheck = new HashSet<string>();
 
             //Calculate the maximum number of possible passwords
-            int quantity = (int)Math.Min(settings.Quantity, Math.Pow(characterSet.Count, length));
+            int quantity = (int)Math.Min(settings.Quantity, Math.Pow(characterSet.Length, length));
             for (int i = 0; i < quantity; i++)
             {
                 string pwd;
                 do
                 {
                     pwd = GetRandomString(characterSet, length, passwordEncoding);
-
                 }
                 while (!duplicateCheck.Add(pwd));
 
@@ -71,7 +69,7 @@ namespace Umoxfo.Security.Password.Generator
         /// <param name="length">The length of the string that needs to be generated</param>
         /// <param name="passwordEncoding">The encoding of the raw password used when converting to be a string</param>
         /// <returns>Generated password string</returns>
-        private static string GetRandomString(IReadOnlyList<char> characterArray, int length, PasswordEncoding passwordEncoding)
+        private static string GetRandomString(in char[] characterArray, int length, in PasswordEncoding passwordEncoding)
         {
             byte[] buf = new byte[length];
             rngCsp.GetBytes(buf);
@@ -87,7 +85,7 @@ namespace Umoxfo.Security.Password.Generator
                     int[] previousValueIndexs = new int[2];
                     for (int i = 0; i < length; i++)
                     {
-                        int valueIndex = RollDice(characterArray.Count);
+                        int valueIndex = RollDice(characterArray.Length);
 
                         // Not more than 2 identical characters in a row
                         if ((previousValueIndexs[0] == previousValueIndexs[1]) && (previousValueIndexs[1] == valueIndex))
@@ -108,14 +106,14 @@ namespace Umoxfo.Security.Password.Generator
 
         private static int RollDice(int numberSides)
         {
-            if (numberSides <= 0) throw new ArgumentOutOfRangeException("numberSides");
+            if (numberSides <= 0) throw new ArgumentOutOfRangeException("Invalid character-set");
 
             // The maximum value in the full sets of the dice sides that can come up in an int32.
             int maxValueOfFullSets = (int.MaxValue / numberSides) * numberSides;
 
             // Create a byte array to hold the random value.
             byte[] randomNumber = new byte[4];
-            uint value = 0;
+            uint value;
             do
             {
                 // Fill the array with a random value.
