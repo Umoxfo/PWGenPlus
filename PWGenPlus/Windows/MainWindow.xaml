@@ -29,7 +29,7 @@
     </Window.CommandBindings>
 
     <DockPanel>
-        <Menu x:Name="menu" DockPanel.Dock="Top">
+        <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_Profile">
                     <MenuItem x:Name="openProfileEditorMenuItem" Header="Profile Editor..." Click="OpenProfileEditorMenuItem_Click" />
@@ -188,6 +188,11 @@
                     <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)" Checked="CheckBox_Checked" IsChecked="{Binding Words, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                 </GroupBox.Header>
                 <Grid Grid.IsSharedSizeScope="True" IsEnabled="{Binding IsChecked, ElementName=wordCheckBox}">
+                    <Grid.Resources>
+                        <Style TargetType="{x:Type CheckBox}">
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        </Style>
+                    </Grid.Resources>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="5"/>
@@ -195,7 +200,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="5"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="5" MaxWidth="5"/>
+                        <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
@@ -232,7 +237,7 @@
                 </Grid>
             </GroupBox>
 
-            <Border BorderBrush="Black" BorderThickness="0,0.375" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center"/>
+            <Border BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" BorderThickness="0.375" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" VerticalAlignment="Center"/>
 
             <!-- Password Generation -->
             <Label x:Name="passwordQuantityLabel" Foreground="Navy" Grid.Row="7" Grid.Column="1" FontWeight="Bold" Content="Quantity:"/>
@@ -247,39 +252,27 @@
                 <Button x:Name="advancedOptionButton" Grid.Column="2" Content="Advanced"/>
             </Grid>
         </Grid>
-        <Border BorderBrush="Black" BorderThickness="0.25,0"/>
+
         <!-- Password View -->
-        <Grid x:Name="passwordView" Height="{Binding ActualHeight, ElementName=passwordSettingsGrid}">
+        <Grid x:Name="passwordView" Height="{Binding ActualHeight, ElementName=passwordSettingsGrid}" DockPanel.Dock="Right">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Grid x:Name="passwordViewControl" Background="#FFACA9AA" MinHeight="35" Grid.ColumnSpan="2" Grid.IsSharedSizeScope="True">
-                <Grid.Resources>
+            <StackPanel x:Name="passwordViewControl" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Orientation="Horizontal" MinHeight="40">
+                <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="MinWidth" Value="45"/>
                         <Setter Property="MinHeight" Value="27"/>
+                        <Setter Property="Margin" Value="5,4,0,4"/>
                     </Style>
-                </Grid.Resources>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="4"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="4"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="5"/>
-                    <ColumnDefinition SharedSizeGroup="columnItem"/>
-                    <ColumnDefinition Width="5"/>
-                    <ColumnDefinition SharedSizeGroup="columnItem"/>
-                    <ColumnDefinition Width="5"/>
-                    <ColumnDefinition SharedSizeGroup="columnItem"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="copyButton" Grid.Column="1" Content="Copy" Grid.Row="1"/>
-                <Button x:Name="saveButton" Grid.Column="3" Content="Save" Grid.Row="1"/>
-                <Button x:Name="clearButton" Grid.Column="5" Content="Clear" Grid.Row="1"/>
-            </Grid>
+                </StackPanel.Resources>
+                <Button x:Name="copyButton" Content="Copy"/>
+                <Button x:Name="saveButton" Content="Save"/>
+                <Button x:Name="clearButton" Content="Clear"/>
+            </StackPanel>
             <ListBox x:Name="passwordViewListBox" Style="{DynamicResource PasswordListBoxStyle}" d:LayoutOverrides="Width" Grid.Row="1"/>
         </Grid>
+
     </DockPanel>
 </Window>
