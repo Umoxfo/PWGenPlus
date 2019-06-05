@@ -1,7 +1,6 @@
 ﻿<Window x:Name="mainWindow" x:Class="PWGenPlus.Windows.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -74,7 +73,7 @@
                 <MenuItem x:Name="openManualMenuItem" Header="Open Manual">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
-                            <ei:LaunchUriOrFileAction/>
+                            <i:LaunchUriOrFileAction/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </MenuItem>
@@ -82,14 +81,14 @@
                 <MenuItem x:Name="visitWebsiteMenuItem" Header="Visit Website">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
-                            <ei:LaunchUriOrFileAction Path="http://pwgen-win.sourceforge.net"/>
+                            <i:LaunchUriOrFileAction Path="http://pwgen-win.sourceforge.net"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </MenuItem>
                 <MenuItem x:Name="donateMenuItem" Header="Donate...">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="Click">
-                            <ei:LaunchUriOrFileAction Path="http://sourceforge.net/donate/index.php?group_id=57385"/>
+                            <i:LaunchUriOrFileAction Path="http://sourceforge.net/donate/index.php?group_id=57385"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
                 </MenuItem>
