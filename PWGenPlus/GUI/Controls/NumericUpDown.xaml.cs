@@ -106,8 +106,8 @@ namespace PWGenPlus
             InitializeComponent();
         }
 
-        private void NumberButtonUp_Click(object sender, RoutedEventArgs e) => this.Value++;
+        private void NumberButtonUp_Click(object sender, RoutedEventArgs e) => Value++;
 
-        private void NumberButtonDown_Click(object sender, RoutedEventArgs e) => this.Value--;
+        private void NumberButtonDown_Click(object sender, RoutedEventArgs e) => Value--;
     }
 }
