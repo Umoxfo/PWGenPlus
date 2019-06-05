@@ -271,8 +271,7 @@
                 <Button x:Name="saveButton" Content="Save"/>
                 <Button x:Name="clearButton" Content="Clear"/>
             </StackPanel>
-            <ListBox x:Name="passwordViewListBox" Style="{DynamicResource PasswordListBoxStyle}" d:LayoutOverrides="Width" Grid.Row="1"/>
+            <ListBox x:Name="passwordViewListBox" Style="{DynamicResource PasswordListBoxStyle}" Grid.Row="1"/>
         </Grid>
-
     </DockPanel>
 </Window>
