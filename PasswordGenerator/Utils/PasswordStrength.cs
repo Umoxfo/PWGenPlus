@@ -28,7 +28,8 @@ namespace Umoxfo.Security.Password.Utils
         private const double SECTION_POINTS = (MAX_SCORE - 5.000) / 3;
 
         /// <summary>
-        /// Check how a strong a password is. The higher the score, the stronger the password
+        /// Check the strength of a password according to OWASP Authentication General Guidelines (https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authentication_Cheat_Sheet.md#implement-proper-password-strength-controls).
+        /// The higher the score, the stronger the password.
         /// </summary>
         /// <param name="password">The password that needs to be evaluated</param>
         /// <returns>Returns the score of a password</returns>
