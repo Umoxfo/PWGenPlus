@@ -37,7 +37,6 @@ namespace Umoxfo.Security.Password.Generator
                 {
                     string[] values = sr.ReadLine().Split(',');
 
-                    Console.WriteLine($"{values[0]} { values[1]}");
                     tmp.Add(values[0], values[1]);
                 }//while
             }
@@ -45,9 +44,12 @@ namespace Umoxfo.Security.Password.Generator
             dicewareWordList = new ReadOnlyDictionary<string, string>(tmp);
         }//Diceware(string wordListFilePath)
 
-        public static void Test()
-        {
-            Console.WriteLine("Hello World!");
-        }
+        /*        public  void Test()
+                {
+                    foreach (KeyValuePair<string, string> item in dicewareWordList)
+                    {
+                        Console.WriteLine("[{0}: {1}]", item.Key, item.Value);
+                    }
+                }*/
     }
 }
