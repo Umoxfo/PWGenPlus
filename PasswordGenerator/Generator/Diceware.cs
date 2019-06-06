@@ -9,13 +9,16 @@ namespace Umoxfo.Security.Password.Generator
     internal class Diceware
     {
         private static readonly ReadOnlyDictionary<string, string> dicewareWordList;
+        internal Diceware() : this(@".\words\dicewarewordlist.csv")
+        {
+        }//Diceware()
 
-        static Diceware()
+        internal Diceware(string wordListFilePath)
         {
             Dictionary<string, string> tmp = new Dictionary<string, string>();
 
             // Read a word list file
-            using (StreamReader sr = new StreamReader(@".\words\dicewarewordlist.csv"))
+            using (StreamReader sr = new StreamReader(wordListFilePath))
             {
                 while (!sr.EndOfStream)
                 {
@@ -27,7 +30,7 @@ namespace Umoxfo.Security.Password.Generator
             }
 
             dicewareWordList = new ReadOnlyDictionary<string, string>(tmp);
-        }//Diceware()
+        }//Diceware(string wordListFilePath)
 
         public static void Test()
         {
