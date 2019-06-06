@@ -8,7 +8,20 @@ namespace Umoxfo.Security.Password.Generator
 {
     internal class Diceware
     {
-        private static readonly ReadOnlyDictionary<string, string> dicewareWordList;
+        private static readonly char[,] ReplacementTable = new char[6, 6]
+        {
+           // Therd (3rd) Roll
+           // 1    2    3    4    5    6
+ /* F  1 */ {'`', '!', '#', '$', '%', 'ˆ'},
+ /* o  2 */ {'&', '*', '(', ')', '-', '='},
+ /* u  3 */ {'+', '[', ']', '\\', '{', '}'},
+ /* r  4 */ {':', ';', '"', '\'', '<', '>'},
+ /* t  5 */ {'?', '/', '0', '1', '2', '3'},
+ /* h  6 */ {'4', '5', '6', '7', '8', '9'}
+        };
+
+        private readonly ReadOnlyDictionary<string, string> dicewareWordList;
+
         internal Diceware() : this(@".\words\dicewarewordlist.csv")
         {
         }//Diceware()
