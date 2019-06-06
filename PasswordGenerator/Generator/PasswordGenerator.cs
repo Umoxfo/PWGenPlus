@@ -4,11 +4,11 @@ using Umoxfo.Security.Password.Settings;
 
 namespace Umoxfo.Security.Password.Generator
 {
-    public sealed class PasswordGenerator
+    internal sealed class PasswordGenerator
     {
         private readonly RNGCryptoServiceProvider rngCsp;
 
-        public PasswordGenerator() => rngCsp = new RNGCryptoServiceProvider();
+        internal PasswordGenerator() => rngCsp = new RNGCryptoServiceProvider();
 
         /// <summary>
         /// Generate a random string
@@ -17,7 +17,7 @@ namespace Umoxfo.Security.Password.Generator
         /// <param name="length">The length of the string that needs to be generated</param>
         /// <param name="passwordEncoding">The encoding of the raw password used when converting to be a string</param>
         /// <returns>Generated password string</returns>
-        public string GetPassword(in char[] characterArray, int length, in PasswordEncoding passwordEncoding)
+        internal string GetPassword(in char[] characterArray, int length, in PasswordEncoding passwordEncoding)
         {
             byte[] buf = new byte[length];
             rngCsp.GetBytes(buf);
@@ -52,6 +52,8 @@ namespace Umoxfo.Security.Password.Generator
             }//switch
         }//GetPassword
 
+        internal void Dispose() => rngCsp.Dispose();
+
         private int RollDice(int numberSides)
         {
             if (numberSides <= 0) throw new ArgumentOutOfRangeException("Invalid character-set");
@@ -73,7 +75,5 @@ namespace Umoxfo.Security.Password.Generator
             // The possible values are zero-based.
             return (int)(value % numberSides);
         }//RollDice
-
-        public void Dispose() => rngCsp.Dispose();
     }
 }

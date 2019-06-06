@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Umoxfo.Security.Password.Generator
 {
-    class Diceware
+    internal class Diceware
     {
         private static readonly ReadOnlyDictionary<string, string> dicewareWordList;
 
