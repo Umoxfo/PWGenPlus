@@ -35,6 +35,8 @@ namespace Umoxfo.Security.Password.Generator
         /// <returns>A list of passwords</returns>
         public static List<Password> GeneratePasswords(in PasswordSettings settings)
         {
+            //new Diceware().Test();
+
             char[] characterSet = settings.CharSet.Distinct().ToArray();
             int length = settings.Length;
             PasswordEncoding passwordEncoding = settings.Encoding;
