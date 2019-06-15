@@ -84,11 +84,11 @@ namespace Umoxfo.Security.Password.Generator
                 // Roll the dice 5 times
                 for (int r = 1; r < DiceSides; r++)
                 {
-                    wordKey = (wordKey << 8) | RollDice();
+                    wordKey = (wordKey << 4) | RollDice();
                 }//for
 
                 // Add new number to array of wordKeys
-                wordKeys[i] = Convert.ToString(wordKey);
+                wordKeys[i] = Convert.ToString(wordKey, 16);
             }
 
             return wordKeys;
