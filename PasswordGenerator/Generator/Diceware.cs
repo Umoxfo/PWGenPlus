@@ -110,14 +110,5 @@ namespace Umoxfo.Security.Password.Generator
             // Return the number of six-sided dice
             return (byte)((randomNumber[0] % DiceSides) + 1);
         }//RollDice
-
-
-        /*        public  void Test()
-                {
-                    foreach (KeyValuePair<string, string> item in dicewareWordList)
-                    {
-                        Console.WriteLine("[{0}: {1}]", item.Key, item.Value);
-                    }
-                }*/
     }
 }
