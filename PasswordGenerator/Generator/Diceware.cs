@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Umoxfo.Security.Password.Generator
 {
@@ -50,19 +51,24 @@ namespace Umoxfo.Security.Password.Generator
             dicewareWordList = new ReadOnlyDictionary<string, string>(tmp);
         }//Diceware(string wordListFilePath)
 
-        internal string GetPassphrase(int numberWords, bool extraSecurity)
+        internal async Task<string> GetPassphraseAsync(int numberWords, bool extraSecurity)
         {
-            string[] words = new string[numberWords];
-            for (int i = 0; i < numberWords; i++)
+            string passphrase = await Task.Run(() =>
             {
-                dicewareWordList.TryGetValue(GenerateKey(), out words[i]);
-            }//for
+                string[] words = new string[numberWords];
+                for (int i = 0; i < numberWords; i++)
+                {
+                    dicewareWordList.TryGetValue(GenerateKey(), out words[i]);
+                }//for
 
-            // Extra security without adding another word
-            if (extraSecurity) ToSecurePhrase(ref words);
+                // Extra security without adding another word
+                if (extraSecurity) ToSecurePhrase(ref words);
 
-            return string.Join(" ", words);
-        }//GetPassphrase
+                return string.Join(" ", words);
+            });
+
+            return passphrase;
+        }//GetPassphraseAsync
 
         private static string GenerateKey()
         {
