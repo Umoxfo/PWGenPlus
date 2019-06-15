@@ -12,7 +12,6 @@ namespace Umoxfo.Security.Password.Generator
         private const byte DiceSides = 6;
         // The maximum valid value of dice roll by 6-sided dice
         private const int MaxFairValue = 251;
-        private const int WordLength = 7;
 
         private static readonly RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
         private static readonly string[,] ReplacementTable = new string[6, 6]
@@ -53,46 +52,30 @@ namespace Umoxfo.Security.Password.Generator
 
         internal string GetPassphrase(int numberWords, bool extraSecurity)
         {
-            string[] wordKeys = GenerateKeys(numberWords);
-
-            StringBuilder stringBuilder = new StringBuilder(WordLength * numberWords);
-            foreach (string key in wordKeys)
+            string[] words = new string[numberWords];
+            for (int i = 0; i < numberWords; i++)
             {
-                dicewareWordList.TryGetValue(key, out string phrase);
+                dicewareWordList.TryGetValue(GenerateKey(), out words[i]);
+            }//for
 
-                /*
-                if (extraSecurity)
-                {
-                    phrase = ToSecurePhrase(phrase);
-                }//if
-                */
+            // Extra security without adding another word
+            //if (extraSecurity) ToSecurePhrase(ref words);
 
-                stringBuilder.Append(phrase).Append(" ");
-            }//foreach
-
-            return stringBuilder.ToString().Trim();
+            return string.Join(" ", words);
         }//GetPassphrase
 
-        private static string[] GenerateKeys(int numWords)
+        private static string GenerateKey()
         {
-            string[] wordKeys = new string[numWords];
+            int wordKey = 0;
 
-            for (int i = 0; i < numWords; i++)
+            // Roll the dice 5 times
+            for (int r = 1; r < DiceSides; r++)
             {
-                int wordKey = 0;
+                wordKey = (wordKey << 4) | RollDice();
+            }//for
 
-                // Roll the dice 5 times
-                for (int r = 1; r < DiceSides; r++)
-                {
-                    wordKey = (wordKey << 4) | RollDice();
-                }//for
-
-                // Add new number to array of wordKeys
-                wordKeys[i] = Convert.ToString(wordKey, 16);
-            }
-
-            return wordKeys;
-        }//GenerateKeys
+            return Convert.ToString(wordKey, 16);
+        }//GenerateKey
 
 /*
         private static string ToSecurePhrase(string word)
