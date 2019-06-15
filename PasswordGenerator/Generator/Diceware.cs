@@ -14,16 +14,16 @@ namespace Umoxfo.Security.Password.Generator
         private const int MaxFairValue = 251;
 
         private static readonly RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
-        private static readonly string[,] ReplacementTable = new string[6, 6]
+        private static readonly string[][] ReplacementTable =
         {
-           // Therd (3rd) Roll
-           // 1    2    3    4    5    6
- /* F  1 */ {"~", "!", "#", "$", "%", "ˆ"},
- /* o  2 */ {"&", "*", "(", ")", "-", "="},
- /* u  3 */ {"+", "[", "]", @"\", "{", "}"},
- /* r  4 */ {":", ";", "\"", "'", "<", ">"},
- /* t  5 */ {"?", "/", "0", "1", "2", "3"},
- /* h  6 */ {"4", "5", "6", "7", "8", "9"}
+                        // Therd (3rd) Roll
+                        // 1    2    3    4    5    6
+ /* F  1 */ new string[] {"~", "!", "#", "$", "%", "ˆ"},
+ /* o  2 */ new string[] {"&", "*", "(", ")", "-", "="},
+ /* u  3 */ new string[] {"+", "[", "]", @"\", "{", "}"},
+ /* r  4 */ new string[] {":", ";", "\"", "'", "<", ">"},
+ /* t  5 */ new string[] {"?", "/", "0", "1", "2", "3"},
+ /* h  6 */ new string[] {"4", "5", "6", "7", "8", "9"}
         };
 
         private readonly ReadOnlyDictionary<string, string> dicewareWordList;
