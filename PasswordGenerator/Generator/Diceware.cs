@@ -10,6 +10,8 @@ namespace Umoxfo.Security.Password.Generator
     internal class Diceware
     {
         private const byte DiceSides = 6;
+        // The maximum valid value of dice roll by 6-sided dice
+        private const int MaxFairValue = 251;
         private const int WordLength = 7;
 
         private static readonly RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
@@ -82,7 +84,7 @@ namespace Umoxfo.Security.Password.Generator
                 // Roll the dice 5 times
                 for (int r = 1; r < DiceSides; r++)
                 {
-                    wordKey = (wordKey << 8) | RollDice(DiceSides);
+                    wordKey = (wordKey << 8) | RollDice();
                 }//for
 
                 // Add new number to array of wordKeys
@@ -105,19 +107,17 @@ namespace Umoxfo.Security.Password.Generator
         }//ToSecurePhrase
 */
 
-        private static byte RollDice(byte numberSides)
+        private static byte RollDice()
         {
-            // The maximum value in the full sets of the dice sides that can come up in a byte.
-            int maxValueOfFullSets = (byte.MaxValue / numberSides) * numberSides;
-
             byte[] randomNumber = new byte[1];
             do
             {
                 rngCsp.GetBytes(randomNumber);
             }
-            while (randomNumber[0] >= maxValueOfFullSets);
+            while (randomNumber[0] > MaxFairValue);
 
-            return (byte)((randomNumber[0] % numberSides) + 1);
+            // Return the number of six-sided dice
+            return (byte)((randomNumber[0] % DiceSides) + 1);
         }//RollDice
 
 
