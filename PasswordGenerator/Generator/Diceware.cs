@@ -29,7 +29,7 @@ namespace Umoxfo.Security.Password.Generator
 
         private readonly ReadOnlyDictionary<string, string> dicewareWordList;
 
-        internal Diceware() : this(@".\words\diceware_wordlist.csv")
+        internal Diceware() : this(@"words\diceware_wordlist.csv")
         {
         }//Diceware()
 
