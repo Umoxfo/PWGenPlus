@@ -59,7 +59,7 @@ namespace Umoxfo.Security.Password.Generator
             }//for
 
             // Extra security without adding another word
-            //if (extraSecurity) ToSecurePhrase(ref words);
+            if (extraSecurity) ToSecurePhrase(ref words);
 
             return string.Join(" ", words);
         }//GetPassphrase
@@ -77,18 +77,20 @@ namespace Umoxfo.Security.Password.Generator
             return Convert.ToString(wordKey, 16);
         }//GenerateKey
 
-/*
-        private static string ToSecurePhrase(string word)
+        private static void ToSecurePhrase(ref string[] passphrase)
         {
-            // Choose a letter in the word to replace
-            int insertIndex = RollDice(DiceSides) - 1;
+            // Choose a word in the passphrase
+            int passphraseIndex = RollDice() - 1;
+
+            // Choose a letter in the word
+            int insertIndex = RollDice() - 1;
 
             // Pick the added character from the replacement table
-            string addedLetter = ReplacementTable[RollDice(DiceSides) - 1, RollDice(DiceSides) - 1];
+            string addedLetter = ReplacementTable[RollDice() - 1][RollDice() - 1];
 
-            return word.Insert(insertIndex, addedLetter);
+            // Insert one special character or digit into the passphrase
+            passphrase[passphraseIndex] = passphrase[passphraseIndex].Insert(insertIndex, addedLetter);
         }//ToSecurePhrase
-*/
 
         private static byte RollDice()
         {
