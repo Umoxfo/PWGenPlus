@@ -130,7 +130,7 @@ namespace PWGenPlus.Windows
 
                     foreach (char c in dubiousChars)
                     {
-                        sb.Replace(c, '\u200B');
+                        sb.Replace(c.ToString(), null);
                     }//foreach
                 }//if
 
