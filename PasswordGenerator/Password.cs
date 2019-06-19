@@ -42,11 +42,16 @@ namespace Umoxfo.Security.Password
         /// </summary>
         public double Strength { get; }
 
+        public int StrengthIndex { get; }
+
         public Password(string actualPassword)
         {
             ActualPassword = actualPassword;
             Length = actualPassword.Length;
-            Strength = PasswordStrength.CheckStrength(actualPassword);
-        }
+
+            Result result = PasswordStrength.CheckStrength(actualPassword);
+            StrengthIndex = result.ScoreIndex;
+            Strength = result.Score;
+        }//Password
     }
 }
