@@ -29,18 +29,18 @@ namespace Umoxfo.Security.Password
         /// <summary>
         /// The actual password in plain text
         /// </summary>
-        public string ActualPassword { get; set; }
+        public string ActualPassword { get; }
 
         /// <summary>
         /// The length of the password
         /// </summary>
-        public int Length { get; private set; }
+        public int Length { get; }
 
         /// <summary>
         /// The strength of a password, indicated by a number ranging from 0 to 6.
         /// The higher the score, the stronger the password
         /// </summary>
-        public double Strength { get; private set; }
+        public double Strength { get; }
 
         public Password(string actualPassword)
         {
