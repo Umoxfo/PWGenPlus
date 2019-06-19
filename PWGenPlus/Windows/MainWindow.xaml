@@ -259,7 +259,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel x:Name="passwordViewControl" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Orientation="Horizontal" MinHeight="40">
+            <StackPanel x:Name="passwordViewControl" Background="{StaticResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Orientation="Horizontal" MinHeight="40">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="MinWidth" Value="45"/>
@@ -271,7 +271,7 @@
                 <Button x:Name="saveButton" Content="Save"/>
                 <Button x:Name="clearButton" Content="Clear"/>
             </StackPanel>
-            <ListBox x:Name="passwordViewListBox" Style="{DynamicResource PasswordListBoxStyle}" Grid.Row="1"/>
+            <ListBox x:Name="passwordViewListBox" Grid.Row="1" Style="{DynamicResource PasswordListBoxStyle}" />
         </Grid>
     </DockPanel>
 </Window>
