@@ -17,15 +17,39 @@
    You should have received a copy of the GNU General Public License
    along with PasswordGenerator.  If not, see <https://www.gnu.org/licenses/>.
  */
+using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Umoxfo.Security.Password.Utils
 {
+    internal struct Result
+    {
+        public int ScoreIndex { get; }
+        public double Score { get; }
+
+        internal Result(int scoreIndex, double score)
+        {
+            ScoreIndex = scoreIndex;
+            Score = score;
+        }//Result
+    }
+
     internal static class PasswordStrength
     {
-        private const double MAX_SCORE = 40.000d;
-        private const double SECTION_POINTS = (MAX_SCORE - 5.000) / 3;
+        private const double MaxScore = 100.000d;
+        private const double BasePoint = MaxScore / 6;
+
+        protected internal struct CrackTime
+        {
+            internal const int OneHandredSeconds = 100;
+            internal const int TenThousandSeconds = 10_000;
+            internal const int OneMillionSecounds = 1_000_000;
+            internal const int OneHundredMillionSecounds = 100_000_000;
+            internal const long TenBillionSecounds = 10_000_000_000;
+            internal const long OneTrillionSecounds = 1_000_000_000_000;
+        }
+
+        private static readonly Zxcvbn.Zxcvbn zxcvbn = new Zxcvbn.Zxcvbn();
 
         /// <summary>
         /// Check the strength of a password according to OWASP Authentication General Guidelines (https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Authentication_Cheat_Sheet.md#implement-proper-password-strength-controls).
@@ -33,39 +57,90 @@ namespace Umoxfo.Security.Password.Utils
         /// </summary>
         /// <param name="password">The password that needs to be evaluated</param>
         /// <returns>Returns the score of a password</returns>
-        public static double CheckStrength(string password)
+        public static Result CheckStrength(string password)
         {
             double score = 0.000d;
-            double points = SECTION_POINTS / 3;
 
-            if (string.IsNullOrEmpty(password)) return 0;
+            if (string.IsNullOrEmpty(password)) return new Result();
 
-            // Password Length
+            #region Minimum Password Requirement
+            /* Password Length */
             int passwordLength = password.Length;
-            if (passwordLength < 10) return 0;
-            if (passwordLength < 12) return 1;
-            if (passwordLength >= 16) score += points + 1;
-            if (passwordLength >= 20) score += points;
-            if (passwordLength >= 24) score += points;
+            if (passwordLength < 8) score -= 32;
+            //As a requirement of complexity
+            else if (passwordLength < 10) score -= 2;
 
-            // Password Complexity
-            if (HasDigit(password)) score += points;
-            if (HasLowerAndUpperLetter(password)) score += points;
-            if (HasSpecialCharacter(password)) score += points;
+            /* Password Complexity */
+            /*
+             * The index corresponds to the following values:
+             *   0: Uppercase Letters
+             *   1: Lowercase Letters
+             *   2: Digits
+             *   3: Special Characters
+             *   4: Identical Characters
+             */
+            int[] complexity = CharacterCounts(password);
+
+            /*
+             * Contains at least 3 out of the following 4 complexity rules
+             *   at least 1 uppercase character
+             *   at least 1 lowercase character
+             *   at least 1 digit
+             *   at least 1 special character (include space)
+             */
+            int containComplexRules = complexity.Take(4).Where(x => x >= 1).Count();
+            if (containComplexRules < 3) score -= (3 - containComplexRules) * 2;
 
             // Not more than 2 identical characters
-            if (Regex.IsMatch(password, @"^(?!(.)\1{2,}).*$")) score += SECTION_POINTS;
+            if (complexity[4] > 2) score -= (complexity[4] * 6) + 2;
+            #endregion
 
-            // Unique character rate
-            score += (password.Distinct().Count() / passwordLength) * 5.00d;
+            int scoreIndex = CalculatePasswordScore(password);
 
-            return score;
+            return new Result(scoreIndex, score + (BasePoint * scoreIndex));
         }//CheckStrength
 
-        private static bool HasDigit(string password) => password.Any(x => char.IsDigit(x));
+        private static int[] CharacterCounts(string password)
+        {
+            int[] characterCounts = new int[5];
+            int counter = 0;
+            char lastCharacter = password[0];
+            foreach (char ch in password.ToCharArray())
+            {
+                if (char.IsUpper(ch)) characterCounts[0]++;
+                else if (char.IsLower(ch)) characterCounts[1]++;
+                else if (char.IsDigit(ch)) characterCounts[2]++;
+                else if (char.IsSymbol(ch) || char.IsPunctuation(ch) || char.IsSeparator(ch)) characterCounts[3]++;
 
-        private static bool HasLowerAndUpperLetter(string password) => password.Any(x => char.IsLower(x)) && password.Any(x => char.IsUpper(x));
+                // Count consecutive identical characters
+                if (lastCharacter == ch)
+                {
+                    counter++;
+                }
+                else
+                {
+                    if (counter > characterCounts[4]) characterCounts[4] = counter;
+                    lastCharacter = ch;
+                    counter = 1;
+                }//if-else
+            }//foreach
 
-        private static bool HasSpecialCharacter(string password) => password.Any(x => char.IsSymbol(x) || char.IsPunctuation(x) || char.IsSeparator(x));
+            return characterCounts;
+        }//CharacterCounts
+
+        private static int CalculatePasswordScore(string password)
+        {
+            Zxcvbn.Result result = zxcvbn.EvaluatePassword(password);
+
+            //Convert the crack time to a score
+            double crackTimeSeconds = result.CrackTime;
+            if (crackTimeSeconds < CrackTime.OneHandredSeconds) return 0;
+            else if (crackTimeSeconds < CrackTime.TenThousandSeconds) return 1;
+            else if (crackTimeSeconds < CrackTime.OneMillionSecounds) return 2;
+            else if (crackTimeSeconds < CrackTime.OneHundredMillionSecounds) return 3;
+            else if (crackTimeSeconds < CrackTime.TenBillionSecounds) return 4;
+            else if (crackTimeSeconds < CrackTime.OneTrillionSecounds) return 5;
+            else return 6;
+        }//CalculatePasswordScore
     }
 }
