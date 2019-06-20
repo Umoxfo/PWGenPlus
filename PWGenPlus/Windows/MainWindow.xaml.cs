@@ -73,6 +73,19 @@ namespace PWGenPlus.Windows
 
         private void CloseCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
+        private void PasswordViewListBoxCopyCmdExecuted(object target, ExecutedRoutedEventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Password item in passwordViewListBox.SelectedItems)
+            {
+                sb.AppendLine(item.ActualPassword);
+            }
+
+            Clipboard.SetText(sb.ToString());
+        }//PasswordViewListBoxCopyCmdExecuted
+
+        private void CopyCmdCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+
         #region GeneratePasswordCommand
         private void GeneratePasswordCommandExecuted(object target, ExecutedRoutedEventArgs e)
         {
