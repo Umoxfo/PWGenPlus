@@ -9,7 +9,7 @@
                 <ResourceDictionary Source="/Resources/Styles/CheckExpanderStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/GroupBoxStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/NumberBoxStyleDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Styles/PasswordViewStyleDictionary.xaml"/>
+                <ResourceDictionary Source="/Resources/Styles/PasswordListBoxStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/IconButtonDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/Icons/FileBrowseButtonDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/Icons/HelpButtonDictionary.xaml"/>
