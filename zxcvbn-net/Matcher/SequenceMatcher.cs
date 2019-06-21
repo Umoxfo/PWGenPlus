@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Zxcvbn.Matcher
 {
@@ -11,7 +10,7 @@ namespace Zxcvbn.Matcher
     public class SequenceMatcher : IMatcher
     {
         // Sequences should not overlap, sequences here must be ascending, their reverses will be checked automatically
-        string[] Sequences = new string[] { 
+        string[] Sequences = new string[] {
             "abcdefghijklmnopqrstuvwxyz",
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
             "01234567890"
@@ -45,10 +44,10 @@ namespace Zxcvbn.Matcher
 
                 // Find a sequence that the current and next characters could be part of 
                 var seq = (from s in seqs
-                                let ixI = s.IndexOf(password[i])
-                                let ixJ = s.IndexOf(password[j])
-                                where ixJ == ixI + 1 // i.e. two consecutive letters in password are consecutive in sequence
-                                select s).FirstOrDefault();
+                           let ixI = s.IndexOf(password[i])
+                           let ixJ = s.IndexOf(password[j])
+                           where ixJ == ixI + 1 // i.e. two consecutive letters in password are consecutive in sequence
+                           select s).FirstOrDefault();
 
                 // This isn't an ideal check, but we want to know whether the sequence is ascending/descending to keep entropy
                 //   calculation consistent with zxcvbn
@@ -63,7 +62,7 @@ namespace Zxcvbn.Matcher
                     for (; j < password.Length && startIndex + j - i < seq.Length && seq[startIndex + j - i] == password[j]; j++) ;
 
                     var length = j - i;
-                    
+
                     // Only want to consider sequences that are longer than two characters
                     if (length > 2)
                     {
@@ -72,7 +71,8 @@ namespace Zxcvbn.Matcher
                         if (seqIndex >= Sequences.Length) seqIndex -= Sequences.Length; // match reversed sequence with its original
 
                         var match = password.Substring(i, j - i);
-                        matches.Add(new SequenceMatch() {
+                        matches.Add(new SequenceMatch()
+                        {
                             i = i,
                             j = j - 1,
                             Token = match,

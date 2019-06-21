@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Zxcvbn
@@ -28,7 +26,7 @@ namespace Zxcvbn
         public static int PasswordCardinality(string password)
         {
             var cl = 0;
-            
+
             if (password.Any(c => 'a' <= c && c <= 'z')) cl += 26; // Lowercase
             if (password.Any(c => 'A' <= c && c <= 'Z')) cl += 26; // Uppercase
             if (password.Any(c => '0' <= c && c <= '9')) cl += 10; // Numbers

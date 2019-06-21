@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Zxcvbn
 {
@@ -177,7 +175,7 @@ namespace Zxcvbn
         /// <returns>True if the parse succeeds</returns>
         public static bool IntParseSubstring(this string str, int startIndex, int length, out int r)
         {
-            return Int32.TryParse(str.Substring(startIndex, length), out r);
+            return int.TryParse(str.Substring(startIndex, length), out r);
         }
 
         /// <summary>
@@ -188,7 +186,7 @@ namespace Zxcvbn
         public static int ToInt(this string str)
         {
             int r = 0;
-            Int32.TryParse(str, out r);
+            int.TryParse(str, out r);
             return r;
         }
 

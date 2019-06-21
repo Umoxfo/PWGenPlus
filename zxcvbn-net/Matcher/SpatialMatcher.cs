@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Zxcvbn.Matcher
 {
@@ -64,7 +63,7 @@ namespace Zxcvbn.Matcher
                 }
 
                 // Only consider runs of greater than two
-                if (j - i > 2) 
+                if (j - i > 2)
                 {
                     matches.Add(new SpatialMatch()
                     {
@@ -139,7 +138,7 @@ namespace Zxcvbn.Matcher
             public SpatialGraph(string name, string layout, bool slanted)
             {
                 this.Name = name;
-                BuildGraph(layout, slanted);                
+                BuildGraph(layout, slanted);
             }
 
 
@@ -192,7 +191,7 @@ namespace Zxcvbn.Matcher
             private void BuildGraph(string layout, bool slanted)
             {
 
-                var tokens =  layout.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                var tokens = layout.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 var tokenSize = tokens[0].Length;
 
                 // Put the characters in each keyboard cell into the map agains t their coordinates

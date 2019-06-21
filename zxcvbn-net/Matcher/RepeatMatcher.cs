@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Zxcvbn.Matcher
 {
@@ -23,7 +22,8 @@ namespace Zxcvbn.Matcher
             var matches = new List<Match>();
 
             // Be sure to not count groups of one or two characters
-            return password.GroupAdjacent(c => c).Where(g => g.Count() > 2).Select(g => new RepeatMatch {
+            return password.GroupAdjacent(c => c).Where(g => g.Count() > 2).Select(g => new RepeatMatch
+            {
                 Pattern = RepeatPattern,
                 Token = password.Substring(g.StartIndex, g.EndIndex - g.StartIndex + 1),
                 i = g.StartIndex,

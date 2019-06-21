@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Zxcvbn
 {
@@ -63,7 +62,7 @@ namespace Zxcvbn
         /// </summary>
         /// <typeparam name="TElement">Type of grouped elements</typeparam>
         /// <typeparam name="TKey">Type of key used for grouping</typeparam>
-        public class AdjacentGrouping<TKey, TElement> :  IGrouping<TKey, TElement>, IEnumerable<TElement>
+        public class AdjacentGrouping<TKey, TElement> : IGrouping<TKey, TElement>, IEnumerable<TElement>
         {
             /// <summary>
             /// The key value for this grouping

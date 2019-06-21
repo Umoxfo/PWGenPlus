@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 // TODO: These should probably be immutable
 namespace Zxcvbn
@@ -216,7 +213,7 @@ namespace Zxcvbn
         /// <summary>
         /// Warning on this password
         /// </summary>
-        public Warning  warning {get; set;}
+        public Warning warning { get; set; }
 
         /// <summary>
         /// Suggestion on how to improve the password
@@ -259,7 +256,7 @@ namespace Zxcvbn
         /// Some pattern matchers can associate the cardinality of the set of possible matches that the 
         /// entropy calculation is derived from. Not all matchers provide a value for cardinality.
         /// </summary>
-        public int Cardinality { get; set; } 
+        public int Cardinality { get; set; }
 
         /// <summary>
         /// The start index in the password string of the matched token. 

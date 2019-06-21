@@ -1,23 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Zxcvbn.Matcher;
 using System.Text.RegularExpressions;
+
+using Zxcvbn.Matcher;
 
 namespace Zxcvbn
 {
     /// <summary>
     /// <para>Zxcvbn is used to estimate the strength of passwords. </para>
-    /// 
+    ///
     /// <para>This implementation is a port of the Zxcvbn JavaScript library by Dan Wheeler:
     /// https://github.com/lowe/zxcvbn</para>
-    /// 
+    ///
     /// <para>To quickly evaluate a password, use the <see cref="MatchPassword"/> static function.</para>
-    /// 
-    /// <para>To evaluate a number of passwords, create an instance of this object and repeatedly call the <see cref="EvaluatePassword"/> function.
-    /// Reusing the the Zxcvbn instance will ensure that pattern matchers will only be created once rather than being recreated for each password
-    /// e=being evaluated.</para>
+    ///
+    /// <para>To evaluate a number of passwords, create an instance of this object and repeatedly call
+    /// the <see cref="EvaluatePassword"/> function.
+    /// Reusing the Zxcvbn instance will ensure that pattern matchers will only be created once
+    /// rather than being recreated for each password evaluated.</para>
     /// </summary>
     public class Zxcvbn
     {
@@ -48,22 +49,35 @@ namespace Zxcvbn
         }
 
         /// <summary>
-        /// <para>Perform the password matching on the given password and user inputs, returing the result structure with information
-        /// on the lowest entropy match found.</para>
-        /// 
-        /// <para>User data will be treated as another kind of dictionary matching, but can be different for each password being evaluated.</para>para>
+        /// <para>A static function to match a password against the default matchers without having to create
+        /// an instance of Zxcvbn yourself, with supplied user data. </para>
+        ///
+        /// <para>Supplied user data will be treated as another kind of dictionary matching.</para>
+        /// </summary>
+        /// <param name="password">the password to test</param>
+        /// <param name="userInputs">optionally, the user inputs list</param>
+        /// <returns>The results of the password evaluation</returns>
+        public static Result MatchPassword(string password, IEnumerable<string> userInputs = null) =>
+            new Zxcvbn(new DefaultMatcherFactory()).EvaluatePassword(password, userInputs);
+
+        /// <summary>
+        /// <para>Perform the password matching on the given password and user inputs,
+        /// returning the result structure with information on the lowest entropy match found.</para>
+        ///
+        /// <para>User data will be treated as another kind of dictionary matching,
+        /// but can be different for each password being evaluated.</para>
         /// </summary>
         /// <param name="password">Password</param>
-        /// <param name="userInputs">Optionally, an enumarable of user data</param>
+        /// <param name="userInputs">Optionally, an enumerable of user data</param>
         /// <returns>Result for lowest entropy match</returns>
         public Result EvaluatePassword(string password, IEnumerable<string> userInputs = null)
         {
             userInputs = userInputs ?? new string[0];
 
             IEnumerable<Match> matches = new List<Match>();
-            
+
             var timer = System.Diagnostics.Stopwatch.StartNew();
-            
+
             foreach (var matcher in matcherFactory.CreateMatchers(userInputs))
             {
                 matches = matches.Union(matcher.MatchPassword(password));
@@ -78,8 +92,7 @@ namespace Zxcvbn
         }
 
         /// <summary>
-        /// Returns a new result structure initialised with data for the lowest entropy result of all of the matches passed in, adding brute-force
-        /// matches where there are no lesser entropy found pattern matches.
+        /// Returns a new result structure initialized with data for the lowest entropy result of all of the matches passed in, adding brute-force matches where there are no lesser entropy found pattern matches.
         /// </summary>
         /// <param name="matches">Password being evaluated</param>
         /// <param name="password">List of matches found against the password</param>
@@ -91,7 +104,7 @@ namespace Zxcvbn
             // Minimum entropy up to position k in the password
             var minimumEntropyToIndex = new double[password.Length];
             var bestMatchForIndex = new Match[password.Length];
- 
+
             for (var k = 0; k < password.Length; k++)
             {
                 // Start with bruteforce scenario added to previous sequence to beat
@@ -199,10 +212,10 @@ namespace Zxcvbn
                 }
                 else
                 {
-                    //tie feedback to the longest match for longer sequences                   
+                    //tie feedback to the longest match for longer sequences
                     Match longestMatch = GetLongestMatch(matchSequence);
                     GetMatchFeedback(longestMatch, matchSequence.Count() == 1, result);
-                    result.suggestions.Insert(0,Suggestion.AddAnotherWordOrTwo);
+                    result.suggestions.Insert(0, Suggestion.AddAnotherWordOrTwo);
                 }
 
 
@@ -235,10 +248,10 @@ namespace Zxcvbn
             {
                 case "dictionary":
                     GetDictionaryMatchFeedback((DictionaryMatch)match, isSoleMatch, result);
-                break;
+                    break;
 
                 case "spatial":
-                    SpatialMatch spatialMatch = (SpatialMatch) match;
+                    SpatialMatch spatialMatch = (SpatialMatch)match;
 
                     if (spatialMatch.Turns == 1)
                         result.warning = Warning.StraightRow;
@@ -286,12 +299,12 @@ namespace Zxcvbn
                 //todo: add support for reversed words
                 if (isSoleMatch == true && !(match is L33tDictionaryMatch))
                 {
-                        if (match.Rank <= 10)
-                            result.warning = Warning.Top10Passwords;
-                        else if (match.Rank <= 100)
-                            result.warning = Warning.Top100Passwords;
-                        else
-                            result.warning = Warning.CommonPasswords;
+                    if (match.Rank <= 10)
+                        result.warning = Warning.Top10Passwords;
+                    else if (match.Rank <= 100)
+                        result.warning = Warning.Top100Passwords;
+                    else
+                        result.warning = Warning.CommonPasswords;
                 }
                 else if (PasswordScoring.CrackTimeToScore(PasswordScoring.EntropyToCrackTime(match.Entropy)) <= 1)
                 {
@@ -337,20 +350,6 @@ namespace Zxcvbn
             }
         }
 
-        /// <summary>
-        /// <para>A static function to match a password against the default matchers without having to create
-        /// an instance of Zxcvbn yourself, with supplied user data. </para>
-        /// 
-        /// <para>Supplied user data will be treated as another kind of dictionary matching.</para>
-        /// </summary>
-        /// <param name="password">the password to test</param>
-        /// <param name="userInputs">optionally, the user inputs list</param>
-        /// <returns>The results of the password evaluation</returns>
-        public static Result MatchPassword(string password, IEnumerable<string> userInputs = null)
-        {
-            var zx = new Zxcvbn(new DefaultMatcherFactory());
-            return zx.EvaluatePassword(password, userInputs);
-        }
 
     }
 }

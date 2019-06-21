@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Zxcvbn.Matcher
@@ -27,7 +25,7 @@ namespace Zxcvbn.Matcher
         /// be give per-matched-character or per-match</param>
         /// <param name="perCharCardinality">True if cardinality is given as per-matched-character</param>
         /// <param name="matcherName">The name to give this matcher ('pattern' in resulting matches)</param>
-        public RegexMatcher(string pattern, int cardinality, bool perCharCardinality = true, string matcherName = "regex") 
+        public RegexMatcher(string pattern, int cardinality, bool perCharCardinality = true, string matcherName = "regex")
             : this(new Regex(pattern), cardinality, perCharCardinality, matcherName)
         {
         }

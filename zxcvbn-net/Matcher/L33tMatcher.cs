@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Zxcvbn.Matcher
 {
@@ -43,17 +42,17 @@ namespace Zxcvbn.Matcher
             var subs = EnumerateSubtitutions(GetRelevantSubstitutions(password));
 
             var matches = (from subDict in subs
-                          let sub_password = TranslateString(subDict, password)
-                          from matcher in dictionaryMatchers
-                          from match in matcher.MatchPassword(sub_password).OfType<DictionaryMatch>()
-                          let token = password.Substring(match.i, match.j - match.i + 1)
-                          let usedSubs = subDict.Where(kv => token.Contains(kv.Key)) // Count subs ised in matched token
-                          where usedSubs.Count() > 0 // Only want matches where substitutions were used
-                          select new L33tDictionaryMatch(match)
-                          {
-                              Token = token,
-                              Subs = usedSubs.ToDictionary(kv => kv.Key, kv => kv.Value)
-                          }).ToList();
+                           let sub_password = TranslateString(subDict, password)
+                           from matcher in dictionaryMatchers
+                           from match in matcher.MatchPassword(sub_password).OfType<DictionaryMatch>()
+                           let token = password.Substring(match.i, match.j - match.i + 1)
+                           let usedSubs = subDict.Where(kv => token.Contains(kv.Key)) // Count subs ised in matched token
+                           where usedSubs.Count() > 0 // Only want matches where substitutions were used
+                           select new L33tDictionaryMatch(match)
+                           {
+                               Token = token,
+                               Subs = usedSubs.ToDictionary(kv => kv.Key, kv => kv.Value)
+                           }).ToList();
 
             foreach (var match in matches) CalulateL33tEntropy(match);
 
@@ -89,7 +88,7 @@ namespace Zxcvbn.Matcher
         private string TranslateString(Dictionary<char, char> charMap, string str)
         {
             // Make substitutions from the character map wherever possible
-            return new String(str.Select(c => charMap.ContainsKey(c) ? charMap[c] : c).ToArray());
+            return new string(str.Select(c => charMap.ContainsKey(c) ? charMap[c] : c).ToArray());
         }
 
         private Dictionary<char, string> GetRelevantSubstitutions(string password)
@@ -97,7 +96,7 @@ namespace Zxcvbn.Matcher
             // Return a map of only the useful substitutions, i.e. only characters that the password
             //   contains a substituted form of
             return substitutions.Where(kv => kv.Value.Any(lc => password.Contains(lc)))
-                                .ToDictionary(kv => kv.Key, kv => new String(kv.Value.Where(lc => password.Contains(lc)).ToArray()));
+                                .ToDictionary(kv => kv.Key, kv => new string(kv.Value.Where(lc => password.Contains(lc)).ToArray()));
         }
 
         private List<Dictionary<char, char>> EnumerateSubtitutions(Dictionary<char, string> table)
@@ -106,7 +105,7 @@ namespace Zxcvbn.Matcher
             //  so we have to produce an entry that maps from the l33t char to both possibilities
 
             //XXX: This function produces different combinations to the original in zxcvbn. It may require some more work to get identical.
-            
+
             //XXX: The function is also limited in that it only ever considers one substitution for each l33t character (e.g. ||ke could feasibly
             //     match 'like' but this method would never show this). My understanding is that this is also a limitation in zxcvbn and so I
             //     feel no need to correct it here.

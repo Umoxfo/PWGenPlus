@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Zxcvbn.Matcher
 {
     /// <summary>
     /// <para>This matcher attempts to guess dates, with and without date separators. e.g. 1197 (could be 1/1/97) through to 18/12/2015.</para>
-    /// 
+    ///
     /// <para>The format for matching dates is quite particular, and only detected years in the range 00-99 and 1900-2019 are considered by
     /// this matcher.</para>
     /// </summary>
@@ -36,7 +34,7 @@ namespace Zxcvbn.Matcher
         /// <summary>
         /// Find date matches in <paramref name="password"/>
         /// </summary>
-        /// <param name="password">The passsord to check</param>
+        /// <param name="password">The password to check</param>
         /// <returns>An enumerable of date matches</returns>
         /// <seealso cref="DateMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
@@ -112,7 +110,7 @@ namespace Zxcvbn.Matcher
             // The entropy calculation is pretty straightforward
 
             // This is a slight departure from the zxcvbn case where the match has the actual year so the two-year vs four-year
-            //   can always be known rather than guessed for strings without separators. 
+            //   can always be known rather than guessed for strings without separators.
             if (!year.HasValue)
             {
                 // Guess year length from string length
@@ -131,12 +129,12 @@ namespace Zxcvbn.Matcher
         /// <summary>
         /// Determine whether a string resembles a date (year first or year last)
         /// </summary>
-        private Boolean IsDate(string match)
+        private bool IsDate(string match)
         {
             bool isValid = false;
-            
+
             // Try year length depending on match length. Length six should try both two and four digits
-            
+
             if (match.Length <= 6)
             {
                 // Try a two digit year, suffix and prefix
@@ -153,7 +151,7 @@ namespace Zxcvbn.Matcher
             return isValid;
         }
 
-        private Boolean IsDateWithYearType(string match, bool suffix, int yearLen)
+        private bool IsDateWithYearType(string match, bool suffix, int yearLen)
         {
             int year = 0;
             if (suffix) match.IntParseSubstring(match.Length - yearLen, yearLen, out year);
@@ -166,10 +164,10 @@ namespace Zxcvbn.Matcher
         /// <summary>
         /// Determines whether a substring of a date string resembles a day and month (day-month or month-day)
         /// </summary>
-        private Boolean IsDayMonthString(string match)
+        private static bool IsDayMonthString(string match)
         {
             int p1 = 0, p2 = 0;
-            
+
             // Parse the day/month string into two parts
             if (match.Length == 2)
             {
