@@ -28,12 +28,11 @@ namespace Zxcvbn
         private readonly Translation translation;
 
         /// <summary>
-        /// Create a new instance of Zxcvbn that uses the default matchers.
+        /// Create a new instance of Zxcvbn that uses the default matchers and user inputs list.
         /// </summary>
-        public Zxcvbn(Translation translation = Translation.English)
-            : this(new DefaultMatcherFactory())
+        public Zxcvbn(IEnumerable<string> userInputs = null, Translation translation = Translation.English)
+            : this(new DefaultMatcherFactory(userInputs), translation)
         {
-            this.translation = translation;
         }
 
         /// <summary>

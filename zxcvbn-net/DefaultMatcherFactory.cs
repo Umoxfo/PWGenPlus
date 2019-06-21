@@ -21,9 +21,9 @@ namespace Zxcvbn
         List<IMatcher> matchers;
 
         /// <summary>
-        /// Create a matcher factory that uses the default list of pattern matchers
+        /// Create a matcher factory that uses the default list of pattern matchers and userInputs
         /// </summary>
-        public DefaultMatcherFactory()
+        public DefaultMatcherFactory(IEnumerable<string> userInputs = null)
         {
             var dictionaryMatchers = new List<DictionaryMatcher>() {
                 new DictionaryMatcher("passwords",
@@ -36,6 +36,7 @@ namespace Zxcvbn
                     Properties.Resources.FemaleNames.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
                 new DictionaryMatcher("surnames",
                     Properties.Resources.Surnames.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
+                new DictionaryMatcher("user_inputs", userInputs ?? new string[0])
             };
 
             matchers = new List<IMatcher> {
