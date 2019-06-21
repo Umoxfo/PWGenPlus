@@ -77,7 +77,7 @@ namespace Umoxfo.Security.Password.Utils
              *   1: Lowercase Letters
              *   2: Digits
              *   3: Special Characters
-             *   4: Identical Characters
+             *   4: More than 2 Identical Characters
              */
             int[] complexity = CharacterCounts(password);
 
@@ -92,7 +92,7 @@ namespace Umoxfo.Security.Password.Utils
             if (containComplexRules < 3) score -= (3 - containComplexRules) * 2;
 
             // Not more than 2 identical characters
-            if (complexity[4] > 2) score -= (complexity[4] * 6) + 2;
+            if (complexity[4] > 0) score -= (complexity[4] * 6) + 2;
             #endregion
 
             int scoreIndex = CalculatePasswordScore(password);
@@ -119,7 +119,8 @@ namespace Umoxfo.Security.Password.Utils
                 }
                 else
                 {
-                    if (counter > characterCounts[4]) characterCounts[4] = counter;
+                    // Not more than 2 identical characters
+                    if (counter > 2) characterCounts[4] += counter;
                     lastCharacter = ch;
                     counter = 1;
                 }//if-else
