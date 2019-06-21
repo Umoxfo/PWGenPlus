@@ -30,19 +30,5 @@ namespace PWGenPlus
             public const string BRACKETS = "()[]{}<>";
             public const string AMBIGUOUS = "1Iil!|0Oo`'\",;.:\\/";
         }//CharacterSet
-
-        public static readonly string[] FormatList =
-        {
-            "%{%4u%4l%2d%s%}",
-            "%{%6A%L%d%}",
-            "%3[%8q %]",
-            "%*d",
-            "%*10-20A",
-            "%6q%2d%s%6q%2d%s",
-            "%5[%w-%2d %]",
-            "%U%9A",
-            "%32h",
-            "%5[%2h-%]%2h"
-        };
     } //DefaultEntries
 }
