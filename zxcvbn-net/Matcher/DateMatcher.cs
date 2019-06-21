@@ -154,7 +154,7 @@ namespace Zxcvbn.Matcher
 
         private static bool IsDateWithYearType(string match, bool suffix, int yearLen)
         {
-            int year = 0;
+            int year;
             if (suffix) match.IntParseSubstring(match.Length - yearLen, yearLen, out year);
             else match.IntParseSubstring(0, yearLen, out year);
 
@@ -215,7 +215,7 @@ namespace Zxcvbn.Matcher
         // Assume all months have 31 days, we only care that things look like dates not that they're completely valid
         private static bool IsMonthDayInRange(int month, int day)
         {
-            return 1 <= month && month <= 12 && 1 <= day && day <= 31;
+            return (1 <= month && month <= 12) && (1 <= day && day <= 31);
         }
     }
 
