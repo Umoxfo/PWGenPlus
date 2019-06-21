@@ -9,7 +9,7 @@ namespace Zxcvbn.Matcher
     /// e.g. 1197 (could be 1/1/97) through to 18/12/2015.</para>
     ///
     /// <para>The format for matching dates is quite particular,
-    /// and only detected years in the range 00-99 and 1900-2019 are considered by this matcher.</para>
+    /// and only detected years in the range 00-99 and 1900-(the current year) are considered by this matcher.</para>
     /// </summary>
     public class DateMatcher : IMatcher
     {
@@ -206,10 +206,10 @@ namespace Zxcvbn.Matcher
             return IsYearInRange(year) && IsMonthDayInRange(month, day);
         }
 
-        // Two-digit years are allowed, otherwise in 1900-2019
+        // Two-digit years are allowed, otherwise in 1900-(the current year)
         private Boolean IsYearInRange(int year)
         {
-            return (1900 <= year && year <= 2019) || (0 < year && year <= 99);
+            return (1900 <= year && year <= DateTime.Today.Year) || (0 < year && year <= 99);
         }
 
         // Assume all months have 31 days, we only care that things look like dates not that they're completely valid
