@@ -5,10 +5,11 @@ using System.Text.RegularExpressions;
 namespace Zxcvbn.Matcher
 {
     /// <summary>
-    /// <para>This matcher attempts to guess dates, with and without date separators. e.g. 1197 (could be 1/1/97) through to 18/12/2015.</para>
+    /// <para>This matcher attempts to guess dates, with and without date separators.
+    /// e.g. 1197 (could be 1/1/97) through to 18/12/2015.</para>
     ///
-    /// <para>The format for matching dates is quite particular, and only detected years in the range 00-99 and 1900-2019 are considered by
-    /// this matcher.</para>
+    /// <para>The format for matching dates is quite particular,
+    /// and only detected years in the range 00-99 and 1900-2019 are considered by this matcher.</para>
     /// </summary>
     public class DateMatcher : IMatcher
     {
@@ -18,7 +19,7 @@ namespace Zxcvbn.Matcher
         const string DatePattern = "date";
 
 
-        // The two regexes for matching dates with slashes is lifted directly from zxcvbn (matching.coffee about :400)
+        // The two RegExes for matching dates with slashes is lifted directly from zxcvbn (matching.coffee about :400)
         const string DateWithSlashesSuffixPattern = @"  ( \d{1,2} )                         # day or month
   ( \s | - | / | \\ | _ | \. )        # separator
   ( \d{1,2} )                         # month or day

@@ -10,13 +10,15 @@ namespace Zxcvbn.Matcher
     ///
     /// <para>The dictionary to be used can be specified directly by passing an enumerable of strings through the constructor (e.g. for matching again user inputs). Most dictionaries will be in word list files.</para>
     ///
-    /// <para>Using external files is a departure from the JS version of Zxcvbn which bakes in the word lists, so the default dictionaries
-    /// have been included in the Zxcvbn assembly as embedded resources (to remove the external dependency). Thus when a word list is specified
-    /// by name, it is first checked to see if it matches and embedded resource and if not is assumed to be an external file. </para>
+    /// <para>Using external files is a departure from the JS version of Zxcvbn which bakes in the word lists,
+    /// so the default dictionaries have been included in the Zxcvbn assembly as embedded resources
+    /// (to remove the external dependency).
+    /// Thus when a word list is specified by name, it is first checked to see if it matches and embedded resource
+    /// and if not is assumed to be an external file. </para>
     ///
-    /// <para>Thus custom dictionaries can be included by providing the name of an external text file, but the built-in dictionaries (english.lst,
-    /// female_names.lst, male_names.lst, passwords.lst, surnames.lst) can be used without concern about locating a dictionary file in an accessible
-    /// place.</para>
+    /// <para>Thus custom dictionaries can be included by providing the name of an external text file,
+    /// but the built-in dictionaries (english, female_names, male_names, passwords, surnames) can be used without concern
+    /// about locating a dictionary file in an accessible place.</para>
     ///
     /// <para>Dictionary word lists must be in decreasing frequency order and contain one word per line with no additional information.</para>
     /// </summary>
@@ -28,11 +30,11 @@ namespace Zxcvbn.Matcher
         private Lazy<Dictionary<string, int>> rankedDictionary;
 
         /// <summary>
-        /// Creates a new dictionary matcher. <paramref name="wordListPath"/> must be the path (relative or absolute) to a file containing one word per line,
-        /// entirely in lowercase, ordered by frequency (decreasing); or <paramref name="wordListPath"/> must be the name of a built-in dictionary.
+        /// Creates a new dictionary matcher.  <paramref name="wordListPath"/> must be the path (relative or absolute)
+        /// to a file containing one word per line, entirely in lowercase, ordered by frequency (decreasing).
         /// </summary>
         /// <param name="name">The name provided to the dictionary used</param>
-        /// <param name="wordListPath">The filename of the dictionary (full or relative path) or name of built-in dictionary</param>
+        /// <param name="wordListPath">The filename of the dictionary (full or relative path)</param>
         public DictionaryMatcher(string name, string wordListPath)
         {
             dictionaryName = name;

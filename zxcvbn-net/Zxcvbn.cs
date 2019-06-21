@@ -106,7 +106,7 @@ namespace Zxcvbn
 
             for (int k = 0; k < password.Length; k++)
             {
-                // Start with bruteforce scenario added to previous sequence to beat
+                // Start with brute-force scenario added to previous sequence to beat
                 minimumEntropyToIndex[k] = (k == 0 ? 0 : minimumEntropyToIndex[k - 1]) + Math.Log(bruteforce_cardinality, 2);
 
                 // All matches that end at the current character, test to see if the entropy is less
@@ -135,7 +135,7 @@ namespace Zxcvbn
             matchSequence.Reverse();
 
 
-            // The match sequence might have gaps, fill in with bruteforce matching
+            // The match sequence might have gaps, fill in with brute-force matching
             // After this the matches in matchSequence must cover the whole string (i.e. match[k].j == match[k + 1].i - 1)
             if (matchSequence.Count == 0)
             {
