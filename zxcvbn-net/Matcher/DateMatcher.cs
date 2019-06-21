@@ -152,7 +152,7 @@ namespace Zxcvbn.Matcher
             return isValid;
         }
 
-        private bool IsDateWithYearType(string match, bool suffix, int yearLen)
+        private static bool IsDateWithYearType(string match, bool suffix, int yearLen)
         {
             int year = 0;
             if (suffix) match.IntParseSubstring(match.Length - yearLen, yearLen, out year);
@@ -201,19 +201,19 @@ namespace Zxcvbn.Matcher
             return IsMonthDayInRange(p1, p2) || IsMonthDayInRange(p2, p1);
         }
 
-        private Boolean IsDateInRange(int year, int month, int day)
+        private static bool IsDateInRange(int year, int month, int day)
         {
             return IsYearInRange(year) && IsMonthDayInRange(month, day);
         }
 
         // Two-digit years are allowed, otherwise in 1900-(the current year)
-        private Boolean IsYearInRange(int year)
+        private static bool IsYearInRange(int year)
         {
             return (1900 <= year && year <= DateTime.Today.Year) || (0 < year && year <= 99);
         }
 
         // Assume all months have 31 days, we only care that things look like dates not that they're completely valid
-        private Boolean IsMonthDayInRange(int month, int day)
+        private static bool IsMonthDayInRange(int month, int day)
         {
             return 1 <= month && month <= 12 && 1 <= day && day <= 31;
         }

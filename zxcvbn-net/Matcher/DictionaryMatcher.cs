@@ -95,7 +95,7 @@ namespace Zxcvbn.Matcher
         private Dictionary<string, int> BuildRankedDictionary(string wordListFile) =>
             BuildRankedDictionary(File.ReadAllLines(wordListFile));
 
-        private Dictionary<string, int> BuildRankedDictionary(IEnumerable<string> wordList)
+        private static Dictionary<string, int> BuildRankedDictionary(IEnumerable<string> wordList)
         {
             Dictionary<string, int> dict = new Dictionary<string, int>();
 

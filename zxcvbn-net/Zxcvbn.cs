@@ -222,7 +222,7 @@ namespace Zxcvbn
             return result;
         }
 
-        private Match GetLongestMatch(List<Match> matchSequence)
+        private static Match GetLongestMatch(List<Match> matchSequence)
         {
             Match longestMatch;
 
@@ -291,7 +291,7 @@ namespace Zxcvbn
             }
         }
 
-        private void GetDictionaryMatchFeedback(DictionaryMatch match, bool isSoleMatch, Result result)
+        private static void GetDictionaryMatchFeedback(DictionaryMatch match, bool isSoleMatch, Result result)
         {
             if (match.DictionaryName.Equals("passwords"))
             {

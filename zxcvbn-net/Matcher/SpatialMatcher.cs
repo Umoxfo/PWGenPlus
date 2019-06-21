@@ -172,7 +172,7 @@ namespace Zxcvbn.Matcher
                 return AdjacencyGraph[c].IndexOf(adjacentEntry);
             }
 
-            private Point[] GetSlantedAdjacent(Point c)
+            private static Point[] GetSlantedAdjacent(Point c)
             {
                 int x = c.x;
                 int y = c.y;
@@ -180,7 +180,7 @@ namespace Zxcvbn.Matcher
                 return new Point[] { new Point(x - 1, y), new Point(x, y - 1), new Point(x + 1, y - 1), new Point(x + 1, y), new Point(x, y + 1), new Point(x - 1, y + 1) };
             }
 
-            private Point[] GetAlignedAdjacent(Point c)
+            private static Point[] GetAlignedAdjacent(Point c)
             {
                 int x = c.x;
                 int y = c.y;
