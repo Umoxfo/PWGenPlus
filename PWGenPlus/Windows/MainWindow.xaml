@@ -13,6 +13,7 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <window:AnyMultiValueConverter x:Key="AnyConverter"/>
             <Style TargetType="{x:Type GroupBox}">
                 <Setter Property="Padding" Value="8,4,0,0"/>
                 <Setter Property="Template" Value="{StaticResource CheckGroupBoxTemplate}"/>
@@ -20,6 +21,21 @@
             <Style TargetType="{x:Type ComboBox}">
                 <Setter Property="IsEditable" Value="True"/>
                 <Setter Property="SelectedIndex" Value="0"/>
+            </Style>
+            <Style x:Key="GeneratePasswordButtonStyle" TargetType="{x:Type Button}">
+                <Setter Property="IsEnabled" Value="False"/>
+                <Style.Triggers>
+                    <DataTrigger Value="True">
+                        <DataTrigger.Binding>
+                            <MultiBinding Converter="{StaticResource AnyConverter}">
+                                <Binding ElementName="charCheckBox" Path="IsChecked" />
+                                <Binding ElementName="wordCheckBox" Path="IsChecked" />
+                                <Binding ElementName="passwordFormatCheckBox" Path="IsChecked" />
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <Setter Property="IsEnabled" Value="True"/>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -126,7 +142,7 @@
             <!-- Characters -->
             <GroupBox x:Name="characterGroupBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="charCheckBox" Content="Characters (Pass*word*)" IsChecked="{Binding Characters, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" Checked="CheckBox_Checked"/>
+                    <CheckBox x:Name="charCheckBox" Content="Characters (Pass*word*)" IsChecked="{Binding Characters, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding IsChecked, ElementName=charCheckBox}">
                     <Grid.ColumnDefinitions>
@@ -185,7 +201,7 @@
             <!-- Words -->
             <GroupBox x:Name="wordsGroupBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)" Checked="CheckBox_Checked" IsChecked="{Binding Words, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
+                    <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)" IsChecked="{Binding Words, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                 </GroupBox.Header>
                 <Grid Grid.IsSharedSizeScope="True" IsEnabled="{Binding IsChecked, ElementName=wordCheckBox}">
                     <Grid.Resources>
@@ -224,7 +240,7 @@
             <!--Format-->
             <GroupBox x:Name="passwordFormatGroupBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="passwordFormatCheckBox" Content="Password format" Checked="CheckBox_Checked" IsChecked="{Binding Format, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
+                    <CheckBox x:Name="passwordFormatCheckBox" Content="Password format" IsChecked="{Binding Format, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding IsChecked, ElementName=passwordFormatCheckBox}">
                     <Grid.ColumnDefinitions>
@@ -248,7 +264,7 @@
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="generatePasswordButton" Command="{x:Static window:MainWindow.GeneratePasswordCommand}" Content="Generate"/>
+                <Button x:Name="generatePasswordButton" Style="{StaticResource GeneratePasswordButtonStyle}" Command="{x:Static window:MainWindow.GeneratePasswordCommand}" Content="Generate"/>
                 <Button x:Name="advancedOptionButton" Grid.Column="2" Content="Advanced"/>
             </Grid>
         </Grid>
