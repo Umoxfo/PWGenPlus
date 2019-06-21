@@ -271,7 +271,7 @@
                 <Button x:Name="saveButton" Content="Save"/>
                 <Button x:Name="clearButton" Content="Clear"/>
             </StackPanel>
-            <ListBox x:Name="passwordViewListBox" Grid.Row="1" Style="{DynamicResource PasswordListBoxStyle}">
+            <ListBox x:Name="passwordViewListBox" Grid.Row="1" Style="{StaticResource PasswordListBoxStyle}" ItemsSource="{x:Static window:MainWindow.Passwords}">
                 <ListBox.CommandBindings>
                     <CommandBinding Command="ApplicationCommands.Copy" Executed="PasswordViewListBoxCopyCmdExecuted" CanExecute="CopyCmdCanExecute"/>
                 </ListBox.CommandBindings>

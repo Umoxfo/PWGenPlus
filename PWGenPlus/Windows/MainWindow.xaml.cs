@@ -46,7 +46,7 @@ namespace PWGenPlus.Windows
 
         public static readonly RoutedCommand GeneratePasswordCommand = new RoutedCommand();
 
-        public ObservableCollection<Password> Passwords { get; set; } = new ObservableCollection<Password>();
+        public static ObservableCollection<Password> Passwords { get; set; } = new ObservableCollection<Password>();
 
         public MainWindow()
         {
@@ -57,8 +57,6 @@ namespace PWGenPlus.Windows
                 FilterIndex = 0,
                 Filter = "All files (*.*)|*.*|Text files (*.txt)|*.txt|Trigram files (*.tgm)|*.tgm"
             };
-
-            passwordViewListBox.ItemsSource = Passwords;
         }
 
         private void OpenProfileEditorMenuItem_Click(object sender, RoutedEventArgs e)
