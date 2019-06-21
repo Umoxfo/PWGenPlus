@@ -43,7 +43,7 @@ namespace Zxcvbn
                 new RepeatMatcher(),
                 new SequenceMatcher(),
                 new RegexMatcher("\\d{3,}", 10, true, "digits"),
-                new RegexMatcher("19\\d\\d|200\\d|201\\d", 119, false, "year"),
+                new RegexMatcher("19\\d{2}|20[01]\\d", 119, false, "year"),
                 new DateMatcher(),
                 new SpatialMatcher()
             };
