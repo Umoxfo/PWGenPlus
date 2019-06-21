@@ -26,11 +26,16 @@ namespace Zxcvbn
         public DefaultMatcherFactory()
         {
             var dictionaryMatchers = new List<DictionaryMatcher>() {
-                new DictionaryMatcher("passwords", "passwords.lst"),
-                new DictionaryMatcher("english", "english.lst"),
-                new DictionaryMatcher("male_names", "male_names.lst"),
-                new DictionaryMatcher("female_names", "female_names.lst"),
-                new DictionaryMatcher("surnames", "surnames.lst"),
+                new DictionaryMatcher("passwords",
+                    Properties.Resources.Passwords.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
+                new DictionaryMatcher("english",
+                    Properties.Resources.English.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
+                new DictionaryMatcher("male_names",
+                    Properties.Resources.MaleNames.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
+                new DictionaryMatcher("female_names",
+                    Properties.Resources.FemaleNames.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
+                new DictionaryMatcher("surnames",
+                    Properties.Resources.Surnames.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
             };
 
             matchers = new List<IMatcher> {
