@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style x:Key="HelpButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="ToolTip" Value="Quick Help"/>
         <Setter Property="Template" Value="{StaticResource IconButtonControlTemplate}"/>
-        <Setter Property="Content" Value="{DynamicResource helpDrawingImage}"/>
+        <Setter Property="ToolTip" Value="Quick Help"/>
+        <Setter Property="Content" Value="{StaticResource HelpDrawingImage}"/>
     </Style>
 </ResourceDictionary>

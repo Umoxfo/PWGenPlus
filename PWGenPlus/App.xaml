@@ -5,6 +5,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Images/Icons.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/DialogStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/CheckExpanderStyleDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/GroupBoxStyleDictionary.xaml"/>
@@ -13,7 +14,6 @@
                 <ResourceDictionary Source="/Resources/Styles/IconButtonDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/Icons/FileBrowseButtonDictionary.xaml"/>
                 <ResourceDictionary Source="/Resources/Styles/Icons/HelpButtonDictionary.xaml"/>
-                <ResourceDictionary Source="/Resources/Images/Icons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -4,8 +4,8 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     mc:Ignorable="d">
     <Style x:Key="FileBrowseButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="ToolTip" Value="File Browse"/>
         <Setter Property="Template" Value="{StaticResource IconButtonControlTemplate}"/>
-        <Setter Property="Content" Value="{DynamicResource fileBrowseDrawingImage}"/>
+        <Setter Property="ToolTip" Value="File Browse"/>
+        <Setter Property="Content" Value="{StaticResource FileBrowseDrawingImage}"/>
     </Style>
 </ResourceDictionary>

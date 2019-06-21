@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Help -->
-    <DrawingImage x:Key="helpDrawingImage">
+    <DrawingImage x:Key="HelpDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V16 H16.000001 V0 H0 Z">
                 <GeometryDrawing Brush="#FF25B7D3" Geometry="F1 M16.000001,16z M0,0z M16,8.0001927C16,3.5814828 12.418272,0 8.0001319,0 3.5817623,0 0,3.5814828 0,8.0001927 0,12.41823 3.5817623,16 8.0001319,16 12.418272,16 16,12.41823 16,8.0001927z" />
@@ -11,7 +11,7 @@
     </DrawingImage>
 
     <!-- Info -->
-    <DrawingImage x:Key="infoDrawingImage">
+    <DrawingImage x:Key="InfoDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V16 H16 V0 H0 Z">
                 <GeometryDrawing Brush="#FF25B7D3" Geometry="F1 M16,16z M0,0z M16,8C16,3.5813021 12.41824,0 8,0 3.581632,0 0,3.58144 0,8 0,12.417984 3.58176,16 8,16 12.418114,16 16,12.418304 16,8z" />
@@ -22,7 +22,7 @@
     </DrawingImage>
 
     <!-- Save -->
-    <DrawingImage x:Key="saveDrawingImage">
+    <DrawingImage x:Key="SaveDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V16 H15.999999 V0 H0 Z">
                 <DrawingGroup Transform="0.34782609,0,0,0.34042553,-0.17391304,0">
@@ -63,7 +63,7 @@
     </DrawingImage>
 
     <!--File Browse-->
-    <DrawingImage x:Key="fileBrowseDrawingImage">
+    <DrawingImage x:Key="FileBrowseDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V16.003122 H16 V0 H0 Z">
                 <GeometryDrawing Brush="#FF616161" Geometry="F1 M16,16.003122z M0,0z M6.3949999,0C2.8633841,0 0,2.8633846 0,6.3949996 0,9.9266166 2.8633841,12.79 6.3949999,12.79 7.8746182,12.79 9.2326541,12.28254 10.31625,11.438751L14.87,15.9925 16,14.86125 11.44625,10.307501C12.285784,9.2253786 12.79,7.8704886 12.79,6.3949996 12.79,2.8633846 9.9266163,0 6.3949999,0z" />

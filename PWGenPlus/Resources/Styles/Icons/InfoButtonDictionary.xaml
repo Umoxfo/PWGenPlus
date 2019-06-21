@@ -4,8 +4,8 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     mc:Ignorable="d">
     <Style x:Key="InfoButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="ToolTip" Value="Infomation"/>
         <Setter Property="Template" Value="{StaticResource IconButtonControlTemplate}"/>
-        <Setter Property="ContentTemplate" Value="{StaticResource InfoButtonTemplate}"/>
+        <Setter Property="ToolTip" Value="Infomation"/>
+        <Setter Property="Content" Value="{StaticResource InfoDrawingImage}"/>
     </Style>
 </ResourceDictionary>

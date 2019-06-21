@@ -7,7 +7,7 @@
 
     <ControlTemplate x:Key="IconButtonControlTemplate" TargetType="{x:Type Button}">
         <Border x:Name="border" SnapsToDevicePixels="true" Cursor="Hand">
-            <Image x:Name="contentPresenter" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Source="{TemplateBinding Content}" Focusable="False"/>
+            <Image x:Name="contentPresenter" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Source="{TemplateBinding Content}" Focusable="False"/>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsPressed" Value="true">
