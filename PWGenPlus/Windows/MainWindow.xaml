@@ -164,7 +164,7 @@
                     <Button x:Name="symbolsHelpButton" Grid.Row="8" Grid.Column="2" Style="{StaticResource HelpButtonStyle}" HorizontalAlignment="Right"/>
                     <CheckBox x:Name="customCharSetCheckBox" Grid.Row="10" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Others (your characters):" IsChecked="{Binding CustomCharSet, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                     <TextBox x:Name="customCharacterTextBox" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" Text="{Binding CustomCharacters, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" IsEnabled="{Binding IsChecked, ElementName=customCharSetCheckBox}" ToolTip="E.g. ~!@#$%^&amp;*(),.=+&lt;&gt;"/>
-                    <Expander x:Name="passwordEncordExpander" Grid.Row="12" Grid.ColumnSpan="5" Header="Password Encode" Template="{StaticResource CheckExpanderTemplate}" IsExpanded="{Binding PasswordEncode, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" VerticalContentAlignment="Center">
+                    <Expander x:Name="passwordEncordExpander" Grid.Row="12" Grid.ColumnSpan="5" Header="Password Encode" Template="{StaticResource CheckExpanderTemplate}" IsExpanded="{Binding PasswordEncode, Source={x:Static properties:Settings.Default}, Mode=TwoWay}">
                         <VirtualizingStackPanel>
                             <RadioButton x:Name="base64RadioButton" Content="Base64" Tag="{x:Static Password:PasswordEncoding.Base64}" IsChecked="True"/>
                             <RadioButton x:Name="hexLowerRadioButton" Content="hex (0 - f)" Tag="{x:Static Password:PasswordEncoding.HexLower}"/>
@@ -259,7 +259,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel x:Name="passwordViewControl" Background="{StaticResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Orientation="Horizontal" MinHeight="40">
+            <StackPanel x:Name="passwordViewControl" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Orientation="Horizontal" MinHeight="40">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="MinWidth" Value="45"/>
