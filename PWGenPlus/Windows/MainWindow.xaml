@@ -233,7 +233,7 @@
                     <Button x:Name="fileBrowseButton" Grid.Row="2" Grid.Column="7" Style="{StaticResource FileBrowseButtonStyle}"/>
                     <CheckBox x:Name="specifyLengthCheckBox" Grid.Row="4" Grid.ColumnSpan="3" Content="Specify length*:"/>
                     <local:NumberBox x:Name="specifyLengthNumericBox" Grid.Row="4" Grid.Column="3" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}" Value="{Binding SpecifyLength, Mode=TwoWay, Source={x:Static properties:Settings.Default}}"/>
-                    <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Row="4" Grid.Column="5" Content="Combine words with characters" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}" IsChecked="{Binding CombineWords, Mode=TwoWay, Source={x:Static properties:Settings.Default}}"/>
+                    <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Row="4" Grid.Column="5" Content="Combine words with characters" IsChecked="{Binding CombineWords, Mode=TwoWay, Source={x:Static properties:Settings.Default}}"/>
                 </Grid>
             </GroupBox>
 
