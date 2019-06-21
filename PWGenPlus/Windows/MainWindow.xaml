@@ -13,6 +13,7 @@
 
     <Window.Resources>
         <ResourceDictionary>
+            <window:AnyMultiValueConverter x:Key="AnyConverter"/>
             <Style TargetType="{x:Type GroupBox}">
                 <Setter Property="Padding" Value="8,4,0,0"/>
                 <Setter Property="Template" Value="{StaticResource CheckGroupBoxTemplate}"/>
@@ -20,6 +21,21 @@
             <Style TargetType="{x:Type ComboBox}">
                 <Setter Property="IsEditable" Value="True"/>
                 <Setter Property="SelectedIndex" Value="0"/>
+            </Style>
+            <Style x:Key="GeneratePasswordButtonStyle" TargetType="{x:Type Button}">
+                <Setter Property="IsEnabled" Value="False"/>
+                <Style.Triggers>
+                    <DataTrigger Value="True">
+                        <DataTrigger.Binding>
+                            <MultiBinding Converter="{StaticResource AnyConverter}">
+                                <Binding ElementName="charCheckBox" Path="IsChecked" />
+                                <Binding ElementName="wordCheckBox" Path="IsChecked" />
+                                <Binding ElementName="passwordFormatCheckBox" Path="IsChecked" />
+                            </MultiBinding>
+                        </DataTrigger.Binding>
+                        <Setter Property="IsEnabled" Value="True"/>
+                    </DataTrigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -126,7 +142,7 @@
             <!-- Characters -->
             <GroupBox x:Name="characterGroupBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="charCheckBox" Content="Characters (Pass*word*)" IsChecked="{Binding Characters, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" Checked="CheckBox_Checked"/>
+                    <CheckBox x:Name="charCheckBox" Content="Characters (Pass*word*)" IsChecked="{Binding Characters, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding IsChecked, ElementName=charCheckBox}">
                     <Grid.ColumnDefinitions>
@@ -164,7 +180,7 @@
                     <Button x:Name="symbolsHelpButton" Grid.Row="8" Grid.Column="2" Style="{StaticResource HelpButtonStyle}" HorizontalAlignment="Right"/>
                     <CheckBox x:Name="customCharSetCheckBox" Grid.Row="10" Grid.ColumnSpan="3" VerticalContentAlignment="Center" Content="Others (your characters):" IsChecked="{Binding CustomCharSet, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                     <TextBox x:Name="customCharacterTextBox" Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="2" Text="{Binding CustomCharacters, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" IsEnabled="{Binding IsChecked, ElementName=customCharSetCheckBox}" ToolTip="E.g. ~!@#$%^&amp;*(),.=+&lt;&gt;"/>
-                    <Expander x:Name="passwordEncordExpander" Grid.Row="12" Grid.ColumnSpan="5" Header="Password Encode" Template="{StaticResource CheckExpanderTemplate}" IsExpanded="{Binding PasswordEncode, Source={x:Static properties:Settings.Default}, Mode=TwoWay}" VerticalContentAlignment="Center">
+                    <Expander x:Name="passwordEncordExpander" Grid.Row="12" Grid.ColumnSpan="5" Header="Password Encode" Template="{StaticResource CheckExpanderTemplate}" IsExpanded="{Binding PasswordEncode, Source={x:Static properties:Settings.Default}, Mode=TwoWay}">
                         <VirtualizingStackPanel>
                             <RadioButton x:Name="base64RadioButton" Content="Base64" Tag="{x:Static Password:PasswordEncoding.Base64}" IsChecked="True"/>
                             <RadioButton x:Name="hexLowerRadioButton" Content="hex (0 - f)" Tag="{x:Static Password:PasswordEncoding.HexLower}"/>
@@ -185,7 +201,7 @@
             <!-- Words -->
             <GroupBox x:Name="wordsGroupBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)" Checked="CheckBox_Checked" IsChecked="{Binding Words, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
+                    <CheckBox x:Name="wordCheckBox" Content="Words (Pass*phrases*)" IsChecked="{Binding Words, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                 </GroupBox.Header>
                 <Grid Grid.IsSharedSizeScope="True" IsEnabled="{Binding IsChecked, ElementName=wordCheckBox}">
                     <Grid.Resources>
@@ -217,14 +233,14 @@
                     <Button x:Name="fileBrowseButton" Grid.Row="2" Grid.Column="7" Style="{StaticResource FileBrowseButtonStyle}"/>
                     <CheckBox x:Name="specifyLengthCheckBox" Grid.Row="4" Grid.ColumnSpan="3" Content="Specify length*:"/>
                     <local:NumberBox x:Name="specifyLengthNumericBox" Grid.Row="4" Grid.Column="3" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}" Value="{Binding SpecifyLength, Mode=TwoWay, Source={x:Static properties:Settings.Default}}"/>
-                    <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Row="4" Grid.Column="5" Content="Combine words with characters" IsEnabled="{Binding IsChecked, ElementName=specifyLengthCheckBox}" IsChecked="{Binding CombineWords, Mode=TwoWay, Source={x:Static properties:Settings.Default}}"/>
+                    <CheckBox x:Name="cmbineWordsCharsCeckBox" Grid.Row="4" Grid.Column="5" Content="Combine words with characters" IsChecked="{Binding CombineWords, Mode=TwoWay, Source={x:Static properties:Settings.Default}}"/>
                 </Grid>
             </GroupBox>
 
             <!--Format-->
             <GroupBox x:Name="passwordFormatGroupBox" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3">
                 <GroupBox.Header>
-                    <CheckBox x:Name="passwordFormatCheckBox" Content="Password format" Checked="CheckBox_Checked" IsChecked="{Binding Format, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
+                    <CheckBox x:Name="passwordFormatCheckBox" Content="Password format" IsChecked="{Binding Format, Source={x:Static properties:Settings.Default}, Mode=TwoWay}"/>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding IsChecked, ElementName=passwordFormatCheckBox}">
                     <Grid.ColumnDefinitions>
@@ -248,7 +264,7 @@
                     <ColumnDefinition Width="5"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="generatePasswordButton" Command="{x:Static window:MainWindow.GeneratePasswordCommand}" Content="Generate"/>
+                <Button x:Name="generatePasswordButton" Style="{StaticResource GeneratePasswordButtonStyle}" Command="{x:Static window:MainWindow.GeneratePasswordCommand}" Content="Generate"/>
                 <Button x:Name="advancedOptionButton" Grid.Column="2" Content="Advanced"/>
             </Grid>
         </Grid>
@@ -259,7 +275,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <StackPanel x:Name="passwordViewControl" Background="{StaticResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Orientation="Horizontal" MinHeight="40">
+            <StackPanel x:Name="passwordViewControl" Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Orientation="Horizontal" MinHeight="40">
                 <StackPanel.Resources>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="MinWidth" Value="45"/>

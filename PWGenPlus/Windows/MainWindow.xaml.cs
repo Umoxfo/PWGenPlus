@@ -17,10 +17,14 @@
    You should have received a copy of the GNU General Public License
    along with PWGenPlus.  If not, see <https://www.gnu.org/licenses/>.
  */
+using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -285,18 +289,23 @@ namespace PWGenPlus.Windows
             }.ShowDialog();
         }//CreateTrigramFileMenuItem_Click
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            if (generatePasswordButton != null)
-            {
-                generatePasswordButton.IsEnabled = true;
-            }//if
-        }//CheckBox_Checked
-
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             Properties.Settings.Default.Save();
             base.OnClosing(e);
+        }
+    }
+
+    public partial class AnyMultiValueConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return values.Where(x => (bool)x).Contains(true);
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }
