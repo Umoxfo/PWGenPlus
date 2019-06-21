@@ -25,7 +25,7 @@ namespace Zxcvbn
         /// </summary>
         public DefaultMatcherFactory(IEnumerable<string> userInputs = null)
         {
-            var dictionaryMatchers = new List<DictionaryMatcher>() {
+            List<DictionaryMatcher> dictionaryMatchers = new List<DictionaryMatcher>() {
                 new DictionaryMatcher("passwords",
                     Properties.Resources.Passwords.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)),
                 new DictionaryMatcher("english",
@@ -59,8 +59,8 @@ namespace Zxcvbn
         /// <returns>Enumerable of matchers to use</returns>
         public IEnumerable<IMatcher> CreateMatchers(IEnumerable<string> userInputs)
         {
-            var userInputDict = new DictionaryMatcher("user_inputs", userInputs);
-            var leetUser = new L33tMatcher(userInputDict);
+            DictionaryMatcher userInputDict = new DictionaryMatcher("user_inputs", userInputs);
+            L33tMatcher leetUser = new L33tMatcher(userInputDict);
 
             return matchers.Union(new List<IMatcher> { userInputDict, leetUser });
         }

@@ -53,9 +53,9 @@ namespace Zxcvbn.Matcher
         /// <returns>An enumerable of matches for each regex match in <paramref name="password"/></returns>
         public IEnumerable<Match> MatchPassword(string password)
         {
-            var reMatches = matchRegex.Matches(password);
+            MatchCollection reMatches = matchRegex.Matches(password);
 
-            var pwMatches = new List<Match>();
+            List<Match> pwMatches = new List<Match>();
 
             foreach (System.Text.RegularExpressions.Match rem in reMatches)
             {

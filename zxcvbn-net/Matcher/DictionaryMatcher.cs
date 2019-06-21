@@ -59,9 +59,9 @@ namespace Zxcvbn.Matcher
         /// <seealso cref="DictionaryMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
         {
-            var passwordLower = password.ToLower();
+            string passwordLower = password.ToLower();
 
-            var matches = (from i in Enumerable.Range(0, password.Length)
+            List<DictionaryMatch> matches = (from i in Enumerable.Range(0, password.Length)
                            from j in Enumerable.Range(i, password.Length - i)
                            let psub = passwordLower.Substring(i, j - i + 1)
                            where rankedDictionary.Value.ContainsKey(psub)
@@ -77,7 +77,7 @@ namespace Zxcvbn.Matcher
                                Cardinality = rankedDictionary.Value.Count
                            }).ToList();
 
-            foreach (var match in matches) CalculateEntropyForMatch(match);
+            foreach (DictionaryMatch match in matches) CalculateEntropyForMatch(match);
 
             return matches;
         }
@@ -95,10 +95,10 @@ namespace Zxcvbn.Matcher
 
         private Dictionary<string, int> BuildRankedDictionary(IEnumerable<string> wordList)
         {
-            var dict = new Dictionary<string, int>();
+            Dictionary<string, int> dict = new Dictionary<string, int>();
 
-            var i = 1;
-            foreach (var word in wordList)
+            int i = 1;
+            foreach (string word in wordList)
             {
                 // The word list is assumed to be in increasing frequency order
                 dict[word] = i++;

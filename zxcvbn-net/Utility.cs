@@ -197,13 +197,13 @@ namespace Zxcvbn
         /// <returns>An enumerable of lines of text in the resource or null if the resource does not exist</returns>
         public static IEnumerable<string> GetEmbeddedResourceLines(string resourceName)
         {
-            var asm = Assembly.GetExecutingAssembly();
+            Assembly asm = Assembly.GetExecutingAssembly();
             if (!asm.GetManifestResourceNames().Contains(resourceName)) return null; // Not an embedded resource
 
-            var lines = new List<string>();
+            List<string> lines = new List<string>();
 
-            using (var stream = asm.GetManifestResourceStream(resourceName))
-            using (var text = new StreamReader(stream))
+            using (Stream stream = asm.GetManifestResourceStream(resourceName))
+            using (StreamReader text = new StreamReader(stream))
             {
                 while (!text.EndOfStream)
                 {

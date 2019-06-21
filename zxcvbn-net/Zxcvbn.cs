@@ -75,14 +75,14 @@ namespace Zxcvbn
 
             IEnumerable<Match> matches = new List<Match>();
 
-            var timer = System.Diagnostics.Stopwatch.StartNew();
+            System.Diagnostics.Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
 
-            foreach (var matcher in matcherFactory.CreateMatchers(userInputs))
+            foreach (IMatcher matcher in matcherFactory.CreateMatchers(userInputs))
             {
                 matches = matches.Union(matcher.MatchPassword(password));
             }
 
-            var result = FindMinimumEntropyMatch(password, matches);
+            Result result = FindMinimumEntropyMatch(password, matches);
 
             timer.Stop();
             result.CalcTime = timer.ElapsedMilliseconds;
@@ -98,21 +98,21 @@ namespace Zxcvbn
         /// <returns>A result object for the lowest entropy match sequence</returns>
         private Result FindMinimumEntropyMatch(string password, IEnumerable<Match> matches)
         {
-            var bruteforce_cardinality = PasswordScoring.PasswordCardinality(password);
+            int bruteforce_cardinality = PasswordScoring.PasswordCardinality(password);
 
             // Minimum entropy up to position k in the password
-            var minimumEntropyToIndex = new double[password.Length];
-            var bestMatchForIndex = new Match[password.Length];
+            double[] minimumEntropyToIndex = new double[password.Length];
+            Match[] bestMatchForIndex = new Match[password.Length];
 
-            for (var k = 0; k < password.Length; k++)
+            for (int k = 0; k < password.Length; k++)
             {
                 // Start with bruteforce scenario added to previous sequence to beat
                 minimumEntropyToIndex[k] = (k == 0 ? 0 : minimumEntropyToIndex[k - 1]) + Math.Log(bruteforce_cardinality, 2);
 
                 // All matches that end at the current character, test to see if the entropy is less
-                foreach (var match in matches.Where(m => m.j == k))
+                foreach (Match match in matches.Where(m => m.j == k))
                 {
-                    var candidate_entropy = (match.i <= 0 ? 0 : minimumEntropyToIndex[match.i - 1]) + match.Entropy;
+                    double candidate_entropy = (match.i <= 0 ? 0 : minimumEntropyToIndex[match.i - 1]) + match.Entropy;
                     if (candidate_entropy < minimumEntropyToIndex[k])
                     {
                         minimumEntropyToIndex[k] = candidate_entropy;
@@ -123,8 +123,8 @@ namespace Zxcvbn
 
 
             // Walk backwards through lowest entropy matches, to build the best password sequence
-            var matchSequence = new List<Match>();
-            for (var k = password.Length - 1; k >= 0; k--)
+            List<Match> matchSequence = new List<Match>();
+            for (int k = password.Length - 1; k >= 0; k--)
             {
                 if (bestMatchForIndex[k] != null)
                 {
@@ -153,18 +153,18 @@ namespace Zxcvbn
             else
             {
                 // There are matches, so find the gaps and fill them in
-                var matchSequenceCopy = new List<Match>();
-                for (var k = 0; k < matchSequence.Count; k++)
+                List<Match> matchSequenceCopy = new List<Match>();
+                for (int k = 0; k < matchSequence.Count; k++)
                 {
-                    var m1 = matchSequence[k];
-                    var m2 = (k < matchSequence.Count - 1 ? matchSequence[k + 1] : new Match() { i = password.Length }); // Next match, or a match past the end of the password
+                    Match m1 = matchSequence[k];
+                    Match m2 = (k < matchSequence.Count - 1 ? matchSequence[k + 1] : new Match() { i = password.Length }); // Next match, or a match past the end of the password
 
                     matchSequenceCopy.Add(m1);
                     if (m1.j < m2.i - 1)
                     {
                         // Fill in gap
-                        var ns = m1.j + 1;
-                        var ne = m2.i - 1;
+                        int ns = m1.j + 1;
+                        int ne = m2.i - 1;
                         matchSequenceCopy.Add(new Match()
                         {
                             i = ns,
@@ -181,10 +181,10 @@ namespace Zxcvbn
             }
 
 
-            var minEntropy = (password.Length == 0 ? 0 : minimumEntropyToIndex[password.Length - 1]);
-            var crackTime = PasswordScoring.EntropyToCrackTime(minEntropy);
+            double minEntropy = (password.Length == 0 ? 0 : minimumEntropyToIndex[password.Length - 1]);
+            double crackTime = PasswordScoring.EntropyToCrackTime(minEntropy);
 
-            var result = new Result();
+            Result result = new Result();
             result.Password = password;
             result.Entropy = Math.Round(minEntropy, 3);
             result.MatchSequence = matchSequence;

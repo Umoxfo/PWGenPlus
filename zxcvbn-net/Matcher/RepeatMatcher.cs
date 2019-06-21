@@ -19,7 +19,7 @@ namespace Zxcvbn.Matcher
         /// <seealso cref="RepeatMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
         {
-            var matches = new List<Match>();
+            List<Match> matches = new List<Match>();
 
             // Be sure to not count groups of one or two characters
             return password.GroupAdjacent(c => c).Where(g => g.Count() > 2).Select(g => new RepeatMatch

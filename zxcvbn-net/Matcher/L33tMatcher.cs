@@ -39,9 +39,9 @@ namespace Zxcvbn.Matcher
         /// <seealso cref="L33tDictionaryMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
         {
-            var subs = EnumerateSubtitutions(GetRelevantSubstitutions(password));
+            List<Dictionary<char, char>> subs = EnumerateSubtitutions(GetRelevantSubstitutions(password));
 
-            var matches = (from subDict in subs
+            List<L33tDictionaryMatch> matches = (from subDict in subs
                            let sub_password = TranslateString(subDict, password)
                            from matcher in dictionaryMatchers
                            from match in matcher.MatchPassword(sub_password).OfType<DictionaryMatch>()
@@ -54,7 +54,7 @@ namespace Zxcvbn.Matcher
                                Subs = usedSubs.ToDictionary(kv => kv.Key, kv => kv.Value)
                            }).ToList();
 
-            foreach (var match in matches) CalulateL33tEntropy(match);
+            foreach (L33tDictionaryMatch match in matches) CalulateL33tEntropy(match);
 
             return matches;
         }
@@ -63,17 +63,17 @@ namespace Zxcvbn.Matcher
         {
             // I'm a bit dubious about this function, but I have duplicated zxcvbn functionality regardless
 
-            var possibilities = 0;
+            int possibilities = 0;
 
-            foreach (var kvp in match.Subs)
+            foreach (KeyValuePair<char, char> kvp in match.Subs)
             {
-                var subbedChars = match.Token.Where(c => c == kvp.Key).Count();
-                var unsubbedChars = match.Token.Where(c => c == kvp.Value).Count(); // Won't this always be zero?
+                int subbedChars = match.Token.Where(c => c == kvp.Key).Count();
+                int unsubbedChars = match.Token.Where(c => c == kvp.Value).Count(); // Won't this always be zero?
 
                 possibilities += Enumerable.Range(0, Math.Min(subbedChars, unsubbedChars) + 1).Sum(i => (int)PasswordScoring.Binomial(subbedChars + unsubbedChars, i));
             }
 
-            var entropy = Math.Log(possibilities, 2);
+            double entropy = Math.Log(possibilities, 2);
 
             // In the case of only a single subsitution (e.g. 4pple) this would otherwise come out as zero, so give it one bit
             match.L33tEntropy = (entropy < 1 ? 1 : entropy);
@@ -110,25 +110,25 @@ namespace Zxcvbn.Matcher
             //     match 'like' but this method would never show this). My understanding is that this is also a limitation in zxcvbn and so I
             //     feel no need to correct it here.
 
-            var subs = new List<Dictionary<char, char>>();
+            List<Dictionary<char, char>> subs = new List<Dictionary<char, char>>();
             subs.Add(new Dictionary<char, char>()); // Must be at least one mapping dictionary to work
 
-            foreach (var mapPair in table)
+            foreach (KeyValuePair<char, string> mapPair in table)
             {
-                var normalChar = mapPair.Key;
+                char normalChar = mapPair.Key;
 
-                foreach (var l33tChar in mapPair.Value)
+                foreach (char l33tChar in mapPair.Value)
                 {
                     // Can't add while enumerating so store here
-                    var addedSubs = new List<Dictionary<char, char>>();
+                    List<Dictionary<char, char>> addedSubs = new List<Dictionary<char, char>>();
 
-                    foreach (var subDict in subs)
+                    foreach (Dictionary<char, char> subDict in subs)
                     {
                         if (subDict.ContainsKey(l33tChar))
                         {
                             // This mapping already contains a corresponding normal character for this character, so keep the existing one as is
                             //   but add a duplicate with the mappring replaced with this normal character
-                            var newSub = new Dictionary<char, char>(subDict);
+                            Dictionary<char, char> newSub = new Dictionary<char, char>(subDict);
                             newSub[l33tChar] = normalChar;
                             addedSubs.Add(newSub);
                         }
@@ -148,7 +148,7 @@ namespace Zxcvbn.Matcher
         private Dictionary<char, string> BuildSubstitutionsMap()
         {
             // Is there an easier way of building this table?
-            var subs = new Dictionary<char, string>();
+            Dictionary<char, string> subs = new Dictionary<char, string>();
 
             subs['a'] = "4@";
             subs['b'] = "8";

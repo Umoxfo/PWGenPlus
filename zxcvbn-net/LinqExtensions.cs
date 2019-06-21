@@ -19,15 +19,15 @@ namespace Zxcvbn
         /// <typeparam name="TSource">Type of elements that are grouped</typeparam>
         public static IEnumerable<AdjacentGrouping<TKey, TSource>> GroupAdjacent<TKey, TSource>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            var prevKey = default(TKey);
-            var prevStartIndex = 0;
-            var prevInit = false;
-            var itemsList = new List<TSource>();
+            TKey prevKey = default(TKey);
+            int prevStartIndex = 0;
+            bool prevInit = false;
+            List<TSource> itemsList = new List<TSource>();
 
-            var i = 0;
-            foreach (var item in source)
+            int i = 0;
+            foreach (TSource item in source)
             {
-                var key = keySelector(item);
+                TKey key = keySelector(item);
                 if (prevInit)
                 {
                     if (!prevKey.Equals(key))

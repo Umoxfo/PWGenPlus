@@ -34,19 +34,19 @@ namespace Zxcvbn.Matcher
         /// <returns>List of matching patterns</returns>
         private List<Match> SpatialMatch(SpatialGraph graph, string password)
         {
-            var matches = new List<Match>();
+            List<Match> matches = new List<Match>();
 
-            var i = 0;
+            int i = 0;
             while (i < password.Length - 1)
             {
                 int turns = 0, shiftedCount = 0;
-                var lastDirection = -1;
+                int lastDirection = -1;
 
-                var j = i + 1;
+                int j = i + 1;
                 for (; j < password.Length; ++j)
                 {
                     bool shifted;
-                    var foundDirection = graph.GetAdjacentCharDirection(password[j - 1], password[j], out shifted);
+                    int foundDirection = graph.GetAdjacentCharDirection(password[j - 1], password[j], out shifted);
 
                     if (foundDirection != -1)
                     {
@@ -165,7 +165,7 @@ namespace Zxcvbn.Matcher
 
                 if (!AdjacencyGraph.ContainsKey(c)) return -1;
 
-                var adjacentEntry = AdjacencyGraph[c].FirstOrDefault(s => s != null && s.Contains(adjacent));
+                string adjacentEntry = AdjacencyGraph[c].FirstOrDefault(s => s != null && s.Contains(adjacent));
                 if (adjacentEntry == null) return -1;
 
                 shifted = adjacentEntry.IndexOf(adjacent) > 0; // i.e. shifted if not first character in the adjacency
@@ -191,35 +191,35 @@ namespace Zxcvbn.Matcher
             private void BuildGraph(string layout, bool slanted)
             {
 
-                var tokens = layout.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-                var tokenSize = tokens[0].Length;
+                string[] tokens = layout.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                int tokenSize = tokens[0].Length;
 
                 // Put the characters in each keyboard cell into the map agains t their coordinates
-                var positionTable = new Dictionary<Point, string>();
-                var lines = layout.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                Dictionary<Point, string> positionTable = new Dictionary<Point, string>();
+                string[] lines = layout.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 for (int y = 0; y < lines.Length; ++y)
                 {
-                    var line = lines[y];
-                    var slant = slanted ? y - 1 : 0;
+                    string line = lines[y];
+                    int slant = slanted ? y - 1 : 0;
 
-                    foreach (var token in line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
+                    foreach (string token in line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        var x = (line.IndexOf(token) - slant) / (tokenSize + 1);
-                        var p = new Point(x, y);
+                        int x = (line.IndexOf(token) - slant) / (tokenSize + 1);
+                        Point p = new Point(x, y);
                         positionTable[p] = token;
                     }
                 }
 
                 AdjacencyGraph = new Dictionary<char, List<string>>();
-                foreach (var pair in positionTable)
+                foreach (KeyValuePair<Point, string> pair in positionTable)
                 {
-                    var p = pair.Key;
-                    foreach (var c in pair.Value)
+                    Point p = pair.Key;
+                    foreach (char c in pair.Value)
                     {
                         AdjacencyGraph[c] = new List<string>();
-                        var adjacentPoints = slanted ? GetSlantedAdjacent(p) : GetAlignedAdjacent(p);
+                        Point[] adjacentPoints = slanted ? GetSlantedAdjacent(p) : GetAlignedAdjacent(p);
 
-                        foreach (var adjacent in adjacentPoints)
+                        foreach (Point adjacent in adjacentPoints)
                         {
                             // We want to include nulls so that direction is correspondent with index in the list
                             if (positionTable.ContainsKey(adjacent)) AdjacencyGraph[c].Add(positionTable[adjacent]);
@@ -241,21 +241,21 @@ namespace Zxcvbn.Matcher
             public double CalculateEntropy(int matchLength, int turns, int shiftedCount)
             {
                 // This is an estimation of the number of patterns with length of matchLength or less with turns turns or less
-                var possibilities = Enumerable.Range(2, matchLength - 1).Sum(i =>
+                double possibilities = Enumerable.Range(2, matchLength - 1).Sum(i =>
                 {
-                    var possible_turns = Math.Min(turns, i - 1);
+                    int possible_turns = Math.Min(turns, i - 1);
                     return Enumerable.Range(1, possible_turns).Sum(j =>
                     {
                         return StartingPositions * Math.Pow(AverageDegree, j) * PasswordScoring.Binomial(i - 1, j - 1);
                     });
                 });
 
-                var entropy = Math.Log(possibilities, 2);
+                double entropy = Math.Log(possibilities, 2);
 
                 // Entropy increaeses for a mix of shifted and unshifted
                 if (shiftedCount > 0)
                 {
-                    var unshifted = matchLength - shiftedCount;
+                    int unshifted = matchLength - shiftedCount;
                     entropy += Math.Log(Enumerable.Range(0, Math.Min(shiftedCount, unshifted) + 1).Sum(i => PasswordScoring.Binomial(matchLength, i)), 2);
                 }
 

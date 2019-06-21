@@ -38,10 +38,10 @@ namespace Zxcvbn.Matcher
         /// <returns>An enumerable of date matches</returns>
         /// <seealso cref="DateMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
-        {           
-            var matches = new List<Match>();
+        {
+            List<Match> matches = new List<Match>();
 
-            var possibleDates = Regex.Matches(password, "\\d{4,8}"); // Slashless dates
+            MatchCollection possibleDates = Regex.Matches(password, "\\d{4,8}"); // Slash-less dates
             foreach (System.Text.RegularExpressions.Match dateMatch in possibleDates)
             {
                 if (IsDate(dateMatch.Value)) matches.Add(new Match()
@@ -54,15 +54,15 @@ namespace Zxcvbn.Matcher
                 });
             }
 
-            var slashDatesSuffix = Regex.Matches(password, DateWithSlashesSuffixPattern, RegexOptions.IgnorePatternWhitespace);
+            MatchCollection slashDatesSuffix = Regex.Matches(password, DateWithSlashesSuffixPattern, RegexOptions.IgnorePatternWhitespace);
             foreach (System.Text.RegularExpressions.Match dateMatch in slashDatesSuffix)
             {
-                var year = dateMatch.Groups[4].Value.ToInt();
-                var month = dateMatch.Groups[3].Value.ToInt(); // or day
-                var day = dateMatch.Groups[1].Value.ToInt(); // or month
+                int year = dateMatch.Groups[4].Value.ToInt();
+                int month = dateMatch.Groups[3].Value.ToInt(); // or day
+                int day = dateMatch.Groups[1].Value.ToInt(); // or month
 
                 // Do a quick check for month/day swap (e.g. US dates)
-                if (12 <= month && month <= 31 && day <= 12) { var t = month; month = day; day = t; }
+                if (12 <= month && month <= 31 && day <= 12) { int t = month; month = day; day = t; }
 
                 if (IsDateInRange(year, month, day)) matches.Add(new DateMatch()
                 {
@@ -78,15 +78,15 @@ namespace Zxcvbn.Matcher
                 });
             }
 
-            var slashDatesPrefix = Regex.Matches(password, DateWithSlashesPrefixPattern, RegexOptions.IgnorePatternWhitespace);
+            MatchCollection slashDatesPrefix = Regex.Matches(password, DateWithSlashesPrefixPattern, RegexOptions.IgnorePatternWhitespace);
             foreach (System.Text.RegularExpressions.Match dateMatch in slashDatesPrefix)
             {
-                var year = dateMatch.Groups[1].Value.ToInt();
-                var month = dateMatch.Groups[3].Value.ToInt(); // or day
-                var day = dateMatch.Groups[4].Value.ToInt(); // or month
+                int year = dateMatch.Groups[1].Value.ToInt();
+                int month = dateMatch.Groups[3].Value.ToInt(); // or day
+                int day = dateMatch.Groups[4].Value.ToInt(); // or month
 
                 // Do a quick check for month/day swap (e.g. US dates)
-                if (12 <= month && month <= 31 && day <= 12) { var t = month; month = day; day = t; }
+                if (12 <= month && month <= 31 && day <= 12) { int t = month; month = day; day = t; }
 
                 if (IsDateInRange(year, month, day)) matches.Add(new DateMatch()
                 {
@@ -117,7 +117,7 @@ namespace Zxcvbn.Matcher
                 year = match.Length <= 6 ? 99 : 9999;
             }
 
-            var entropy = 0.0;
+            double entropy = 0.0;
             if (year < 100) entropy = Math.Log(31 * 12 * 100, 2); // 100 years (two-digits)
             else entropy = Math.Log(31 * 12 * 119, 2); // 119 years (four digit years valid range)
 
