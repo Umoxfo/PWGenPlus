@@ -19,7 +19,7 @@
  */
 using System.Windows.Controls;
 
-namespace PWGenPlus
+namespace PWGenPlus.GUI.Controls
 {
     /// <summary>
     /// CommonButtonPanel.xaml の相互作用ロジック

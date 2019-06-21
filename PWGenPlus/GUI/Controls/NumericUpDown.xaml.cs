@@ -21,7 +21,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PWGenPlus
+namespace PWGenPlus.GUI.Controls
 {
     /// <summary>
     /// NumericUpDown.xaml

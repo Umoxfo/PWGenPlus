@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PWGenPlus.CommonButtonPanel"
+﻿<UserControl x:Class="PWGenPlus.GUI.Controls.CommonButtonPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"

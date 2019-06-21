@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PWGenPlus.Windows.Menu.Tools"
-        xmlns:PWGenPlus = "clr-namespace:PWGenPlus"
+        xmlns:PWGenPlus = "clr-namespace:PWGenPlus.GUI.Controls"
         mc:Ignorable="d"
         Title="Create Random Data File" MinWidth="355" WindowStartupLocation="CenterOwner" Style="{DynamicResource DialogWindowStyle}">
 
