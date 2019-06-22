@@ -135,7 +135,7 @@ namespace Zxcvbn.Matcher
 
             public SpatialGraph(string name, string layout, bool slanted)
             {
-                this.Name = name;
+                Name = name;
                 BuildGraph(layout, slanted);
             }
 

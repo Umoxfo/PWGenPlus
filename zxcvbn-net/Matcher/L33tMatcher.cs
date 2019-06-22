@@ -189,17 +189,17 @@ namespace Zxcvbn.Matcher
         /// <param name="dm">The dictionary match to initialise the l33t match from</param>
         public L33tDictionaryMatch(DictionaryMatch dm)
         {
-            this.BaseEntropy = dm.BaseEntropy;
-            this.Cardinality = dm.Cardinality;
-            this.DictionaryName = dm.DictionaryName;
-            this.Entropy = dm.Entropy;
-            this.i = dm.i;
-            this.j = dm.j;
-            this.MatchedWord = dm.MatchedWord;
-            this.Pattern = dm.Pattern;
-            this.Rank = dm.Rank;
-            this.Token = dm.Token;
-            this.UppercaseEntropy = dm.UppercaseEntropy;
+            BaseEntropy = dm.BaseEntropy;
+            Cardinality = dm.Cardinality;
+            DictionaryName = dm.DictionaryName;
+            Entropy = dm.Entropy;
+            i = dm.i;
+            j = dm.j;
+            MatchedWord = dm.MatchedWord;
+            Pattern = dm.Pattern;
+            Rank = dm.Rank;
+            Token = dm.Token;
+            UppercaseEntropy = dm.UppercaseEntropy;
 
             Subs = new Dictionary<char, char>();
         }

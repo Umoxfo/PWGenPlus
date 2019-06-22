@@ -95,9 +95,9 @@ namespace Zxcvbn
 
             internal AdjacentGrouping(TKey key, IEnumerable<TElement> groupItems, int startIndex, int endIndex)
             {
-                this.Key = key;
-                this.StartIndex = startIndex;
-                this.EndIndex = endIndex;
+                Key = key;
+                StartIndex = startIndex;
+                EndIndex = endIndex;
                 m_groupItems = groupItems;
             }
 
