@@ -8,13 +8,6 @@ namespace Zxcvbn
     /// </summary>
     static class PasswordScoring
     {
-        public const string StartUpper = "^[A-Z][^A-Z]+$";
-
-        public const string EndUpper = "^[^A-Z]+[A-Z]$";
-
-        public const string AllUpper = "^[^a-z]+$";
-
-        public const string AllLower = "^[^A-Z]+$";
 
         /// <summary>
         /// Calculate the cardinality of the minimal character sets necessary to brute force the password (roughly)
