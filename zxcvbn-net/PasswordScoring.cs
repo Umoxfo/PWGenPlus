@@ -19,11 +19,10 @@ namespace Zxcvbn
         {
             int cl = 0;
 
-            if (password.Any(c => 'a' <= c && c <= 'z')) cl += 26; // Lowercase
-            if (password.Any(c => 'A' <= c && c <= 'Z')) cl += 26; // Uppercase
-            if (password.Any(c => '0' <= c && c <= '9')) cl += 10; // Numbers
-            if (password.Any(c => c <= '/' || (':' <= c && c <= '@') || ('[' <= c && c <= '`') || ('{' <= c && c <= 0x7F))) cl += 33; // Symbols
-            if (password.Any(c => c > 0x7F)) cl += 100; // 'Unicode' (why 100?)
+            if (password.Any(c => c >= 'a' && c <= 'z')) cl += 26; // Lowercase
+            if (password.Any(c => c >= 'A' && c <= 'Z')) cl += 26; // Uppercase
+            if (password.Any(c => c >= '0' && c <= '9')) cl += 10; // Numbers
+            if (password.Any(c => (c >= ' ' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || ('{' <= c && c <= '~'))) cl += 33; // Symbols
 
             return cl;
         }
