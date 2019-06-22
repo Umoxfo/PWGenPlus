@@ -184,13 +184,15 @@ namespace Zxcvbn
             double minEntropy = (password.Length == 0 ? 0 : minimumEntropyToIndex[password.Length - 1]);
             double crackTime = PasswordScoring.EntropyToCrackTime(minEntropy);
 
-            Result result = new Result();
-            result.Password = password;
-            result.Entropy = Math.Round(minEntropy, 3);
-            result.MatchSequence = matchSequence;
-            result.CrackTime = Math.Round(crackTime, 3);
-            result.CrackTimeDisplay = Utility.DisplayTime(crackTime, translation);
-            result.Score = PasswordScoring.CrackTimeToScore(crackTime);
+            Result result = new Result
+            {
+                Password = password,
+                Entropy = Math.Round(minEntropy, 3),
+                MatchSequence = matchSequence,
+                CrackTime = Math.Round(crackTime, 3),
+                CrackTimeDisplay = Utility.DisplayTime(crackTime, translation),
+                Score = PasswordScoring.CrackTimeToScore(crackTime)
+            };
 
 
             //starting feedback
