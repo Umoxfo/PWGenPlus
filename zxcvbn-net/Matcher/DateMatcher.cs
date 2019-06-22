@@ -19,18 +19,18 @@ namespace Zxcvbn.Matcher
         const string DatePattern = "date";
 
 
-        // The two RegExes for matching dates with slashes is lifted directly from zxcvbn (matching.coffee about :400)
-        const string DateWithSlashesSuffixPattern = @"  ( \d{1,2} )                         # day or month
-  ( \s | - | / | \\ | _ | \. )        # separator
-  ( \d{1,2} )                         # month or day
-  \2                                  # same separator
-  ( 19\d{2} | 200\d | 201\d | \d{2} ) # year";
+        // The two RegExes for matching dates with slashes is lifted directly from zxcvbn (matching.coffee about :432)
+        const string DateWithSlashesSuffixPattern = @"(\d{1,2})                                 # day or month
+                                                      (?<separator>(\s | - | / | \\ | _ | \.))
+                                                      (\d{1,2})                                 # month or day
+                                                      \k<separator>
+                                                      (\d{2,4})                                 # year";
 
-        const string DateWithSlashesPrefixPattern = @"  ( 19\d{2} | 200\d | 201\d | \d{2} ) # year
-  ( \s | - | / | \\ | _ | \. )        # separator
-  ( \d{1,2} )                         # day or month
-  \2                                  # same separator
-  ( \d{1,2} )                         # month or day";
+        const string DateWithSlashesPrefixPattern = @"(\d{2,4})                                 # year
+                                                      (?<separator>(\s | - | / | \\ | _ | \.))
+                                                      (\d{1,2})                                 # day or month
+                                                      \k<separator>
+                                                      (\d{1,2})                                 # month or day";
 
         /// <summary>
         /// Find date matches in <paramref name="password"/>
@@ -42,7 +42,7 @@ namespace Zxcvbn.Matcher
         {
             List<Match> matches = new List<Match>();
 
-            MatchCollection possibleDates = Regex.Matches(password, "\\d{4,8}"); // Slash-less dates
+            MatchCollection possibleDates = Regex.Matches(password, @"\d{4,8}"); // Slash-less dates
             foreach (System.Text.RegularExpressions.Match dateMatch in possibleDates)
             {
                 if (IsDate(dateMatch.Value)) matches.Add(new Match()
