@@ -8,6 +8,11 @@ namespace Zxcvbn
     /// </summary>
     static class PasswordScoring
     {
+        //Named characters in the Unicode Standard version 8.0
+        private const int UnicodeCharacters = 120_672;
+
+        //Number of ASCII (as also called Basic Latin) characters
+        private const int ASCII = 128;
 
         /// <summary>
         /// Calculate the cardinality of the minimal character sets necessary to brute force the password (roughly)
@@ -23,6 +28,7 @@ namespace Zxcvbn
             if (password.Any(c => c >= 'A' && c <= 'Z')) cl += 26; // Uppercase
             if (password.Any(c => c >= '0' && c <= '9')) cl += 10; // Numbers
             if (password.Any(c => (c >= ' ' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || ('{' <= c && c <= '~'))) cl += 33; // Symbols
+            if (password.Any(c => c > '\x007f')) cl += UnicodeCharacters - ASCII; // 'Unicode 8.0'
 
             return cl;
         }
