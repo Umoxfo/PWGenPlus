@@ -6,7 +6,7 @@ namespace Zxcvbn.Matcher
 {
     /// <summary>
     /// <para>A matcher that checks for keyboard layout patterns (e.g. 78523 on a keypad, or plkmn on a QWERTY keyboard).</para>
-    /// <para>Has patterns for QWERTY, DVORAK, numeric keybad and mac numeric keypad</para>
+    /// <para>Has patterns for QWERTY, DVORAK, numeric keypad and mac numeric keypad</para>
     /// <para>The matcher accounts for shifted characters (e.g. qwErt or po9*7y) when detecting patterns as well as multiple changes in direction.</para>
     /// </summary>
     public class SpatialMatcher : IMatcher
@@ -85,7 +85,7 @@ namespace Zxcvbn.Matcher
         // In the JS version these are precomputed, but for now we'll generate them here when they are first needed.
         private static List<SpatialGraph> GenerateSpatialGraphs()
         {
-            // Kwyboard layouts directly from zxcvbn's build_keyboard_adjacency_graph.py script
+            // Keyboard layouts directly from zxcvbn's build_keyboard_adjacency_graph.py script
             const string qwerty = @"
 `~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+
     qQ wW eE rR tT yY uU iI oO pP [{ ]} \|
@@ -151,7 +151,7 @@ namespace Zxcvbn.Matcher
             /// <summary>
             /// Returns the 'direction' of the adjacent character (i.e. index in the adjacency list).
             /// If the character is not adjacent, -1 is returned
-            /// 
+            ///
             /// Uses the 'shifted' out parameter to let the caller know if the matched character is shifted
             /// </summary>
             public int GetAdjacentCharDirection(char c, char adjacent, out bool shifted)
@@ -249,7 +249,7 @@ namespace Zxcvbn.Matcher
 
                 double entropy = Math.Log(possibilities, 2);
 
-                // Entropy increaeses for a mix of shifted and unshifted
+                // Entropy increases for a mix of shifted and unsifted
                 if (shiftedCount > 0)
                 {
                     int unshifted = matchLength - shiftedCount;
@@ -287,7 +287,7 @@ namespace Zxcvbn.Matcher
         public string Graph { get; set; }
 
         /// <summary>
-        /// The number of turns made (i.e. when diretion of adjacent keys changes)
+        /// The number of turns made (i.e. when direction of adjacent keys changes)
         /// </summary>
         public int Turns { get; set; }
 
