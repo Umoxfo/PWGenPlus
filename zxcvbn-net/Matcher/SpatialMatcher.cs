@@ -21,7 +21,8 @@ namespace Zxcvbn.Matcher
         /// <param name="password">Password to match</param>
         /// <returns>List of matching patterns</returns>
         /// <seealso cref="SpatialMatch"/>
-        public IEnumerable<Match> MatchPassword(string password) => spatialGraphs.Value.SelectMany((g) => SpatialMatch(g, password)).ToList();
+        public IEnumerable<Match> MatchPassword(string password) =>
+            spatialGraphs.Value.SelectMany((g) => SpatialMatch(g, password)).ToList();
 
         /// <summary>
         /// Match the password against a single pattern
@@ -272,7 +273,7 @@ namespace Zxcvbn.Matcher
                 this.y = y;
             }
 
-            public override string ToString() => "{" + x + ", " + y + "}";
+            public override string ToString() => $"{{{x}, {y}}}";
         }
     }
 
