@@ -103,15 +103,9 @@ namespace Zxcvbn
 
             private AdjacentGrouping() { }
 
-            IEnumerator<TElement> IEnumerable<TElement>.GetEnumerator()
-            {
-                return m_groupItems.GetEnumerator();
-            }
+            IEnumerator<TElement> IEnumerable<TElement>.GetEnumerator() => m_groupItems.GetEnumerator();
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return m_groupItems.GetEnumerator();
-            }
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => m_groupItems.GetEnumerator();
         }
     }
 }

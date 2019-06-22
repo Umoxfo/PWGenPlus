@@ -33,10 +33,7 @@ namespace Zxcvbn.Matcher
             });
         }
 
-        private double CalculateEntropy(string match)
-        {
-            return Math.Log(PasswordScoring.PasswordCardinality(match) * match.Length, 2);
-        }
+        private double CalculateEntropy(string match) => Math.Log(PasswordScoring.PasswordCardinality(match) * match.Length, 2);
     }
 
     /// <summary>

@@ -201,22 +201,13 @@ namespace Zxcvbn.Matcher
             return IsMonthDayInRange(p1, p2) || IsMonthDayInRange(p2, p1);
         }
 
-        private static bool IsDateInRange(int year, int month, int day)
-        {
-            return IsYearInRange(year) && IsMonthDayInRange(month, day);
-        }
+        private static bool IsDateInRange(int year, int month, int day) => IsYearInRange(year) && IsMonthDayInRange(month, day);
 
         // Two-digit years are allowed, otherwise in 1900-(the current year)
-        private static bool IsYearInRange(int year)
-        {
-            return (1900 <= year && year <= DateTime.Today.Year) || (0 < year && year <= 99);
-        }
+        private static bool IsYearInRange(int year) => (1900 <= year && year <= DateTime.Today.Year) || (0 < year && year <= 99);
 
         // Assume all months have 31 days, we only care that things look like dates not that they're completely valid
-        private static bool IsMonthDayInRange(int month, int day)
-        {
-            return (1 <= month && month <= 12) && (1 <= day && day <= 31);
-        }
+        private static bool IsMonthDayInRange(int month, int day) => (1 <= month && month <= 12) && (1 <= day && day <= 31);
     }
 
     /// <summary>

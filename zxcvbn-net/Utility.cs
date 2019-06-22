@@ -150,20 +150,14 @@ namespace Zxcvbn
         /// <param name="args">Format args</param>
         /// <param name="str">Format string</param>
         /// <returns>Formatted string</returns>
-        public static string F(this string str, params object[] args)
-        {
-            return string.Format(str, args);
-        }
+        public static string F(this string str, params object[] args) => string.Format(str, args);
 
         /// <summary>
         /// Reverse a string in one call
         /// </summary>
         /// <param name="str">String to reverse</param>
         /// <returns>String in reverse</returns>
-        public static string StringReverse(this string str)
-        {
-            return new string(str.Reverse().ToArray());
-        }
+        public static string StringReverse(this string str) => new string(str.Reverse().ToArray());
 
         /// <summary>
         /// A convenience for parsing a substring as an int and returning the results. Uses TryParse, and so returns zero where there is no valid int
@@ -173,10 +167,7 @@ namespace Zxcvbn
         /// <param name="startIndex">Start index of substring to parse</param>
         /// <param name="str">String to get substring of</param>
         /// <returns>True if the parse succeeds</returns>
-        public static bool IntParseSubstring(this string str, int startIndex, int length, out int r)
-        {
-            return int.TryParse(str.Substring(startIndex, length), out r);
-        }
+        public static bool IntParseSubstring(this string str, int startIndex, int length, out int r) => int.TryParse(str.Substring(startIndex, length), out r);
 
         /// <summary>
         /// Quickly convert a string to an integer, uses TryParse so any non-integers will return zero
