@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Zxcvbn
 {
@@ -95,17 +94,16 @@ namespace Zxcvbn
         /// <returns>An estimation of the entropy gained from casing in <paramref name="word"/></returns>
         public static double CalculateUppercaseEntropy(string word)
         {
+            if (word == word.ToLower()) return 0;
 
-            if (Regex.IsMatch(word, AllLower)) return 0;
+            // If the word is all uppercase adds only one bit of entropy, add only one bit for initial/end single cap only
+            if (new[] { word.FirstOrDefault(), word.LastOrDefault() }.Any(c => c >= 'A' && c <= 'Z') || word == word.ToUpper()) return 1;
 
-            // If the word is all uppercase add's only one bit of entropy, add only one bit for initial/end single cap only
-            if (new[] { StartUpper, EndUpper, AllUpper }.Any(re => Regex.IsMatch(word, re))) return 1;
+            int lowers = word.Where(c => c >= 'a' && c <= 'z').Count();
+            int uppers = word.Where(c => c >= 'A' && c <= 'Z').Count();
 
-            int lowers = word.Where(c => 'a' <= c && c <= 'z').Count();
-            int uppers = word.Where(c => 'A' <= c && c <= 'Z').Count();
-
-            return Math.Log(Enumerable.Range(0, Math.Min(uppers, lowers) + 1).Sum(i => PasswordScoring.Binomial(uppers + lowers, i)), 2);
-            // Calculate number of ways to capitalize (or inverse if there are fewer lowercase chars) and return lg for entropy
+            // Calculate number of ways to capitalize (or inverse if there are fewer lowercase chars) and return log for entropy
+            return Math.Log(Enumerable.Range(0, Math.Min(uppers, lowers) + 1).Sum(i => Binomial(uppers + lowers, i)), 2);
         }
     }
 }
