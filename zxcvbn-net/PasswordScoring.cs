@@ -14,6 +14,19 @@ namespace Zxcvbn
         //Number of ASCII (as also called Basic Latin) characters
         private const int ASCII = 128;
 
+        protected internal struct Score
+        {
+            private const int DELTA = 7;
+
+            internal const double Useless = 1e3 + DELTA;
+            internal const double VeryWeek = 1e6 + DELTA;
+            internal const double Week = 1e8 + DELTA;
+            internal const double Reasonable = 1e10 + DELTA;
+            internal const double Good = 1e11 + DELTA;
+            internal const double Strong = 1e12 + DELTA;
+            internal const double VeryStrong = 1e13 + DELTA;
+        }
+
         /// <summary>
         /// Calculate the cardinality of the minimal character sets necessary to brute force the password (roughly)
         /// (e.g. lowercase = 26, numbers = 10, lowercase + numbers = 36)
@@ -48,17 +61,19 @@ namespace Zxcvbn
         }
 
         /// <summary>
-        /// Return a score for password strength from the crack time. Scores are 0..4, 0 being minimum and 4 maximum strength.
+        /// Return a score for password strength from the entropy. Scores are 0..6, 0 being minimum and 6 maximum strength.
         /// </summary>
-        /// <param name="crackTimeSeconds">Number of seconds estimated for password cracking</param>
-        /// <returns>Password strength. 0 to 4, 0 is minimum</returns>
-        public static int CrackTimeToScore(double crackTimeSeconds)
+        /// <param name="entropy">Entropy of password</param>
+        /// <returns>Password strength. 0 to 6, 0 is minimum</returns>
+        public static int CrackTimeToScore(double crackTime)
         {
-            if (crackTimeSeconds < Math.Pow(10, 2)) return 0;
-            else if (crackTimeSeconds < Math.Pow(10, 4)) return 1;
-            else if (crackTimeSeconds < Math.Pow(10, 6)) return 2;
-            else if (crackTimeSeconds < Math.Pow(10, 8)) return 3;
-            else return 4;
+            if (crackTime < Score.Useless) return 0;
+            else if (crackTime < Score.VeryWeek) return 1;
+            else if (crackTime < Score.Week) return 2;
+            else if (crackTime < Score.Reasonable) return 3;
+            else if (crackTime < Score.Good) return 4;
+            else if (crackTime < Score.Strong) return 5;
+            else return 6;
         }
 
         /// <summary>

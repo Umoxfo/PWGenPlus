@@ -194,8 +194,8 @@ namespace Zxcvbn
         public string CrackTimeDisplay { get; set; }
 
         /// <summary>
-        /// A score from 0 to 4 (inclusive), with 0 being least secure and 4 being most secure calculated from crack time:
-        /// [0,1,2,3,4] if crack time is less than [10**2, 10**4, 10**6, 10**8, Infinity] seconds.
+        /// A score from 0 to 6 (inclusive), with 0 being least secure and 6 being most secure calculated from crack time:
+        /// [0,1,2,3,4,5,6] if crack time is less than [10^3, 10^6, 10^8, 10^10, 10^11, 10^12, Infinity] seconds.
         /// Useful for implementing a strength meter
         /// </summary>
         public int Score { get; set; }
