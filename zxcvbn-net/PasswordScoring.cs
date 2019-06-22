@@ -22,7 +22,7 @@ namespace Zxcvbn
         /// (e.g. lowercase = 26, numbers = 10, lowercase + numbers = 36)
         /// </summary>
         /// <param name="password">THe password to evaluate</param>
-        /// <returns>An estimation of the cardinality of charactes for this password</returns>
+        /// <returns>An estimation of the cardinality of characters for this password</returns>
         public static int PasswordCardinality(string password)
         {
             int cl = 0;
@@ -40,7 +40,7 @@ namespace Zxcvbn
         /// Calculate a rough estimate of crack time for entropy, see zxcbn scoring.coffee for more information on the model used
         /// </summary>
         /// <param name="entropy">Entropy of password</param>
-        /// <returns>An estimation of seconts taken to crack password</returns>
+        /// <returns>An estimation of seconds taken to crack password</returns>
         public static double EntropyToCrackTime(double entropy)
         {
             const double SingleGuess = 0.01;
@@ -65,8 +65,8 @@ namespace Zxcvbn
         }
 
         /// <summary>
-        /// Caclulate binomial coefficient (i.e. nCk)
-        /// Uses same algorithm as zxcvbn (cf. scoring.coffee), from http://blog.plover.com/math/choose.html 
+        /// Calculate binomial coefficient (i.e. nCk)
+        /// Uses same algorithm as zxcvbn (cf. scoring.coffee), from http://blog.plover.com/math/choose.html
         /// </summary>
         /// <param name="k">k</param>
         /// <param name="n">n</param>
@@ -104,8 +104,8 @@ namespace Zxcvbn
             int lowers = word.Where(c => 'a' <= c && c <= 'z').Count();
             int uppers = word.Where(c => 'A' <= c && c <= 'Z').Count();
 
-            // Calculate numer of ways to capitalise (or inverse if there are fewer lowercase chars) and return lg for entropy
             return Math.Log(Enumerable.Range(0, Math.Min(uppers, lowers) + 1).Sum(i => PasswordScoring.Binomial(uppers + lowers, i)), 2);
+            // Calculate number of ways to capitalize (or inverse if there are fewer lowercase chars) and return lg for entropy
         }
     }
 }
