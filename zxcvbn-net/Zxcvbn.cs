@@ -186,9 +186,9 @@ namespace Zxcvbn
             Result result = new Result
             {
                 Password = password,
-                Entropy = Math.Round(minEntropy, 3),
+                Entropy = minEntropy,
                 MatchSequence = matchSequence,
-                CrackTime = Math.Round(crackTime, 3),
+                CrackTime = crackTime,
                 CrackTimeDisplay = Utility.DisplayTime(crackTime, translation),
                 Score = PasswordScoring.CrackTimeToScore(crackTime)
             };
