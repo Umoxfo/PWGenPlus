@@ -87,7 +87,6 @@ namespace Zxcvbn
         ///  Empty String
         /// </summary>
         Empty,
-
     }
 
     /// <summary>
@@ -117,7 +116,7 @@ namespace Zxcvbn
         AvoidRepeatedWordsAndChars,
 
         /// <summary>
-        ///  Avoid sequences  
+        ///  Avoid sequences
         /// </summary>
         AvoidSequences,
 
@@ -128,27 +127,27 @@ namespace Zxcvbn
         AvoidYearsAssociatedYou,
 
         /// <summary>
-        ///  Avoid dates and years that are associated with you 
+        ///  Avoid dates and years that are associated with you
         /// </summary>
         AvoidDatesYearsAssociatedYou,
 
         /// <summary>
-        ///  Capitalization doesn't help very much  
+        ///  Capitalization doesn't help very much
         /// </summary>
         CapsDontHelp,
 
         /// <summary>
-        /// All-uppercase is almost as easy to guess as all-lowercase   
+        /// All-uppercase is almost as easy to guess as all-lowercase
         /// </summary>
         AllCapsEasy,
 
         /// <summary>
-        /// Reversed words aren't much harder to guess   
+        /// Reversed words aren't much harder to guess
         /// </summary>
         ReversedWordEasy,
 
         /// <summary>
-        ///  Predictable substitutions like '@' instead of 'a' don't help very much  
+        ///  Predictable substitutions like '@' instead of 'a' don't help very much
         /// </summary>
         PredictableSubstitutionsEasy,
 
@@ -156,12 +155,7 @@ namespace Zxcvbn
         ///  Empty String
         /// </summary>
         Empty,
-
     }
-
-
-
-
 
     /// <summary>
     /// The results of zxcvbn's password analysis
@@ -169,68 +163,61 @@ namespace Zxcvbn
     public class Result
     {
         /// <summary>
-        /// Result constructor initialize Suggestion list.
+        /// A calculated estimate of how many bits of entropy the password covers.
         /// </summary>
-        public Result() { suggestions = new List<Suggestion>(); }
-
-        /// <summary>
-        /// A calculated estimate of how many bits of entropy the password covers, rounded to three decimal places.
-        /// </summary>
-        public double Entropy { get; set; }
+        public double Entropy { get; internal set; }
 
         /// <summary>
         /// The number of milliseconds that zxcvbn took to calculate results for this password
         /// </summary>
-        public long CalcTime { get; set; }
+        public long CalcTime { get; internal set; }
 
         /// <summary>
         /// An estimation of the crack time for this password in seconds
         /// </summary>
-        public double CrackTime { get; set; }
+        public double CrackTime { get; internal set; }
 
         /// <summary>
         /// A friendly string for the crack time (like "centuries", "instant", "7 minutes", "14 hours" etc.)
         /// </summary>
-        public string CrackTimeDisplay { get; set; }
+        public string CrackTimeDisplay { get; internal set; }
 
         /// <summary>
         /// A score from 0 to 6 (inclusive), with 0 being least secure and 6 being most secure calculated from crack time:
         /// [0,1,2,3,4,5,6] if crack time is less than [10^3, 10^6, 10^8, 10^10, 10^11, 10^12, Infinity] seconds.
         /// Useful for implementing a strength meter
         /// </summary>
-        public int Score { get; set; }
+        public int Score { get; internal set; }
 
         /// <summary>
         /// The sequence of matches that were used to create the entropy calculation
         /// </summary>
-        public IList<Match> MatchSequence { get; set; }
+        public IList<Match> MatchSequence { get; internal set; }
 
         /// <summary>
         /// The password that was used to generate these results
         /// </summary>
-        public string Password { get; set; }
+        public string Password { get; internal set; }
 
         /// <summary>
         /// Warning on this password
         /// </summary>
-        public Warning warning { get; set; }
+        public Warning Warning { get; internal set; }
 
         /// <summary>
         /// Suggestion on how to improve the password
+        /// Initialized by the Suggestion list
         /// </summary>
-        public List<Suggestion> suggestions { get; set; }
-
-
+        public List<Suggestion> Suggestions { get; internal set; } = new List<Suggestion>();
     }
 
     /// <summary>
     /// <para>A single match that one of the pattern matchers has made against the password being tested.</para>
-    /// 
+    ///
     /// <para>Some pattern matchers implement subclasses of match that can provide more information on their specific results.</para>
-    /// 
+    ///
     /// <para>Matches must all have the <see cref="Pattern"/>, <see cref="Token"/>, <see cref="Entropy"/>, <see cref="i"/> and
-    /// <see cref="j"/> fields (i.e. all but the <see cref="Cardinality"/> field, which is optional) set before being returned from the matcher
-    /// in which they are created.</para>
+    /// <see cref="j"/> fields (i.e. all but the <see cref="Cardinality"/> field, which is optional) set before being returned from the matcher in which they are created.</para>
     /// </summary>
     public class Match
     {
@@ -253,13 +240,13 @@ namespace Zxcvbn
         // The following are more internal measures, but may be useful to consumers
 
         /// <summary>
-        /// Some pattern matchers can associate the cardinality of the set of possible matches that the 
-        /// entropy calculation is derived from. Not all matchers provide a value for cardinality.
+        /// Some pattern matchers can associate the cardinality of the set of possible matches that
+        /// the entropy calculation is derived from. Not all matchers provide a value for cardinality.
         /// </summary>
         public int Cardinality { get; set; }
 
         /// <summary>
-        /// The start index in the password string of the matched token. 
+        /// The start index in the password string of the matched token.
         /// </summary>
         public int i { get; set; } // Start Index
 

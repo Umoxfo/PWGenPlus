@@ -44,10 +44,10 @@ namespace Zxcvbn.Matcher
 
                 // Find a sequence that the current and next characters could be part of 
                 string seq = (from s in seqs
-                           let ixI = s.IndexOf(password[i])
-                           let ixJ = s.IndexOf(password[j])
-                           where ixJ == ixI + 1 // i.e. two consecutive letters in password are consecutive in sequence
-                           select s).FirstOrDefault();
+                              let ixI = s.IndexOf(password[i])
+                              let ixJ = s.IndexOf(password[j])
+                              where ixJ == ixI + 1 // i.e. two consecutive letters in password are consecutive in sequence
+                              select s).FirstOrDefault();
 
                 // This isn't an ideal check, but we want to know whether the sequence is ascending/descending to keep entropy
                 //   calculation consistent with zxcvbn

@@ -42,17 +42,17 @@ namespace Zxcvbn.Matcher
             List<Dictionary<char, char>> subs = EnumerateSubtitutions(GetRelevantSubstitutions(password));
 
             List<L33tDictionaryMatch> matches = (from subDict in subs
-                           let sub_password = TranslateString(subDict, password)
-                           from matcher in dictionaryMatchers
-                           from match in matcher.MatchPassword(sub_password).OfType<DictionaryMatch>()
-                           let token = password.Substring(match.i, match.j - match.i + 1)
-                           let usedSubs = subDict.Where(kv => token.Contains(kv.Key)) // Count subs ised in matched token
-                           where usedSubs.Count() > 0 // Only want matches where substitutions were used
-                           select new L33tDictionaryMatch(match)
-                           {
-                               Token = token,
-                               Subs = usedSubs.ToDictionary(kv => kv.Key, kv => kv.Value)
-                           }).ToList();
+                                                 let sub_password = TranslateString(subDict, password)
+                                                 from matcher in dictionaryMatchers
+                                                 from match in matcher.MatchPassword(sub_password).OfType<DictionaryMatch>()
+                                                 let token = password.Substring(match.i, match.j - match.i + 1)
+                                                 let usedSubs = subDict.Where(kv => token.Contains(kv.Key)) // Count subs ised in matched token
+                                                 where usedSubs.Count() > 0 // Only want matches where substitutions were used
+                                                 select new L33tDictionaryMatch(match)
+                                                 {
+                                                     Token = token,
+                                                     Subs = usedSubs.ToDictionary(kv => kv.Key, kv => kv.Value)
+                                                 }).ToList();
 
             foreach (L33tDictionaryMatch match in matches) CalulateL33tEntropy(match);
 
@@ -207,9 +207,6 @@ namespace Zxcvbn.Matcher
         /// <summary>
         /// Create an empty l33t match
         /// </summary>
-        public L33tDictionaryMatch()
-        {
-            Subs = new Dictionary<char, char>();
-        }
+        public L33tDictionaryMatch() => Subs = new Dictionary<char, char>();
     }
 }

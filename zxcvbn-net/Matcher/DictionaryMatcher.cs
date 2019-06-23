@@ -64,20 +64,20 @@ namespace Zxcvbn.Matcher
             string passwordLower = password.ToLower();
 
             List<DictionaryMatch> matches = (from i in Enumerable.Range(0, password.Length)
-                           from j in Enumerable.Range(i, password.Length - i)
-                           let psub = passwordLower.Substring(i, j - i + 1)
-                           where rankedDictionary.Value.ContainsKey(psub)
-                           select new DictionaryMatch()
-                           {
-                               Pattern = DictionaryPattern,
-                               i = i,
-                               j = j,
-                               Token = password.Substring(i, j - i + 1), // Could have different case so pull from password
-                               MatchedWord = psub,
-                               Rank = rankedDictionary.Value[psub],
-                               DictionaryName = dictionaryName,
-                               Cardinality = rankedDictionary.Value.Count
-                           }).ToList();
+                                             from j in Enumerable.Range(i, password.Length - i)
+                                             let psub = passwordLower.Substring(i, j - i + 1)
+                                             where rankedDictionary.Value.ContainsKey(psub)
+                                             select new DictionaryMatch()
+                                             {
+                                                 Pattern = DictionaryPattern,
+                                                 i = i,
+                                                 j = j,
+                                                 Token = password.Substring(i, j - i + 1), // Could have different case so pull from password
+                                                 MatchedWord = psub,
+                                                 Rank = rankedDictionary.Value[psub],
+                                                 DictionaryName = dictionaryName,
+                                                 Cardinality = rankedDictionary.Value.Count
+                                             }).ToList();
 
             foreach (DictionaryMatch match in matches) CalculateEntropyForMatch(match);
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using Zxcvbn.Matcher;
 
@@ -24,7 +23,7 @@ namespace Zxcvbn
     {
         private const string BruteforcePattern = "bruteforce";
 
-        private IMatcherFactory matcherFactory;
+        private readonly IMatcherFactory matcherFactory;
         private readonly Translation translation;
 
         /// <summary>
@@ -139,7 +138,7 @@ namespace Zxcvbn
             // After this the matches in matchSequence must cover the whole string (i.e. match[k].j == match[k + 1].i - 1)
             if (matchSequence.Count == 0)
             {
-                // To make things easy, we'll separate out the case where there are no matches so everything is bruteforced
+                // To make things easy, we'll separate out the case where there are no matches so everything is brute-forced
                 matchSequence.Add(new Match()
                 {
                     i = 0,
@@ -198,25 +197,25 @@ namespace Zxcvbn
             //starting feedback
             if ((matchSequence == null) || (matchSequence.Count() == 0))
             {
-                result.warning = Warning.Default;
-                result.suggestions.Clear();
-                result.suggestions.Add(Suggestion.Default);
+                result.Warning = Warning.Default;
+                result.Suggestions.Clear();
+                result.Suggestions.Add(Suggestion.Default);
             }
             else
             {
                 //no Feedback if score is good or great
                 if (result.Score > 2)
                 {
-                    result.warning = Warning.Empty;
-                    result.suggestions.Clear();
-                    result.suggestions.Add(Suggestion.Empty);
+                    result.Warning = Warning.Empty;
+                    result.Suggestions.Clear();
+                    result.Suggestions.Add(Suggestion.Empty);
                 }
                 else
                 {
                     //tie feedback to the longest match for longer sequences
                     Match longestMatch = GetLongestMatch(matchSequence);
                     GetMatchFeedback(longestMatch, matchSequence.Count() == 1, result);
-                    result.suggestions.Insert(0, Suggestion.AddAnotherWordOrTwo);
+                    result.Suggestions.Insert(0, Suggestion.AddAnotherWordOrTwo);
                 }
 
 
@@ -238,7 +237,9 @@ namespace Zxcvbn
                 }
             }
             else
+            {
                 longestMatch = new Match();
+            }
 
             return longestMatch;
         }
@@ -255,12 +256,12 @@ namespace Zxcvbn
                     SpatialMatch spatialMatch = (SpatialMatch)match;
 
                     if (spatialMatch.Turns == 1)
-                        result.warning = Warning.StraightRow;
+                        result.Warning = Warning.StraightRow;
                     else
-                        result.warning = Warning.ShortKeyboardPatterns;
+                        result.Warning = Warning.ShortKeyboardPatterns;
 
-                    result.suggestions.Clear();
-                    result.suggestions.Add(Suggestion.UseLongerKeyboardPattern);
+                    result.Suggestions.Clear();
+                    result.Suggestions.Add(Suggestion.UseLongerKeyboardPattern);
                     break;
 
                 case "repeat":
@@ -270,25 +271,25 @@ namespace Zxcvbn
                   //  else
                  //       result.warning = Warning.RepeatsLikeAbcSlighterHarder;
 
-                    result.suggestions.Clear();
-                    result.suggestions.Add(Suggestion.AvoidRepeatedWordsAndChars);
+                    result.Suggestions.Clear();
+                    result.Suggestions.Add(Suggestion.AvoidRepeatedWordsAndChars);
                     break;
 
                 case "sequence":
-                    result.warning = Warning.SequenceAbcEasy;
+                    result.Warning = Warning.SequenceAbcEasy;
 
-                    result.suggestions.Clear();
-                    result.suggestions.Add(Suggestion.AvoidSequences);
+                    result.Suggestions.Clear();
+                    result.Suggestions.Add(Suggestion.AvoidSequences);
                     break;
 
                 //todo: add support for recent_year, however not example exist on https://dl.dropboxusercontent.com/u/209/zxcvbn/test/index.html
 
 
                 case "date":
-                    result.warning = Warning.DatesEasy;
+                    result.Warning = Warning.DatesEasy;
 
-                    result.suggestions.Clear();
-                    result.suggestions.Add(Suggestion.AvoidDatesYearsAssociatedYou);
+                    result.Suggestions.Clear();
+                    result.Suggestions.Add(Suggestion.AvoidDatesYearsAssociatedYou);
                     break;
             }
         }
@@ -301,44 +302,46 @@ namespace Zxcvbn
                 if (isSoleMatch == true && !(match is L33tDictionaryMatch))
                 {
                     if (match.Rank <= 10)
-                        result.warning = Warning.Top10Passwords;
+                        result.Warning = Warning.Top10Passwords;
                     else if (match.Rank <= 100)
-                        result.warning = Warning.Top100Passwords;
+                        result.Warning = Warning.Top100Passwords;
                     else
-                        result.warning = Warning.CommonPasswords;
+                        result.Warning = Warning.CommonPasswords;
                 }
                 else if (PasswordScoring.CrackTimeToScore(PasswordScoring.EntropyToCrackTime(match.Entropy)) <= 1)
                 {
-                    result.warning = Warning.SimilarCommonPasswords;
+                    result.Warning = Warning.SimilarCommonPasswords;
                 }
             }
-            else if (match.DictionaryName.Equals("english"))
+            else if (match.DictionaryName == "english")
             {
-                if (isSoleMatch == true)
-                    result.warning = Warning.WordEasy;
+                if (isSoleMatch)
+                    result.Warning = Warning.WordEasy;
             }
-            else if (match.DictionaryName.Equals("surnames") ||
-                     match.DictionaryName.Equals("male_names") ||
-                     match.DictionaryName.Equals("female_names"))
+            else if (match.DictionaryName == "surnames" ||
+                     match.DictionaryName == "male_names" ||
+                     match.DictionaryName == "female_names")
             {
-                if (isSoleMatch == true)
-                    result.warning = Warning.NameSurnamesEasy;
+                result.Warning = isSoleMatch ? Warning.NameSurnamesEasy : Warning.CommonNameSurnamesEasy;
+
+                if (isSoleMatch)
+                    result.Warning = Warning.NameSurnamesEasy;
                 else
-                    result.warning = Warning.CommonNameSurnamesEasy;
+                    result.Warning = Warning.CommonNameSurnamesEasy;
             }
             else
             {
-                result.warning = Warning.Empty;
+                result.Warning = Warning.Empty;
             }
 
             string word = match.Token;
-            if (Regex.IsMatch(word, PasswordScoring.StartUpper))
+            if (word.FirstOrDefault() >= 'A' && word.FirstOrDefault() <= 'Z')
             {
-                result.suggestions.Add(Suggestion.CapsDontHelp);
+                result.Suggestions.Add(Suggestion.CapsDontHelp);
             }
-            else if (Regex.IsMatch(word, PasswordScoring.AllUpper) && !word.Equals(word.ToLowerInvariant()))
+            else if (word == word.ToUpper() && word != word.ToLowerInvariant())
             {
-                result.suggestions.Add(Suggestion.AllCapsEasy);
+                result.Suggestions.Add(Suggestion.AllCapsEasy);
             }
 
             //todo: add support for reversed words
@@ -347,7 +350,7 @@ namespace Zxcvbn
 
             if (match is L33tDictionaryMatch)
             {
-                result.suggestions.Add(Suggestion.PredictableSubstitutionsEasy);
+                result.Suggestions.Add(Suggestion.PredictableSubstitutionsEasy);
             }
         }
 
