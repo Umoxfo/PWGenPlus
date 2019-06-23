@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Linq;
-using System.Reflection;
 
 namespace Zxcvbn
 {
@@ -11,138 +9,61 @@ namespace Zxcvbn
     /// </summary>
     static class Utility
     {
+        private struct TimeUnit
+        {
+            internal const long Minute = 60;
+            internal const long Hour = Minute * 60;
+            internal const long Day = Hour * 24;
+            internal const long Month = Day * 31;
+            internal const long Year = Day * 365;
+            internal const long Century = Year * 100;
+        }
+
         /// <summary>
-        /// Convert a number of seconds into a human readable form. Rounds up.
-        /// To be consistent with zxcvbn, it returns the unit + 1 (i.e. 60 * 10 seconds = 10 minutes would come out as "11 minutes"
+        /// Convert a number of seconds into a human-friendly form. Rounds up.
+        /// To be consistent with zxcvbn, it returns the unit + 1 (i.e. 60 * 10 seconds = 10 minutes would come out as "11 minutes")
         /// this is probably to avoid ever needing to deal with plurals
         /// </summary>
         /// <param name="seconds">The time in seconds</param>
         /// <param name="translation">The language in which the string is returned</param>
         /// <returns>A human-friendly time string</returns>
-        public static string DisplayTime(double seconds, Translation translation = Translation.English)
+        public static string DisplayTime(double seconds, in Translation translation = Translation.English)
         {
-            long minute = 60, hour = minute * 60, day = hour * 24, month = day * 31, year = month * 12, century = year * 100;
+            SetTranslation(translation);
 
-            if (seconds < minute) return GetTranslation("instant", translation);
-            else if (seconds < hour) return string.Format("{0} " + GetTranslation("minutes", translation), (1 + Math.Ceiling(seconds / minute)));
-            else if (seconds < day) return string.Format("{0} " + GetTranslation("hours", translation), (1 + Math.Ceiling(seconds / hour)));
-            else if (seconds < month) return string.Format("{0} " + GetTranslation("days", translation), (1 + Math.Ceiling(seconds / day)));
-            else if (seconds < year) return string.Format("{0} " + GetTranslation("months", translation), (1 + Math.Ceiling(seconds / month)));
-            else if (seconds < century) return string.Format("{0} " + GetTranslation("years", translation), (1 + Math.Ceiling(seconds / year)));
-            else return GetTranslation("centuries", translation);
-        }
+            if (seconds < 1) return Properties.Resources.Instant;
+            else if (seconds < TimeUnit.Minute) return $"{1 + Math.Ceiling(seconds)} {Properties.Resources.Seconds}";
+            else if (seconds < TimeUnit.Hour) return $"{1 + Divide(seconds, TimeUnit.Minute)} {Properties.Resources.Minutes}";
+            else if (seconds < TimeUnit.Day) return $"{1 + Divide(seconds, TimeUnit.Hour)} {Properties.Resources.Hours}";
+            else if (seconds < TimeUnit.Month) return $"{1 + Divide(seconds, TimeUnit.Day)} {Properties.Resources.Days}";
+            else if (seconds < TimeUnit.Year) return $"{1 + Divide(seconds, TimeUnit.Month)} {Properties.Resources.Months}";
+            else if (seconds < TimeUnit.Century) return $"{1 + Divide(seconds, TimeUnit.Year)} {Properties.Resources.Years}";
+            else return $"{Divide(seconds, TimeUnit.Century)} {Properties.Resources.Centuries}";
+        }//DisplayTime
 
-        private static string GetTranslation(string matcher, Translation translation)
+        private static void SetTranslation(in Translation translation)
         {
-            string translated;
+            string cultureName;
 
-            switch (matcher)
+            switch (translation)
             {
-                case "instant":
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "unmittelbar";
-                            break;
-                        case Translation.France:
-                            translated = "instantané";
-                            break;
-                        default:
-                            translated = "instant";
-                            break;
-                    }
+                case Translation.German:
+                    cultureName = "de-DE";
                     break;
-                case "minutes":
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "Minuten";
-                            break;
-                        case Translation.France:
-                            translated = "Minutes";
-                            break;
-                        default:
-                            translated = "minutes";
-                            break;
-                    }
+                case Translation.France:
+                    cultureName = "fr-FR";
                     break;
-                case "hours":
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "Stunden";
-                            break;
-                        case Translation.France:
-                            translated = "Heures";
-                            break;
-                        default:
-                            translated = "hours";
-                            break;
-                    }
-                    break;
-                case "days":
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "Tage";
-                            break;
-                        case Translation.France:
-                            translated = "Journées";
-                            break;
-                        default:
-                            translated = "days";
-                            break;
-                    }
-                    break;
-                case "months":
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "Monate";
-                            break;
-                        case Translation.France:
-                            translated = "Mois";
-                            break;
-                        default:
-                            translated = "months";
-                            break;
-                    }
-                    break;
-                case "years":
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "Jahre";
-                            break;
-                        case Translation.France:
-                            translated = "Ans";
-                            break;
-                        default:
-                            translated = "years";
-                            break;
-                    }
-                    break;
-                case "centuries":
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "Jahrhunderte";
-                            break;
-                        case Translation.France:
-                            translated = "Siècles";
-                            break;
-                        default:
-                            translated = "centuries";
-                            break;
-                    }
-                    break;
+                case Translation.English:
                 default:
-                    translated = matcher;
+                    cultureName = "en-US";
                     break;
-            }
+            }//switch
 
-            return translated;
-        }
+            Properties.Resources.Culture = CultureInfo.GetCultureInfo(cultureName);
+        }//SetTranslation
+
+        private static long Divide(double dividend, double divisor) =>
+            decimal.ToInt64(decimal.Round((decimal)dividend / (decimal)divisor));
 
         /// <summary>
         /// Shortcut for string.Format
@@ -176,33 +97,8 @@ namespace Zxcvbn
         /// <returns>Parsed int or zero</returns>
         public static int ToInt(this string str)
         {
-            int r = 0;
-            int.TryParse(str, out r);
+            int.TryParse(str, out int r);
             return r;
-        }
-
-        /// <summary>
-        /// Returns a list of the lines of text from an embedded resource in the assembly.
-        /// </summary>
-        /// <param name="resourceName">The name of the resource to get the contents of</param>
-        /// <returns>An enumerable of lines of text in the resource or null if the resource does not exist</returns>
-        public static IEnumerable<string> GetEmbeddedResourceLines(string resourceName)
-        {
-            Assembly asm = Assembly.GetExecutingAssembly();
-            if (!asm.GetManifestResourceNames().Contains(resourceName)) return null; // Not an embedded resource
-
-            List<string> lines = new List<string>();
-
-            using (Stream stream = asm.GetManifestResourceStream(resourceName))
-            using (StreamReader text = new StreamReader(stream))
-            {
-                while (!text.EndOfStream)
-                {
-                    lines.Add(text.ReadLine());
-                }
-            }
-
-            return lines;
         }
 
         /// <summary>
@@ -211,233 +107,68 @@ namespace Zxcvbn
         /// <param name="warning">Warning enum to get the string from</param>
         /// <param name="translation">Language in which to return the string to. Default is English.</param>
         /// <returns>Warning string in the right language</returns>
-        public static string GetWarning(Warning warning, Translation translation = Translation.English)
+        public static string GetWarning(Warning warning, in Translation translation = Translation.English)
         {
-            string translated;
+            SetTranslation(translation);
 
+            string message;
             switch (warning)
             {
                 case Warning.StraightRow:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Straight rows of keys are easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_StraightRow;
                     break;
 
                 case Warning.ShortKeyboardPatterns:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Short keyboard patterns are easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_ShortKeyboardPatterns;
                     break;
 
                 case Warning.RepeatsLikeAaaEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Repeats like \"aaa\" are easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_RepeatsLikeAaaEasy;
                     break;
 
                 case Warning.RepeatsLikeAbcSlighterHarder:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Repeats like \"abcabcabc\" are only slightly harder to guess than \"abc\"";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_RepeatsLikeAbcSlighterHarder;
                     break;
                 case Warning.SequenceAbcEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Sequences like abc or 6543 are easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_SequenceAbcEasy;
                     break;
                 case Warning.RecentYearsEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Recent years are easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_RecentYearsEasy;
                     break;
                 case Warning.DatesEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Dates are often easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_DatesEasy;
                     break;
                 case Warning.Top10Passwords:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "This is a top-10 common password";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_Top10Passwords;
                     break;
                 case Warning.Top100Passwords:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "This is a top-100 common password";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_Top100Passwords;
                     break;
                 case Warning.CommonPasswords:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "This is a very common password";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_CommonPasswords;
                     break;
                 case Warning.SimilarCommonPasswords:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "This is similar to a commonly used password";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_SimilarCommonPasswords;
                     break;
                 case Warning.WordEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "A word by itself is easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_WordEasy;
                     break;
                 case Warning.NameSurnamesEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Names and surnames by themselves are easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_NameSurnamesEasy;
                     break;
                 case Warning.CommonNameSurnamesEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Common names and surnames are easy to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_CommonNameSurnamesEasy;
                     break;
-
                 case Warning.Empty:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "";
-                            break;
-                    }
+                    message = Properties.Resources.Warning_Empty;
                     break;
-
                 default:
-                    translated = "";
+                    message = "";
                     break;
-            }
-            return translated;
-        }
+            }//switch
+
+            return message;
+        }//GetWarning
 
         /// <summary>
         /// Get a translated string of the Warning
@@ -447,174 +178,50 @@ namespace Zxcvbn
         /// <returns>Suggestion string in the right language</returns>
         public static string GetSuggestion(Suggestion suggestion, Translation translation = Translation.English)
         {
-            string translated;
+            SetTranslation(translation);
 
+            string message;
             switch (suggestion)
             {
                 case Suggestion.AddAnotherWordOrTwo:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Add another word or two. Uncommon words are better.";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_AddAnotherWordOrTwo;
                     break;
-
                 case Suggestion.UseLongerKeyboardPattern:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Use a longer keyboard pattern with more turns";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_UseLongerKeyboardPattern;
                     break;
-
                 case Suggestion.AvoidRepeatedWordsAndChars:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Avoid repeated words and characters";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_AvoidRepeatedWordsAndChars;
                     break;
-
                 case Suggestion.AvoidSequences:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Avoid sequences";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_AvoidSequences;
                     break;
                 case Suggestion.AvoidYearsAssociatedYou:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Avoid recent years \n Avoid years that are associated with you";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_AvoidYearsAssociatedYou;
                     break;
                 case Suggestion.AvoidDatesYearsAssociatedYou:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Avoid dates and years that are associated with you";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_AvoidDatesYearsAssociatedYou;
                     break;
                 case Suggestion.CapsDontHelp:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Capitalization doesn't help very much";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_CapsDontHelp;
                     break;
                 case Suggestion.AllCapsEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "All-uppercase is almost as easy to guess as all-lowercase";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_AllCapsEasy;
                     break;
                 case Suggestion.ReversedWordEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Reversed words aren't much harder to guess";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_ReversedWordEasy;
                     break;
                 case Suggestion.PredictableSubstitutionsEasy:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "Predictable substitutions like '@' instead of 'a' don't help very much";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_PredictableSubstitutionsEasy;
                     break;
-
                 case Suggestion.Empty:
-                    switch (translation)
-                    {
-                        case Translation.German:
-                            translated = "";
-                            break;
-                        case Translation.France:
-                            translated = "";
-                            break;
-                        default:
-                            translated = "";
-                            break;
-                    }
+                    message = Properties.Resources.Suggestion_Empty;
                     break;
                 default:
-                    translated = "Use a few words, avoid common phrases \n No need for symbols, digits, or uppercase letters";
+                    message = "Use a few words, avoid common phrases \n No need for symbols, digits, or uppercase letters";
                     break;
-            }
-            return translated;
-        }
+            }//switch
 
+            return message;
+        }//GetSuggestion
     }
 }
