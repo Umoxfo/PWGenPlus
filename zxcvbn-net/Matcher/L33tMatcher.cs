@@ -148,20 +148,21 @@ namespace Zxcvbn.Matcher
         private Dictionary<char, string> BuildSubstitutionsMap()
         {
             // Is there an easier way of building this table?
-            Dictionary<char, string> subs = new Dictionary<char, string>();
-
-            subs['a'] = "4@";
-            subs['b'] = "8";
-            subs['c'] = "({[<";
-            subs['e'] = "3";
-            subs['g'] = "69";
-            subs['i'] = "1!|";
-            subs['l'] = "1|7";
-            subs['o'] = "0";
-            subs['s'] = "$5";
-            subs['t'] = "+7";
-            subs['x'] = "%";
-            subs['z'] = "2";
+            Dictionary<char, string> subs = new Dictionary<char, string>
+            {
+                ['a'] = "4@",
+                ['b'] = "8",
+                ['c'] = "({[<",
+                ['e'] = "3",
+                ['g'] = "69",
+                ['i'] = "1!|",
+                ['l'] = "1|7",
+                ['o'] = "0",
+                ['s'] = "$5",
+                ['t'] = "+7",
+                ['x'] = "%",
+                ['z'] = "2"
+            };
 
             return subs;
         }
