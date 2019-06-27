@@ -28,7 +28,7 @@ namespace Zxcvbn.Matcher
         /// Find matching sequences in <paramref name="password"/>
         /// </summary>
         /// <param name="password">The password to check</param>
-        /// <returns>Enumerable of sqeunec matches</returns>
+        /// <returns>Enumerable of sequence matches</returns>
         /// <seealso cref="SequenceMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
         {
@@ -42,7 +42,7 @@ namespace Zxcvbn.Matcher
             {
                 int j = i + 1;
 
-                // Find a sequence that the current and next characters could be part of 
+                // Find a sequence that the current and next characters could be part of
                 string seq = (from s in seqs
                               let ixI = s.IndexOf(password[i])
                               let ixJ = s.IndexOf(password[j])

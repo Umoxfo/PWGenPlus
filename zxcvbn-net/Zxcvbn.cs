@@ -193,7 +193,6 @@ namespace Zxcvbn
                 Score = PasswordScoring.CrackTimeToScore(crackTime)
             };
 
-
             //starting feedback
             if ((matchSequence == null) || (matchSequence.Count() == 0))
             {

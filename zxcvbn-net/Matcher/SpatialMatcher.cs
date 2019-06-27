@@ -192,7 +192,7 @@ namespace Zxcvbn.Matcher
                 string[] tokens = layout.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 int tokenSize = tokens[0].Length;
 
-                // Put the characters in each keyboard cell into the map agains t their coordinates
+                // Put the characters in each keyboard cell into the map again t their coordinates
                 Dictionary<Point, string> positionTable = new Dictionary<Point, string>();
                 string[] lines = layout.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
                 for (int y = 0; y < lines.Length; ++y)
