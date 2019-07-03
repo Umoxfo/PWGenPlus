@@ -9,6 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PWGenPlus", "PWGenPlus\PWGe
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PasswordGenerator", "PasswordGenerator\PasswordGenerator.csproj", "{E13882E3-6BDE-446D-9342-7643A740316C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35C18865-8DB7-41AD-827B-3C0F77A40B3A} = {35C18865-8DB7-41AD-827B-3C0F77A40B3A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zxcvbn-net", "zxcvbn-net\zxcvbn-net.csproj", "{35C18865-8DB7-41AD-827B-3C0F77A40B3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
