@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 // TODO: These should probably be immutable
@@ -211,39 +212,54 @@ namespace Zxcvbn
         public List<Suggestion> Suggestions { get; internal set; } = new List<Suggestion>();
     }
 
+    public readonly struct Pattern : IEquatable<Pattern>
+    {
+        public const string Bruteforce = "bruteforce";
+        public const string Dictionary = "dictionary";
+        public const string Spatial = "spatial";
+        public const string Repeat = "repeat";
+        public const string Sequence = "sequence";
+        public const string Regex = "regex";
+        public const string Date = "date";
+
+        public override bool Equals(object obj) => (obj is Pattern pattern) && Equals(pattern);
+
+        public bool Equals(Pattern other) => GetHashCode() == other.GetHashCode();
+
+        public override int GetHashCode()
+        {
+            int hashCode = 478571960;
+
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Bruteforce);
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Dictionary);
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Spatial);
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Repeat);
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Sequence);
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Regex);
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Date);
+
+            return hashCode;
+        }
+
+        public static bool operator ==(Pattern left, Pattern right) => left.Equals(right);
+
+        public static bool operator !=(Pattern left, Pattern right) => !(left == right);
+    }
+
     /// <summary>
     /// <para>A single match that one of the pattern matchers has made against the password being tested.</para>
     ///
     /// <para>Some pattern matchers implement subclasses of match that can provide more information on their specific results.</para>
     ///
-    /// <para>Matches must all have the <see cref="Pattern"/>, <see cref="Token"/>, <see cref="Entropy"/>, <see cref="i"/> and
+    /// <para>Matches must all have the <see cref="Match.Pattern"/>, <see cref="Token"/>, <see cref="Entropy"/>, <see cref="i"/> and
     /// <see cref="j"/> fields (i.e. all but the <see cref="Cardinality"/> field, which is optional) set before being returned from the matcher in which they are created.</para>
     /// </summary>
-    public class Match
+    public class Match : IComparable<Match>
     {
         /// <summary>
         /// The name of the pattern matcher used to generate this match
         /// </summary>
         public string Pattern { get; set; }
-
-        /// <summary>
-        /// The portion of the password that was matched
-        /// </summary>
-        public string Token { get; set; }
-
-        /// <summary>
-        /// The entropy that this portion of the password covers using the current pattern matching technique
-        /// </summary>
-        public double Entropy { get; set; }
-
-
-        // The following are more internal measures, but may be useful to consumers
-
-        /// <summary>
-        /// Some pattern matchers can associate the cardinality of the set of possible matches that
-        /// the entropy calculation is derived from. Not all matchers provide a value for cardinality.
-        /// </summary>
-        public int Cardinality { get; set; }
 
         /// <summary>
         /// The start index in the password string of the matched token.
@@ -254,6 +270,66 @@ namespace Zxcvbn
         /// The end index in the password string of the matched token.
         /// </summary>
         public int j { get; set; } // End Index
-    }
 
+        /// <summary>
+        /// The portion of the password that was matched
+        /// </summary>
+        public string Token { get; set; }
+
+        // The following are more internal measures, but may be useful to consumers
+
+        /// <summary>
+        /// Some pattern matchers can associate the cardinality of the set of possible matches that
+        /// the entropy calculation is derived from. Not all matchers provide a value for cardinality.
+        /// </summary>
+        public int Cardinality { get; set; }
+
+        /// <summary>
+        /// The entropy that this portion of the password covers using the current pattern matching technique
+        /// </summary>
+        public double Entropy { get; set; }
+
+        public double Guesses { get; internal set; } = double.NaN;
+
+        public double GuessesLog10 { get; internal set; }
+
+        public int CompareTo(Match other)
+        {
+            if (other is null) return -1;
+
+            // Sort on i primary, j secondary
+            int i = this.i - other.i;
+            return (i != 0) ? i : (this.j - other.j);
+        }
+
+        public override bool Equals(object obj) => (obj is Match match) && (GetHashCode() == match.GetHashCode());
+
+        public override int GetHashCode()
+        {
+            int hashCode = 478571960;
+
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Pattern);
+            hashCode *= -1521134295 + i.GetHashCode();
+            hashCode *= -1521134295 + j.GetHashCode();
+            hashCode *= -1521134295 + EqualityComparer<string>.Default.GetHashCode(Token);
+            hashCode *= -1521134295 + Cardinality.GetHashCode();
+            hashCode *= -1521134295 + Entropy.GetHashCode();
+            hashCode *= -1521134295 + Guesses.GetHashCode();
+            hashCode *= -1521134295 + GuessesLog10.GetHashCode();
+
+            return hashCode;
+        }
+
+        public static bool operator ==(Match left, Match right) => (left is null) ? (right is null) : left.Equals(right);
+
+        public static bool operator !=(Match left, Match right) => !(left == right);
+
+        public static bool operator <(Match left, Match right) => (left is null) ? (right is object) : left.CompareTo(right) < 0;
+
+        public static bool operator <=(Match left, Match right) => left is null || left.CompareTo(right) <= 0;
+
+        public static bool operator >(Match left, Match right) => left is object && left.CompareTo(right) > 0;
+
+        public static bool operator >=(Match left, Match right) => (left is null) ? (right is null) : left.CompareTo(right) >= 0;
+    }
 }

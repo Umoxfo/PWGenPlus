@@ -5,7 +5,7 @@ using System.Linq;
 namespace Zxcvbn
 {
     /// <summary>
-    /// Useful shared Linq extensions
+    /// Useful shared LINQ extensions
     /// </summary>
     static class LinqExtensions
     {
@@ -19,7 +19,7 @@ namespace Zxcvbn
         /// <typeparam name="TSource">Type of elements that are grouped</typeparam>
         public static IEnumerable<AdjacentGrouping<TKey, TSource>> GroupAdjacent<TKey, TSource>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            TKey prevKey = default(TKey);
+            TKey prevKey = default;
             int prevStartIndex = 0;
             bool prevInit = false;
             List<TSource> itemsList = new List<TSource>();
@@ -35,8 +35,10 @@ namespace Zxcvbn
                         yield return new AdjacentGrouping<TKey, TSource>(key, itemsList, prevStartIndex, i - 1);
 
                         prevKey = key;
-                        itemsList = new List<TSource>();
-                        itemsList.Add(item);
+                        itemsList = new List<TSource>
+                        {
+                            item
+                        };
                         prevStartIndex = i;
                     }
                     else
@@ -67,31 +69,19 @@ namespace Zxcvbn
             /// <summary>
             /// The key value for this grouping
             /// </summary>
-            public TKey Key
-            {
-                get;
-                private set;
-            }
+            public TKey Key { get; private set; }
 
             /// <summary>
             /// The start index in the source enumerable for this group (i.e. index of first element)
             /// </summary>
-            public int StartIndex
-            {
-                get;
-                private set;
-            }
+            public int StartIndex { get; private set; }
 
             /// <summary>
             /// The end index in the enumerable for this group (i.e. the index of the last element)
             /// </summary>
-            public int EndIndex
-            {
-                get;
-                private set;
-            }
+            public int EndIndex { get; private set; }
 
-            private IEnumerable<TElement> m_groupItems;
+            private readonly IEnumerable<TElement> m_groupItems;
 
             internal AdjacentGrouping(TKey key, IEnumerable<TElement> groupItems, int startIndex, int endIndex)
             {

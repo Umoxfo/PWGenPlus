@@ -11,31 +11,30 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class SpatialMatcher : IMatcher
     {
-        const string SpatialPattern = "spatial";
-
-        Lazy<List<SpatialGraph>> spatialGraphs = new Lazy<List<SpatialGraph>>(() => GenerateSpatialGraphs());
+        readonly Lazy<List<SpatialGraph>> spatialGraphs = new Lazy<List<SpatialGraph>>(() => GenerateSpatialGraphs());
 
         /// <summary>
         /// Match the password against the known keyboard layouts
         /// </summary>
-        /// <param name="password">Password to match</param>
+        /// <param name="password">The password to match</param>
         /// <returns>List of matching patterns</returns>
         /// <seealso cref="SpatialMatch"/>
         public IEnumerable<Match> MatchPassword(string password) =>
-            spatialGraphs.Value.SelectMany((g) => SpatialMatch(g, password)).ToList();
+            spatialGraphs.Value.SelectMany(g => SpatialMatch(g, password)).OrderBy(m => m);
 
         /// <summary>
         /// Match the password against a single pattern
         /// </summary>
         /// <param name="graph">Adjacency graph for this key layout</param>
-        /// <param name="password">Password to match</param>
+        /// <param name="password">The password to match</param>
         /// <returns>List of matching patterns</returns>
         private List<Match> SpatialMatch(SpatialGraph graph, string password)
         {
             List<Match> matches = new List<Match>();
+            int lastPaswordIndex = password.Length - 1;
 
             int i = 0;
-            while (i < password.Length - 1)
+            while (i < lastPaswordIndex)
             {
                 int turns = 0, shiftedCount = 0;
                 int lastDirection = -1;
@@ -43,8 +42,7 @@ namespace Zxcvbn.Matcher
                 int j = i + 1;
                 for (; j < password.Length; ++j)
                 {
-                    bool shifted;
-                    int foundDirection = graph.GetAdjacentCharDirection(password[j - 1], password[j], out shifted);
+                    int foundDirection = graph.GetAdjacentCharDirection(password[j - 1], password[j], out bool shifted);
 
                     if (foundDirection != -1)
                     {
@@ -57,7 +55,6 @@ namespace Zxcvbn.Matcher
                         }
                     }
                     else break; // This character not a spatial match
-
                 }
 
                 // Only consider runs of greater than two
@@ -65,7 +62,7 @@ namespace Zxcvbn.Matcher
                 {
                     matches.Add(new SpatialMatch()
                     {
-                        Pattern = SpatialPattern,
+                        Pattern = Pattern.Spatial,
                         i = i,
                         j = j - 1,
                         Token = password.Substring(i, j - i),
@@ -77,52 +74,23 @@ namespace Zxcvbn.Matcher
                 }
 
                 i = j;
-            }
+            }//while
 
             return matches;
-        }
-
+        }//SpatialMatch
 
         // In the JS version these are precomputed, but for now we'll generate them here when they are first needed.
         private static List<SpatialGraph> GenerateSpatialGraphs()
         {
             // Keyboard layouts directly from zxcvbn's build_keyboard_adjacency_graph.py script
-            const string qwerty = @"
-`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) -_ =+
-    qQ wW eE rR tT yY uU iI oO pP [{ ]} \|
-     aA sS dD fF gG hH jJ kK lL ;: '""
-      zZ xX cC vV bB nN mM ,< .> /?
-";
-
-            const string dvorak = @"
-`~ 1! 2@ 3# 4$ 5% 6^ 7& 8* 9( 0) [{ ]}
-    '"" ,< .> pP yY fF gG cC rR lL /? =+ \|
-     aA oO eE uU iI dD hH tT nN sS -_
-      ;: qQ jJ kK xX bB mM wW vV zZ
-";
-
-            const string keypad = @"
-  / * -
-7 8 9 +
-4 5 6
-1 2 3
-  0 .
-";
-
-            const string mac_keypad = @"
-  = / *
-7 8 9 -
-4 5 6 +
-1 2 3
-  0 .
-";
-
-
-            return new List<SpatialGraph> { new SpatialGraph("qwerty", qwerty, true),
-                    new SpatialGraph("dvorak", dvorak, true),
-                    new SpatialGraph("keypad", keypad, false),
-                    new SpatialGraph("mac_keypad", mac_keypad, false)
-                };
+            return new List<SpatialGraph>
+            {
+                new SpatialGraph("qwerty", Properties.Resources.QWERTY, true),
+                new SpatialGraph("dvorak", Properties.Resources.DVORAK, true),
+                new SpatialGraph("jis", Properties.Resources.JIS, true),
+                new SpatialGraph("keypad", Properties.Resources.Keypad, false),
+                new SpatialGraph("mac_keypad", Properties.Resources.mac_Keypad, false)
+            };
         }
 
         // See build_keyboard_adjacency_graph.py in zxcvbn for how these are generated
@@ -139,14 +107,13 @@ namespace Zxcvbn.Matcher
                 BuildGraph(layout, slanted);
             }
 
-
             /// <summary>
             /// Returns true when testAdjacent is in c's adjacency list
             /// </summary>
             public bool IsCharAdjacent(char c, char testAdjacent)
             {
-                if (AdjacencyGraph.ContainsKey(c)) return AdjacencyGraph[c].Any(s => s.Contains(testAdjacent));
-                return false;
+                return AdjacencyGraph.TryGetValue(c, out List<string> adjacencies) ?
+                    adjacencies.Any(s => s.Contains(testAdjacent)) : false;
             }
 
             /// <summary>
@@ -170,25 +137,57 @@ namespace Zxcvbn.Matcher
                 return AdjacencyGraph[c].IndexOf(adjacentEntry);
             }
 
+            /*
+             * Returns the six adjacent coordinates on a standard keyboard, where each row is slanted to
+             * the right from the last.adjacencies are clockwise,
+             * starting with key to the left, then two keys above, then right key, then two keys below.
+             * (that is, only near-diagonal keys are adjacent,
+             * so g's coordinate is adjacent to those of t,y,b,v, but not those of r,u,n,c.)
+             */
             private static Point[] GetSlantedAdjacent(Point c)
             {
                 int x = c.x;
                 int y = c.y;
 
-                return new Point[] { new Point(x - 1, y), new Point(x, y - 1), new Point(x + 1, y - 1), new Point(x + 1, y), new Point(x, y + 1), new Point(x - 1, y + 1) };
+                return new Point[]
+                {
+                    new Point(x - 1, y),
+                    new Point(x, y - 1),
+                    new Point(x + 1, y - 1),
+                    new Point(x + 1, y),
+                    new Point(x, y + 1),
+                    new Point(x - 1, y + 1)
+                };
             }
 
+            // Returns the nine clockwise adjacent coordinates on a keypad, where each row is vert aligned.
             private static Point[] GetAlignedAdjacent(Point c)
             {
                 int x = c.x;
                 int y = c.y;
 
-                return new Point[] { new Point(x - 1, y), new Point(x - 1, y - 1), new Point(x, y - 1), new Point(x + 1, y - 1), new Point(x + 1, y), new Point(x + 1, y + 1), new Point(x, y + 1), new Point(x - 1, y + 1) };
+                return new Point[]
+                {
+                    new Point(x - 1, y),
+                    new Point(x - 1, y - 1),
+                    new Point(x, y - 1),
+                    new Point(x + 1, y - 1),
+                    new Point(x + 1, y),
+                    new Point(x + 1, y + 1),
+                    new Point(x, y + 1),
+                    new Point(x - 1, y + 1)
+                };
             }
 
+            /*
+             * Builds an adjacency graph as a dictionary: {character: [adjacent_characters]}.
+             * adjacent characters occur in a clockwise order.
+             * for example:
+             *  * on qwerty layout, 'g' maps to ['fF', 'tT', 'yY', 'hH', 'bB', 'vV']
+             *  * on keypad layout, '7' maps to [None, None, None, '=', '8', '5', '4', None]
+             */
             private void BuildGraph(string layout, bool slanted)
             {
-
                 string[] tokens = layout.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 int tokenSize = tokens[0].Length;
 
@@ -202,31 +201,25 @@ namespace Zxcvbn.Matcher
 
                     foreach (string token in line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
                     {
-                        int x = (line.IndexOf(token) - slant) / (tokenSize + 1);
+                        int x = (line.IndexOf(token, StringComparison.InvariantCulture) - slant) / (tokenSize + 1);
                         Point p = new Point(x, y);
                         positionTable[p] = token;
                     }
                 }
 
                 AdjacencyGraph = new Dictionary<char, List<string>>();
-                foreach (KeyValuePair<Point, string> pair in positionTable)
+                foreach (var pair in positionTable)
                 {
                     Point p = pair.Key;
                     foreach (char c in pair.Value)
                     {
                         AdjacencyGraph[c] = new List<string>();
-                        Point[] adjacentPoints = slanted ? GetSlantedAdjacent(p) : GetAlignedAdjacent(p);
 
-                        foreach (Point adjacent in adjacentPoints)
-                        {
-                            // We want to include nulls so that direction is correspondent with index in the list
-                            if (positionTable.ContainsKey(adjacent)) AdjacencyGraph[c].Add(positionTable[adjacent]);
-                            else AdjacencyGraph[c].Add(null);
-                        }
+                        Point[] adjacentPoints = slanted ? GetSlantedAdjacent(p) : GetAlignedAdjacent(p);
+                        // We want to include nulls so that direction is correspondent with index in the list
+                        AdjacencyGraph[c].AddRange(adjacentPoints.Select(adjacent => positionTable.TryGetValue(adjacent, out string val) ? val : null));
                     }
                 }
-
-
 
                 // Calculate average degree and starting positions, cf. init.coffee
                 StartingPositions = AdjacencyGraph.Count;
@@ -243,9 +236,7 @@ namespace Zxcvbn.Matcher
                 {
                     int possible_turns = Math.Min(turns, i - 1);
                     return Enumerable.Range(1, possible_turns).Sum(j =>
-                    {
-                        return StartingPositions * Math.Pow(AverageDegree, j) * PasswordScoring.Binomial(i - 1, j - 1);
-                    });
+                        StartingPositions * Math.Pow(AverageDegree, j) * PasswordScoring.Binomial(i - 1, j - 1));
                 });
 
                 double entropy = Math.Log(possibilities, 2);
@@ -254,31 +245,30 @@ namespace Zxcvbn.Matcher
                 if (shiftedCount > 0)
                 {
                     int unshifted = matchLength - shiftedCount;
-                    entropy += Math.Log(Enumerable.Range(0, Math.Min(shiftedCount, unshifted) + 1).Sum(i => PasswordScoring.Binomial(matchLength, i)), 2);
+                    entropy += Math.Log(Enumerable.Range(0, Math.Min(shiftedCount, unshifted) + 1)
+                                                  .Sum(i => PasswordScoring.Binomial(matchLength, i)), 2);
                 }
 
                 return entropy;
             }
         }
 
-        // Instances of Point or Pair in the standard library are in UI assemblies, so define our own version to reduce dependencies
+        // Instances of Point or Pair in the standard library are in UI assemblies,
+        // so define our own version to reduce dependencies
         private struct Point
         {
             public int x;
             public int y;
 
-            public Point(int x, int y)
-            {
-                this.x = x;
-                this.y = y;
-            }
+            public Point(int x, int y) => (this.x, this.y) = (x, y);
 
             public override string ToString() => $"{{{x}, {y}}}";
         }
     }
 
     /// <summary>
-    /// A match made with the <see cref="SpatialMatcher"/>. Contains additional information specific to spatial matches.
+    /// A match made with the <see cref="SpatialMatcher"/>
+    /// that contains some additional information specific to the spatial match.
     /// </summary>
     public class SpatialMatch : Match
     {

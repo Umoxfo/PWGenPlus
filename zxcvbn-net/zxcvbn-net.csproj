@@ -6,12 +6,37 @@
     <AssemblyName>zxcvbn</AssemblyName>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\Makoto\source\repos\PWGenPlus\zxcvbn-net\zxcvbn.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Dictionaries\english.txt" />
     <None Remove="Dictionaries\female_names.txt" />
     <None Remove="Dictionaries\male_names.txt" />
     <None Remove="Dictionaries\passwords.txt" />
     <None Remove="Dictionaries\surnames.txt" />
+    <None Remove="Keybords\dvorak.txt" />
+    <None Remove="Keybords\jis.txt" />
+    <None Remove="Keybords\keypad.txt" />
+    <None Remove="Keybords\mac_keypad.txt" />
+    <None Remove="Keybords\qwerty.txt" />
+    <None Remove="Matcher\SpatialMatcher.cs~RF8e29e00.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Keybords\dvorak.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +45,10 @@
     <Resource Include="Dictionaries\male_names.txt" />
     <Resource Include="Dictionaries\passwords.txt" />
     <Resource Include="Dictionaries\surnames.txt" />
+    <Resource Include="Keybords\jis.txt" />
+    <Resource Include="Keybords\keypad.txt" />
+    <Resource Include="Keybords\mac_keypad.txt" />
+    <Resource Include="Keybords\qwerty.txt" />
   </ItemGroup>
 
   <ItemGroup>

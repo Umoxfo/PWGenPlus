@@ -8,10 +8,10 @@ namespace Zxcvbn.Matcher
     public interface IMatcher
     {
         /// <summary>
-        /// This function is called once for each matcher for each password being evaluated. It should perform the matching process and return
-        /// an enumerable of Match objects for each match found.
+        /// This function is called once for each matcher for each password being evaluated.
+        /// It should perform the matching process and return an enumerable of Match objects for each match found.
         /// </summary>
-        /// <param name="password"></param>
+        /// <param name="password">The password to match</param>
         /// <returns></returns>
         IEnumerable<Match> MatchPassword(string password);
     }

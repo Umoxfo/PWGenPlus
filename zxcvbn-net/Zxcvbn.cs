@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 using Zxcvbn.Matcher;
@@ -10,7 +11,7 @@ namespace Zxcvbn
     /// <para>Zxcvbn is used to estimate the strength of passwords. </para>
     ///
     /// <para>This implementation is a port of the Zxcvbn JavaScript library by Dan Wheeler:
-    /// https://github.com/lowe/zxcvbn</para>
+    /// https://github.com/lowe/zxcvbn </para>
     ///
     /// <para>To quickly evaluate a password, use the <see cref="MatchPassword"/> static function.</para>
     ///
@@ -55,7 +56,7 @@ namespace Zxcvbn
         /// <param name="password">the password to test</param>
         /// <param name="userInputs">optionally, the user inputs list</param>
         /// <returns>The results of the password evaluation</returns>
-        public static Result MatchPassword(string password, IEnumerable<string> userInputs = null) =>
+        public static Result MeasurePassword(string password, IEnumerable<string> userInputs = null) =>
             new Zxcvbn(new DefaultMatcherFactory()).EvaluatePassword(password, userInputs);
 
         /// <summary>
@@ -70,16 +71,19 @@ namespace Zxcvbn
         /// <returns>Result for lowest entropy match</returns>
         public Result EvaluatePassword(string password, IEnumerable<string> userInputs = null)
         {
-            userInputs = userInputs ?? new string[0];
+            userInputs = userInputs ?? Array.Empty<string>();
+
+            // Reset the user inputs matcher on a per-request basis to keep things stateless
+            IEnumerable<string> sanitizedInputs = userInputs.Select(sanitizedInput => sanitizedInput.ToLowerInvariant());
+            matcherFactory.CreateMatchers(sanitizedInputs);
 
             IEnumerable<Match> matches = new List<Match>();
-
-            System.Diagnostics.Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
-
             foreach (IMatcher matcher in matcherFactory.CreateMatchers(userInputs))
             {
                 matches = matches.Union(matcher.MatchPassword(password));
             }
+
+            System.Diagnostics.Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
 
             Result result = FindMinimumEntropyMatch(password, matches);
 
@@ -266,7 +270,7 @@ namespace Zxcvbn
                 case "repeat":
                     //todo: add support for repeated sequences longer than 1 char
                   //  if(match.Token.Length == 1)
-                        result.warning = Warning.RepeatsLikeAaaEasy;
+                        result.Warning = Warning.RepeatsLikeAaaEasy;
                   //  else
                  //       result.warning = Warning.RepeatsLikeAbcSlighterHarder;
 

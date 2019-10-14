@@ -124,6 +124,9 @@
     <value>days</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="DVORAK" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Keybords\dvorak.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
+  </data>
   <data name="English" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Dictionaries\english.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -136,6 +139,15 @@
   <data name="Instant" xml:space="preserve">
     <value>instant</value>
   </data>
+  <data name="JIS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Keybords\jis.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Keypad" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Keybords\keypad.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
+  </data>
+  <data name="mac_Keypad" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Keybords\mac_keypad.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
+  </data>
   <data name="MaleNames" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Dictionaries\male_names.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
@@ -147,6 +159,9 @@
   </data>
   <data name="Passwords" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Dictionaries\passwords.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
+  </data>
+  <data name="QWERTY" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Keybords\qwerty.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
   <data name="Seconds" xml:space="preserve">
     <value>seconds</value>

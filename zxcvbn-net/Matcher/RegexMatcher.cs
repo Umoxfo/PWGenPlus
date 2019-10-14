@@ -1,76 +1,153 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Zxcvbn.Matcher
 {
     /// <summary>
-    /// <para>Use a regular expression to match agains the password. (e.g. 'year' and 'digits' pattern matchers are implemented with this matcher.</para>
-    /// <para>A note about cardinality: the cardinality parameter is used to calculate the entropy of matches found with the regex matcher. Since
-    /// this cannot be calculated automatically from the regex pattern it must be provided. It can be provided per-character or per-match. Per-match will
-    /// result in every match having the same entropy (lg cardinality) whereas per-character will depend on the match length (lg cardinality ^ length)</para>
+    /// <para>Use a regular expression to match against the password.
+    /// (e.g. 'year' and 'digits' pattern matchers are implemented with this matcher.)</para>
+    /// <para>A note about cardinality: the cardinality parameter is used to
+    /// calculate the entropy of matches found with the regular expression (RegEx) matcher.
+    /// Since this cannot be calculated automatically from the RegEx pattern it must be provided.
+    /// It can be provided per-character or per-match.
+    /// Per-match will result in every match having the same entropy (e.g. cardinality)
+    /// whereas per-character will depend on the match length (e.g. cardinality ^ length)</para>
     /// </summary>
     public class RegexMatcher : IMatcher
     {
-        Regex matchRegex;
-        string matcherName;
-        int cardinality;
-        bool perCharCardinality;
+        private readonly IDictionary<string, RegexMatcherInfo> regexen;
 
         /// <summary>
-        /// Create a new regex pattern matcher
+        /// Create a new regular expression (RegEx) pattern matcher
         /// </summary>
-        /// <param name="pattern">The regex pattern to match</param>
-        /// <param name="cardinality">The cardinality of this match. Since this cannot be calculated from a pattern it must be provided. Can
-        /// be give per-matched-character or per-match</param>
-        /// <param name="perCharCardinality">True if cardinality is given as per-matched-character</param>
-        /// <param name="matcherName">The name to give this matcher ('pattern' in resulting matches)</param>
-        public RegexMatcher(string pattern, int cardinality, bool perCharCardinality = true, string matcherName = "regex")
-            : this(new Regex(pattern), cardinality, perCharCardinality, matcherName)
-        {
-        }
+        /// <param name="regexen">The dictionary for RegEx pattern information
+        /// with a matcher name as key and <see cref="RegexMatcherInfo"/> as value</param>
+        public RegexMatcher(IDictionary<string, RegexMatcherInfo> regexen = null) =>
+            this.regexen = regexen ?? new Dictionary<string, RegexMatcherInfo>();
 
         /// <summary>
-        /// Create a new regex pattern matcher
+        /// Set (or add if not exist) a new regular expression (RegEx) pattern information
         /// </summary>
-        /// <param name="matchRegex">The regex object used to perform matching</param>
-        /// <param name="cardinality">The cardinality of this match. Since this cannot be calculated from a pattern it must be provided. Can
-        /// be give per-matched-character or per-match</param>
+        /// <param name="matcherName">The name of this matcher (<see cref="RegexMatch.RxName"/>)</param>
+        /// <param name="pattern">The RegEx pattern to match</param>
+        /// <param name="cardinality">The cardinality of this match.
+        ///   Since this is not able to be calculated from a pattern it must be provided.
+        ///   It could be given per-match-character or per-match.</param>
         /// <param name="perCharCardinality">True if cardinality is given as per-matched-character</param>
-        /// <param name="matcherName">The name to give this matcher ('pattern' in resulting matches)</param>
-        public RegexMatcher(Regex matchRegex, int cardinality, bool perCharCardinality, string matcherName = "regex")
-        {
-            this.matchRegex = matchRegex;
-            this.matcherName = matcherName;
-            this.cardinality = cardinality;
-            this.perCharCardinality = perCharCardinality;
-        }
+        public void SetRegexn(string matcherName, string pattern, int cardinality, bool perCharCardinality = true) =>
+            SetRegexn(matcherName, new Regex(pattern, RegexOptions.Compiled), cardinality, perCharCardinality);
 
         /// <summary>
-        /// Find all matches of the regex in <paramref name="password"/>
+        /// Set (or add if not exist) a new regular expression (RegEx) pattern information
+        /// </summary>
+        /// <param name="matcherName">The name to give this matcher (<see cref="RegexMatch.RxName"/>)</param>
+        /// <param name="matchRegex">The RegEx object used to perform matching</param>
+        /// <param name="cardinality">The cardinality of this match.
+        ///   Since this is not able to be calculated from a pattern it must be provided.
+        ///   It could be given per-match-character or per-match.</param>
+        /// <param name="perCharCardinality">True if cardinality is given as per-matched-character</param>
+        public void SetRegexn(string matcherName, in Regex matchRegex, int cardinality, bool perCharCardinality) =>
+            regexen[matcherName] = new RegexMatcherInfo(matchRegex, cardinality, perCharCardinality);
+
+        /// <summary>
+        /// Find all matches of the regular expression (RegEx) in <paramref name="password"/>
         /// </summary>
         /// <param name="password">The password to check</param>
-        /// <returns>An enumerable of matches for each regex match in <paramref name="password"/></returns>
+        /// <returns>An enumerable of matches for each RegEx match in <paramref name="password"/></returns>
         public IEnumerable<Match> MatchPassword(string password)
         {
-            MatchCollection reMatches = matchRegex.Matches(password);
-
-            List<Match> pwMatches = new List<Match>();
-
-            foreach (System.Text.RegularExpressions.Match rem in reMatches)
+            return regexen.SelectMany(rx =>
             {
-                pwMatches.Add(new Match()
-                {
-                    Pattern = matcherName,
-                    i = rem.Index,
-                    j = rem.Index + rem.Length - 1,
-                    Token = password.Substring(rem.Index, rem.Length),
-                    Cardinality = cardinality,
-                    Entropy = Math.Log((perCharCardinality ? Math.Pow(cardinality, rem.Length) : cardinality), 2) // Raise cardinality to length when giver per character
-                });
-            }
+                int cardinality = rx.Value.Cardinality;
+                bool perCharCardinality = rx.Value.PerCharCardinality;
+                return
+                    from rem in rx.Value.MatcherRegex.Matches(password).Cast<System.Text.RegularExpressions.Match>()
+                    select new RegexMatch
+                    {
+                        Pattern = Pattern.Regex,
+                        i = rem.Index,
+                        j = rem.Index + rem.Length - 1,
+                        Token = password.Substring(rem.Index, rem.Length),
+                        RxName = rx.Key,
+                        RxMatch = rem,
+                        Cardinality = cardinality,
+                        // Raise cardinality to length when giver per character
+                        Entropy = Math.Log(perCharCardinality ? Math.Pow(cardinality, rem.Length) : cardinality, 2)
+                    };
+            }).OrderBy(rm => rm);
+        }//MatchPassword
+    }//RegexMatcher
 
-            return pwMatches;
+    /// <summary>
+    /// Regular expression (RegEx) pattern information that consists:
+    ///   <list type="bullet">
+    ///     <item>
+    ///       <term><see cref="MatcherRegex"/></term>
+    ///       <description>A RegEx object</description>
+    ///     </item>
+    ///     <item>
+    ///       <term><see cref="Cardinality"/></term>
+    ///       <description>Cardinality of this match</description>
+    ///     </item>
+    ///     <item>
+    ///       <term><see cref="PerCharCardinality"/></term>
+    ///       <description>Whether cardinality is given for each matched character.</description>
+    ///     </item>
+    ///   </list>
+    /// </summary>
+    public readonly struct RegexMatcherInfo : IEquatable<RegexMatcherInfo>
+    {
+        /// <summary>
+        /// The RegEx object used to perform matching
+        /// </summary>
+        public Regex MatcherRegex { get; }
+
+        /// <summary>
+        /// The cardinality of this match.
+        ///
+        /// <para>Since this is not able to be calculated from a pattern it must be provided.
+        /// It could be given per-match-character or per-match.</para>
+        /// </summary>
+        public int Cardinality { get; }
+
+        /// <summary>
+        /// True if cardinality is given as per-matched-character
+        /// </summary>
+        public bool PerCharCardinality { get; }
+
+        public RegexMatcherInfo(in Regex matchRegex, int cardinality, bool perCharCardinality) =>
+            (MatcherRegex, Cardinality, PerCharCardinality) = (matchRegex, cardinality, perCharCardinality);
+
+        public override bool Equals(object obj) => (obj is RegexMatcherInfo regexMatcherInfo) && Equals(regexMatcherInfo);
+
+        public bool Equals(RegexMatcherInfo other) => GetHashCode() == other.GetHashCode();
+
+        public override int GetHashCode()
+        {
+            int hashCode = 699185899;
+
+            hashCode *= -1521134295 + EqualityComparer<Regex>.Default.GetHashCode(MatcherRegex);
+            hashCode *= -1521134295 + Cardinality.GetHashCode();
+            hashCode *= -1521134295 + PerCharCardinality.GetHashCode();
+
+            return hashCode;
         }
+
+        public static bool operator ==(RegexMatcherInfo left, RegexMatcherInfo right) => left.Equals(right);
+
+        public static bool operator !=(RegexMatcherInfo left, RegexMatcherInfo right) => !(left == right);
+    }
+
+    /// <summary>
+    /// A match made with the <see cref="RegexMatcher"/> that contains some additional information
+    /// specific to the regular expression match.
+    /// </summary>
+    public class RegexMatch : Match
+    {
+        public string RxName { get; set; }
+
+        public System.Text.RegularExpressions.Match RxMatch { get; set; }
     }
 }

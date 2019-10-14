@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Zxcvbn.Matcher
@@ -24,94 +23,95 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class DictionaryMatcher : IMatcher
     {
-        const string DictionaryPattern = "dictionary";
+        private readonly Dictionary<string, Dictionary<string, int>> rankedDictionaries;
 
-        private string dictionaryName;
-        private Lazy<Dictionary<string, int>> rankedDictionary;
-
-        /// <summary>
-        /// Creates a new dictionary matcher.  <paramref name="wordListPath"/> must be the path (relative or absolute)
-        /// to a file containing one word per line, entirely in lowercase, ordered by frequency (decreasing).
-        /// </summary>
-        /// <param name="name">The name provided to the dictionary used</param>
-        /// <param name="wordListPath">The filename of the dictionary (full or relative path)</param>
-        public DictionaryMatcher(string name, string wordListPath)
-        {
-            dictionaryName = name;
-            rankedDictionary = new Lazy<Dictionary<string, int>>(() => BuildRankedDictionary(wordListPath));
-        }
+        public DictionaryMatcher(in Dictionary<string, Dictionary<string, int>> rankedDictionaries = null) =>
+            this.rankedDictionaries = rankedDictionaries ?? new Dictionary<string, Dictionary<string, int>>();
 
         /// <summary>
-        /// Creates a new dictionary matcher from the passed in word list.
-        /// If there is any frequency order then they should be in decreasing frequency order.
-        /// </summary>
-        public DictionaryMatcher(string name, IEnumerable<string> wordList)
-        {
-            dictionaryName = name;
-
-            // Must ensure that the dictionary is using lowercase words only
-            rankedDictionary = new Lazy<Dictionary<string, int>>(() => BuildRankedDictionary(wordList.Select(w => w.ToLower())));
-        }
-
-        /// <summary>
-        /// Match substrings of password again the loaded dictionary
+        /// Match substrings of password with the loaded dictionary
         /// </summary>
         /// <param name="password">The password to match</param>
         /// <returns>An enumerable of dictionary matches</returns>
         /// <seealso cref="DictionaryMatch"/>
         public IEnumerable<Match> MatchPassword(string password)
         {
-            string passwordLower = password.ToLower();
+            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
-            List<DictionaryMatch> matches = (from i in Enumerable.Range(0, password.Length)
-                                             from j in Enumerable.Range(i, password.Length - i)
-                                             let psub = passwordLower.Substring(i, j - i + 1)
-                                             where rankedDictionary.Value.ContainsKey(psub)
-                                             select new DictionaryMatch()
-                                             {
-                                                 Pattern = DictionaryPattern,
-                                                 i = i,
-                                                 j = j,
-                                                 Token = password.Substring(i, j - i + 1), // Could have different case so pull from password
-                                                 MatchedWord = psub,
-                                                 Rank = rankedDictionary.Value[psub],
-                                                 DictionaryName = dictionaryName,
-                                                 Cardinality = rankedDictionary.Value.Count
-                                             }).ToList();
+            string passwordLower = password.ToLowerInvariant();
 
-            foreach (DictionaryMatch match in matches) CalculateEntropyForMatch(match);
+            return from dictionary in rankedDictionaries
 
-            return matches;
-        }
+                   from i in Enumerable.Range(0, password.Length)
+                   from j in Enumerable.Range(i, password.Length - i)
+                   let word = passwordLower.Substring(i, j - i + 1)
+                   where dictionary.Value.ContainsKey(word)
 
-        private void CalculateEntropyForMatch(DictionaryMatch match)
-        {
-            match.BaseEntropy = Math.Log(match.Rank, 2);
-            match.UppercaseEntropy = PasswordScoring.CalculateUppercaseEntropy(match.Token);
+                   let token = password.Substring(i, j - i + 1) // Could have different case so pull from password
+                   let rank = dictionary.Value[word]
+                   let baseEntropy = Math.Log(rank, 2)
+                   let uppercaseEntropy = PasswordScoring.CalculateUppercaseEntropy(token)
+                   select new DictionaryMatch
+                   {
+                       Pattern = Pattern.Dictionary,
+                       i = i,
+                       j = j,
+                       Token = token,
+                       MatchedWord = word,
+                       Rank = rank,
+                       DictionaryName = dictionary.Key,
+                       Reversed = false,
+                       L33t = false,
+                       Cardinality = dictionary.Value.Count,
 
-            match.Entropy = match.BaseEntropy + match.UppercaseEntropy;
-        }
+                       //Calculate entropy
+                       BaseEntropy = baseEntropy,
+                       UppercaseEntropy = uppercaseEntropy,
+                       Entropy = baseEntropy + uppercaseEntropy
+                   } into dm
 
-        private Dictionary<string, int> BuildRankedDictionary(string wordListFile) =>
-            BuildRankedDictionary(File.ReadAllLines(wordListFile));
-
-        private static Dictionary<string, int> BuildRankedDictionary(IEnumerable<string> wordList)
-        {
-            Dictionary<string, int> dict = new Dictionary<string, int>();
-
-            int i = 1;
-            foreach (string word in wordList)
-            {
-                // The word list is assumed to be in increasing frequency order
-                dict[word] = i++;
-            }
-
-            return dict;
-        }
+                   orderby dm
+                   select dm;
+        }//MatchPassword
     }
 
     /// <summary>
-    /// Matches found by the dictionary matcher contain some additional information about the matched word.
+    /// This matcher matches substrings of <b>reversed</b> password with the loaded dictionary
+    /// </summary>
+    /// <seealso cref="DictionaryMatcher"/>
+    public class ReversedDictionaryMatcher : IMatcher
+    {
+        private readonly DictionaryMatcher dictionaryMatcher;
+
+        public ReversedDictionaryMatcher(in DictionaryMatcher dictionaryMatcher = null) =>
+            this.dictionaryMatcher = dictionaryMatcher ?? new DictionaryMatcher();
+
+        /// <summary>
+        /// Match substrings of reversed password with the loaded dictionary
+        /// </summary>
+        /// <param name="password">The password to match</param>
+        /// <returns>An enumerable of reversed dictionary matches</returns>
+        /// <seealso cref="DictionaryMatch"/>
+        public IEnumerable<Match> MatchPassword(string password)
+        {
+            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
+
+            IEnumerable<DictionaryMatch> matches = dictionaryMatcher.MatchPassword(string.Join("", password.Reverse())).OfType<DictionaryMatch>();
+            foreach (var match in matches)
+            {
+                match.Token = string.Join("", match.Token.Reverse()); // Reverse back
+                match.Reversed = true;
+                // Map coordinates back to original string
+                (match.i, match.j) = (password.Length - 1 - match.j, password.Length - 1 - match.i);
+            }
+
+            return matches.OrderBy(m => m).ToList();
+        }//MatchPassword
+    }//ReversedDictionaryMatcher
+
+    /// <summary>
+    /// A match made with the <see cref="DictionaryMatcher"/>
+    /// that contains some additional information about the matched word.
     /// </summary>
     public class DictionaryMatch : Match
     {
@@ -130,6 +130,9 @@ namespace Zxcvbn.Matcher
         /// </summary>
         public string DictionaryName { get; set; }
 
+        public bool Reversed { get; set; } = false;
+
+        public bool L33t { get; set; } = false;
 
         /// <summary>
         /// The base entropy of the match, calculated from frequency rank

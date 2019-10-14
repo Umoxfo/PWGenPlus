@@ -79,6 +79,19 @@ namespace Zxcvbn.Properties {
         }
         
         /// <summary>
+        ///   `~ 1! 2@ 3# 4$ 5% 6^ 7&amp; 8* 9( 0) [{ ]}
+        ///    &apos;&quot; ,&lt; .&gt; pP yY fF gG cC rR lL /? =+ \|
+        ///     aA oO eE uU iI dD hH tT nN sS -_
+        ///      ;: qQ jJ kK xX bB mM wW vV zZ
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string DVORAK {
+            get {
+                return ResourceManager.GetString("DVORAK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   you
         ///i
         ///the
@@ -276,6 +289,47 @@ namespace Zxcvbn.Properties {
         }
         
         /// <summary>
+        ///   1! 2&quot; 3# 4$ 5% 6&amp; 7&apos; 8( 9) 00 -= ^~ ¥|
+        /// qQ wW eE rR tT yY uU iI oO pP @` [{
+        ///  aA sS dD fF gG hH jJ kK lL ;+ :* ]}
+        ///   zZ xX cC vV bB nN mM ,&lt; .&gt; /?
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string JIS {
+            get {
+                return ResourceManager.GetString("JIS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///     / * -
+        ///7 8 9 +
+        ///4 5 6
+        ///1 2 3
+        ///  0 .
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string Keypad {
+            get {
+                return ResourceManager.GetString("Keypad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///     = / *
+        ///7 8 9 -
+        ///4 5 6 +
+        ///1 2 3
+        ///  0 .
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string mac_Keypad {
+            get {
+                return ResourceManager.GetString("mac_Keypad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   james
         ///john
         ///robert
@@ -433,6 +487,19 @@ namespace Zxcvbn.Properties {
         }
         
         /// <summary>
+        ///   `~ 1! 2@ 3# 4$ 5% 6^ 7&amp; 8* 9( 0) -_ =+
+        ///    qQ wW eE rR tT yY uU iI oO pP [{ ]} \|
+        ///     aA sS dD fF gG hH jJ kK lL ;: &apos;&quot;
+        ///      zZ xX cC vV bB nN mM ,&lt; .&gt; /?
+        /// に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        public static string QWERTY {
+            get {
+                return ResourceManager.GetString("QWERTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   seconds に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Seconds {
@@ -544,68 +611,67 @@ namespace Zxcvbn.Properties {
         ///   smith
         ///johnson
         ///williams
-        ///jones
         ///brown
-        ///davis
+        ///jones
+        ///garcia
         ///miller
+        ///davis
+        ///rodriguez
+        ///martinez
+        ///hernandez
+        ///lopez
+        ///gonzalez
         ///wilson
-        ///moore
-        ///taylor
         ///anderson
         ///thomas
+        ///taylor
+        ///moore
         ///jackson
+        ///martin
+        ///lee
+        ///perez
+        ///thompson
         ///white
         ///harris
-        ///martin
-        ///thompson
-        ///garcia
-        ///martinez
-        ///robinson
+        ///sanchez
         ///clark
-        ///rodriguez
+        ///ramirez
         ///lewis
-        ///lee
+        ///robinson
         ///walker
-        ///hall
-        ///allen
         ///young
-        ///hernandez
+        ///allen
         ///king
         ///wright
-        ///lopez
-        ///hill
         ///scott
+        ///torres
+        ///nguyen
+        ///hill
+        ///flores
         ///green
         ///adams
-        ///baker
-        ///gonzalez
         ///nelson
-        ///carter
-        ///mitchell
-        ///perez
-        ///roberts
-        ///turner
-        ///phillips
+        ///baker
+        ///hall
+        ///rivera
         ///campbell
-        ///parker
+        ///mitchell
+        ///carter
+        ///roberts
+        ///gomez
+        ///phillips
         ///evans
+        ///turner
+        ///diaz
+        ///parker
+        ///cruz
         ///edwards
         ///collins
+        ///reyes
         ///stewart
-        ///sanchez
         ///morris
-        ///rogers
-        ///reed
-        ///cook
-        ///morgan
-        ///bell
-        ///murphy
-        ///bailey
-        ///rivera
-        ///cooper
-        ///richardson
-        ///cox
-        /// [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///morales
+        ///murphy        /// [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         public static string Surnames {
             get {

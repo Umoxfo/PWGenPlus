@@ -95,11 +95,7 @@ namespace Zxcvbn
         /// </summary>
         /// <param name="str">String to parse into an int</param>
         /// <returns>Parsed int or zero</returns>
-        public static int ToInt(this string str)
-        {
-            int.TryParse(str, out int r);
-            return r;
-        }
+        public static int ToInt(this string str) => int.TryParse(str, out int r) ? r : 0;
 
         /// <summary>
         /// Get a translated string of the Warning
