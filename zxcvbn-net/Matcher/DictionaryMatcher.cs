@@ -38,13 +38,11 @@ namespace Zxcvbn.Matcher
         {
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
-            string passwordLower = password.ToLowerInvariant();
-
             return from dictionary in rankedDictionaries
 
                    from i in Enumerable.Range(0, password.Length)
                    from j in Enumerable.Range(i, password.Length - i)
-                   let word = passwordLower.Substring(i, j - i + 1)
+                   let word = password.ToLowerInvariant().Substring(i, j - i + 1)
                    where dictionary.Value.ContainsKey(word)
 
                    let token = password.Substring(i, j - i + 1) // Could have different case so pull from password

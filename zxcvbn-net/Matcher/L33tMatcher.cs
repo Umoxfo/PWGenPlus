@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Zxcvbn.Utils;
 
 namespace Zxcvbn.Matcher
 {
@@ -11,21 +12,33 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class L33tMatcher : IMatcher
     {
+        // Source: Leet speak alphabet by Roald Craenen (http://www.gamehouse.com/blog/leet-speak-cheat-sheet/)
         private static readonly ReadOnlyDictionary<char, string> L33tTable =
             new ReadOnlyDictionary<char, string>(new Dictionary<char, string>()
             {
-                ['a'] = "4@",
-                ['b'] = "8",
-                ['c'] = "({[<",
-                ['e'] = "3",
-                ['g'] = "69",
+                ['a'] = "4@^Д",
+                ['b'] = "8ß6",
+                ['c'] = "[¢{<(©",
+                ['d'] = ")?>",
+                ['e'] = "3&£€ë",
+                ['f'] = "ƒv",
+                ['g'] = "&69",
+                ['h'] = "#",
                 ['i'] = "1!|",
-                ['l'] = "1|7",
-                ['o'] = "0",
-                ['s'] = "$5",
-                ['t'] = "+7",
-                ['x'] = "%",
-                ['z'] = "2"
+                ['j'] = "];1",
+                ['l'] = "1£7|",
+                ['n'] = "И^ท",
+                ['o'] = "0QpØ",
+                ['p'] = "09",
+                ['q'] = "92&",
+                ['r'] = "2®Я",
+                ['s'] = "$5z§2",
+                ['t'] = "7+†",
+                ['u'] = "vµบ",
+                ['w'] = "ШЩพ",
+                ['x'] = "Ж×?%",
+                ['y'] = "jЧ7¥",
+                ['z'] = "2%s"
             });
 
         private readonly DictionaryMatcher dictionaryMatcher;
@@ -47,10 +60,8 @@ namespace Zxcvbn.Matcher
         {
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
-            List<Dictionary<char, char>> subs = EnumerateSubtitutions(GetRelevantSubstitutions(password));
-
             var matches =
-                from subDict in subs
+                from subDict in EnumerateSubtitutions(GetRelevantSubstitutions(password))
                 let sub_password = TranslateString(password, subDict)
                 from match in dictionaryMatcher.MatchPassword(sub_password).OfType<DictionaryMatch>()
                 let token = password.Substring(match.i, match.j - match.i + 1)
@@ -81,9 +92,7 @@ namespace Zxcvbn.Matcher
         /// <returns>A map of the possible substitutions of the password</returns>
         private Dictionary<char, string> GetRelevantSubstitutions(string password, IDictionary<char, string> table = null)
         {
-            if (table == null) table = L33tTable;
-
-            return (from t in table
+            return (from t in table ?? L33tTable
                     let relevantSubs = t.Value.Intersect(password)
                     where relevantSubs.Any()
                     select (t.Key, Value: string.Join("", relevantSubs))
@@ -96,17 +105,18 @@ namespace Zxcvbn.Matcher
             // Some substitutions can be more than one normal character though,
             // so we have to produce an entry that maps from the l33t char to both possibilities
 
+            // Note: The original zxcvbn is used a list, but we use a dictionary.
+            List<Dictionary<char, char>> subs = new List<Dictionary<char, char>>
+            {
+                new Dictionary<char, char>() // Must be at least one mapping dictionary to work
+            };
+
             //XXX: This function produces different combinations to the original in zxcvbn.
             // It may require some more work to get identical.
 
             //XXX: The function is also limited in that it only ever considers one substitution for each l33t character
             // (e.g. ||ke could feasibly match 'like' but this method would never show this).
-            // My understanding is that this is also a limitation in zxcvbn and so I feel no need to correct it here.
-
-            List<Dictionary<char, char>> subs = new List<Dictionary<char, char>>
-            {
-                new Dictionary<char, char>() // Must be at least one mapping dictionary to work
-            };
+            // My understanding is that this is also a limitation in zxcvbn and so I feel no need to correct it here :(.
 
             foreach (var mapPair in table)
             {
@@ -119,10 +129,12 @@ namespace Zxcvbn.Matcher
 
                     foreach (Dictionary<char, char> subDict in subs)
                     {
+                        // Use Lookup...
                         if (subDict.ContainsKey(l33tChar))
                         {
                             // This mapping already contains a corresponding normal character for this character,
-                            // so keep the existing one as is but add a duplicate with the mapping replaced with this normal character
+                            // so keep the existing one as is but add a duplicate with
+                            // the mapping replaced with this normal character
                             addedSubs.Add(new Dictionary<char, char>(subDict)
                             {
                                 [l33tChar] = normalChar
@@ -130,16 +142,17 @@ namespace Zxcvbn.Matcher
                         }
                         else
                         {
-                            subDict[l33tChar] = normalChar;
-                        }
-                    }
+                            subDict.Add(l33tChar, normalChar);
+                            addedSubs.Add(subDict);
+                        }//if-else
+                    }//foreach subs
 
                     subs.AddRange(addedSubs);
-                }
-            }
+                }//foreach mapPair.Value
+            }//foreach table
 
             return subs;
-        }
+        }//EnumerateSubtitutions
 
         // Make substitutions from the character map wherever possible
         private string TranslateString(string str, Dictionary<char, char> charMap) =>
@@ -151,8 +164,14 @@ namespace Zxcvbn.Matcher
 
             foreach (var kvp in match.Subs)
             {
-                int subbedChars = match.Token.Where(c => c == kvp.Key).Count();
-                int unsubbedChars = match.Token.Where(c => c == kvp.Value).Count(); // Won't this always be zero?
+                int subbedChars = 0;
+                int unsubbedChars = 0;
+                // Lowercase match.Token before calculating: capitalization shouldn't affect l33t calculate
+                foreach (char chr in match.Token.ToLowerInvariant())
+                {
+                    if (chr == kvp.Key) subbedChars++;
+                    if (chr == kvp.Value) unsubbedChars++;
+                }
 
                 possibilities += Enumerable.Range(0, Math.Min(subbedChars, unsubbedChars) + 1)
                                            .Sum(i => (int)PasswordScoring.Binomial(subbedChars + unsubbedChars, i));
@@ -215,90 +234,4 @@ namespace Zxcvbn.Matcher
             Entropy = dm.Entropy;
         }
     }
-
-    //private class SubtitutionsEnumerator
-    //{
-    //    private readonly Dictionary<char, string> table;
-
-    //    private List<Dictionary<char, char>> subs;
-
-    //    internal SubtitutionsEnumerator(Dictionary<char, string> table)
-    //    {
-    //        this.table = table;
-    //        subs = new List<Dictionary<char, char>>
-    //        {
-    //            new Dictionary<char, char>() // Must be at least one mapping dictionary to work
-    //        };
-    //    }
-
-    //    internal List<Dictionary<char, char>> EnumerateSubtitutions(Dictionary<char, string> table)
-    //    {
-    //        // Produce a list of maps from l33t character to normal character.
-    //        // Some substitutions can be more than one normal character though,
-    //        // so we have to produce an entry that maps from the l33t char to both possibilities
-
-    //        //XXX: This function produces different combinations to the original in zxcvbn.
-    //        // It may require some more work to get identical.
-
-    //        //XXX: The function is also limited in that it only ever considers one substitution for each l33t character
-    //        // (e.g. ||ke could feasibly match 'like' but this method would never show this).
-    //        // My understanding is that this is also a limitation in zxcvbn and so I feel no need to correct it here.
-
-    //        List<Dictionary<char, char>> subs = new List<Dictionary<char, char>>
-    //        {
-    //            new Dictionary<char, char>() // Must be at least one mapping dictionary to work
-    //        };
-
-    //        foreach (var mapPair in table)
-    //        {
-    //            char normalChar = mapPair.Key;
-
-    //            foreach (char l33tChar in mapPair.Value)
-    //            {
-    //                // Can't add while enumerating so store here
-    //                List<Dictionary<char, char>> addedSubs = new List<Dictionary<char, char>>();
-
-    //                foreach (Dictionary<char, char> subDict in subs)
-    //                {
-    //                    if (subDict.ContainsKey(l33tChar))
-    //                    {
-    //                        // This mapping already contains a corresponding normal character for this character,
-    //                        // so keep the existing one as is but add a duplicate with the mapping replaced with this normal character
-    //                        Dictionary<char, char> newSub = new Dictionary<char, char>(subDict);
-    //                        newSub[l33tChar] = normalChar;
-    //                        addedSubs.Add(newSub);
-    //                    }
-    //                    else
-    //                    {
-    //                        subDict[l33tChar] = normalChar;
-    //                    }
-    //                }
-
-    //                subs.AddRange(addedSubs);
-    //            }
-    //        }
-
-    //        return subs;
-    //    }
-
-    //    private void Helper(IEnumerable<char> keys)
-    //    {
-    //        if (!keys.Any()) return;
-
-    //        char firstKey = keys.First();
-    //        char[] restKeys = keys.Skip(1).ToArray();
-    //        List<Dictionary<char, char>> nextSubs = new List<Dictionary<char, char>>
-    //        {
-    //            new Dictionary<char, char>()
-    //        };
-    //        foreach (char l33tChr in table[firstKey])
-    //        {
-    //            foreach (var sub in subs)
-    //            {
-    //                int dupL33tIndex = -1;
-
-    //            }
-    //        }
-    //    }
-    //}
 }

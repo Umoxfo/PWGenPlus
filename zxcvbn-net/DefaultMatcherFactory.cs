@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -19,6 +20,16 @@ namespace Zxcvbn
     /// </summary>
     internal class DefaultMatcherFactory : Matching, IMatcherFactory
     {
+        private static readonly IEnumerable<(string Key, IEnumerable<string> Value)> BaseRankedDictionaries =
+            new KeyValuePair<string, string>[]
+            {
+                new KeyValuePair<string, string>("password", Properties.Resources.Passwords),
+                new KeyValuePair<string, string>("english", Properties.Resources.English),
+                new KeyValuePair<string, string>("male_names", Properties.Resources.MaleNames),
+                new KeyValuePair<string, string>("female_names", Properties.Resources.FemaleNames),
+                new KeyValuePair<string, string>("surnames", Properties.Resources.Surnames)
+            }.Select(dict => (dict.Key, Value: dict.Value.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable()));
+
         private static readonly ReadOnlyDictionary<string, RegexMatcherInfo> Regexen =
             new ReadOnlyDictionary<string, RegexMatcherInfo>(new Dictionary<string, RegexMatcherInfo>()
             {
@@ -31,7 +42,7 @@ namespace Zxcvbn
         /// <summary>
         /// Create a matcher factory that uses the default list of pattern matchers and userInputs
         /// </summary>
-        public DefaultMatcherFactory(IEnumerable<string> userInputs = null) : base(userInputs)
+        public DefaultMatcherFactory(IEnumerable<string> userInputs = null) : base(BaseRankedDictionaries, userInputs)
         {
             DictionaryMatcher dictionaryMatcher = new DictionaryMatcher(RankedDictionaries);
 

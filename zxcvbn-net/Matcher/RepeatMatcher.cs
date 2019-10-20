@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Zxcvbn.Report;
 
 namespace Zxcvbn.Matcher
 {
@@ -57,9 +58,7 @@ namespace Zxcvbn.Matcher
 
                 int i = match.Index;
                 int j = match.Index + (match.Length - 1);
-                Strength baseAnalysis = Scoring.MostGuessableMatchSequence(baseToken, new DefaultMatcherFactory().Omnimatch(baseToken));
-
-                lastIndex = i + j;
+                Result baseAnalysis = Scoring.MostGuessableMatchSequence(baseToken, new DefaultMatcherFactory().Omnimatch(baseToken));
 
                 yield return new RepeatMatch
                 {
@@ -69,11 +68,13 @@ namespace Zxcvbn.Matcher
                     Token = match.Value,
                     BaseToken = baseToken,
                     BaseGuesses = baseAnalysis.Guesses,
-                    BaseMatches = baseAnalysis.Sequence,
+                    BaseMatches = baseAnalysis.GuessesSequence,
                     RepeatCount = match.Value.Length / baseToken.Length,
 
                     Entropy = CalculateEntropy(password.Substring(i, j - i + 1)),
                 };
+
+                lastIndex = i + j;
             }//while
         }
 

@@ -61,21 +61,20 @@ namespace Zxcvbn.Matcher
             return regexen.SelectMany(rx =>
             {
                 int cardinality = rx.Value.Cardinality;
-                bool perCharCardinality = rx.Value.PerCharCardinality;
-                return
-                    from rem in rx.Value.MatcherRegex.Matches(password).Cast<System.Text.RegularExpressions.Match>()
-                    select new RegexMatch
-                    {
-                        Pattern = Pattern.Regex,
-                        i = rem.Index,
-                        j = rem.Index + rem.Length - 1,
-                        Token = password.Substring(rem.Index, rem.Length),
-                        RxName = rx.Key,
-                        RxMatch = rem,
-                        Cardinality = cardinality,
-                        // Raise cardinality to length when giver per character
-                        Entropy = Math.Log(perCharCardinality ? Math.Pow(cardinality, rem.Length) : cardinality, 2)
-                    };
+
+                return rx.Value.MatcherRegex.Matches(password).Cast<System.Text.RegularExpressions.Match>()
+                .Select(rem => new RegexMatch
+                {
+                    Pattern = Pattern.Regex,
+                    i = rem.Index,
+                    j = rem.Index + rem.Length - 1,
+                    Token = password.Substring(rem.Index, rem.Length),
+                    RxName = rx.Key,
+                    RxMatch = rem,
+                    Cardinality = cardinality,
+                    // Raise cardinality to length when giver per character
+                    Entropy = Math.Log(rx.Value.PerCharCardinality ? Math.Pow(cardinality, rem.Length) : cardinality, 2)
+                });
             }).OrderBy(rm => rm);
         }//MatchPassword
     }//RegexMatcher
@@ -85,7 +84,7 @@ namespace Zxcvbn.Matcher
     ///   <list type="bullet">
     ///     <item>
     ///       <term><see cref="MatcherRegex"/></term>
-    ///       <description>A RegEx object</description>
+    ///       <description>A <see cref="Regex"/> object</description>
     ///     </item>
     ///     <item>
     ///       <term><see cref="Cardinality"/></term>
@@ -100,45 +99,49 @@ namespace Zxcvbn.Matcher
     public readonly struct RegexMatcherInfo : IEquatable<RegexMatcherInfo>
     {
         /// <summary>
-        /// The RegEx object used to perform matching
+        /// The <see cref="Regex"/> object used to perform matching
         /// </summary>
+        /// <value>The <see cref="Regex"/> object used to perform matching</value>
         public Regex MatcherRegex { get; }
 
         /// <summary>
-        /// The cardinality of this match.
+        /// The cardinality of this match
         ///
         /// <para>Since this is not able to be calculated from a pattern it must be provided.
         /// It could be given per-match-character or per-match.</para>
         /// </summary>
+        /// <value>The cardinality of this match</value>
         public int Cardinality { get; }
 
         /// <summary>
-        /// True if cardinality is given as per-matched-character
+        /// <c>true</c> if cardinality is given as per-matched-character
         /// </summary>
+        /// <value><c>true</c> if cardinality is given as per-matched-character</value>
         public bool PerCharCardinality { get; }
 
         public RegexMatcherInfo(in Regex matchRegex, int cardinality, bool perCharCardinality) =>
             (MatcherRegex, Cardinality, PerCharCardinality) = (matchRegex, cardinality, perCharCardinality);
 
-        public override bool Equals(object obj) => (obj is RegexMatcherInfo regexMatcherInfo) && Equals(regexMatcherInfo);
+        public override bool Equals(object obj) => (obj is RegexMatcherInfo info) && Equals(info);
 
-        public bool Equals(RegexMatcherInfo other) => GetHashCode() == other.GetHashCode();
+        public bool Equals(RegexMatcherInfo other) =>
+            EqualityComparer<Regex>.Default.Equals(MatcherRegex, other.MatcherRegex)
+            && Cardinality == other.Cardinality
+            && PerCharCardinality == other.PerCharCardinality;
 
         public override int GetHashCode()
         {
-            int hashCode = 699185899;
-
-            hashCode *= -1521134295 + EqualityComparer<Regex>.Default.GetHashCode(MatcherRegex);
-            hashCode *= -1521134295 + Cardinality.GetHashCode();
-            hashCode *= -1521134295 + PerCharCardinality.GetHashCode();
-
+            var hashCode = 699185899;
+            hashCode = hashCode * -1521134295 + EqualityComparer<Regex>.Default.GetHashCode(MatcherRegex);
+            hashCode = hashCode * -1521134295 + Cardinality.GetHashCode();
+            hashCode = hashCode * -1521134295 + PerCharCardinality.GetHashCode();
             return hashCode;
         }
 
         public static bool operator ==(RegexMatcherInfo left, RegexMatcherInfo right) => left.Equals(right);
 
         public static bool operator !=(RegexMatcherInfo left, RegexMatcherInfo right) => !(left == right);
-    }
+    }//RegexMatcherInfo
 
     /// <summary>
     /// A match made with the <see cref="RegexMatcher"/> that contains some additional information

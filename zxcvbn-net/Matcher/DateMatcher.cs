@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Globalization;
+using Zxcvbn.Utils;
+using Zxcvbn.Report;
 
 namespace Zxcvbn.Matcher
 {
@@ -90,6 +92,9 @@ namespace Zxcvbn.Matcher
             },
         };
 
+        private static readonly ((int year, int month, int day) date, int distance) CandidateSeed =
+            (date: (DateTime.MinValue.Year, DateTime.MinValue.Month, DateTime.MinValue.Day), distance: int.MaxValue);
+
         private const string DateYearWithSeparatorPattern = @"^(?<month_or_day>\d{1,2})(?<separator>[\s-/\\_\.])(?<day_or_month>\d{1,2})\k<separator>(?<year>\d{2,4})$";
         private const string YearDateWithSeparatorPattern = @"^(?<year>\d{2,4})(?<separator>[\s-/\\_\.])(?<month_or_day>\d{1,2})\k<separator>(?<day_or_month>\d{1,2})$";
 
@@ -115,52 +120,52 @@ namespace Zxcvbn.Matcher
         {
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
-            return SeparatorLessDateMatch(password)
-                    .Concat(DelimitedDateMatch(password))
-                    .OrderBy(m => m);
+            var matches = SeparatorLessDateMatch(password).Concat(DelimitedDateMatch(password));
+
+            return from match in matches
+                   where matches.TakeWhile(om => match.Equals(om) || om.i > match.i || om.j < match.j).Any()
+                   orderby match
+                   select match;
+
+            #region Full LINQ
+            /*            return from match in matches
+                               where (from otherMatch in matches
+                                      where match.Equals(otherMatch) || otherMatch.i > match.i || otherMatch.j < match.j
+                                      select otherMatch).Any()
+                               orderby match
+                               select match;*/
+            #endregion
         }//MatchPassword
 
         private IEnumerable<DateMatch> SeparatorLessDateMatch(string password)
         {
             #region LINQ
-            /*
             int lastMatchingIndex = password.Length - 3;
 
-            yield return
-                (from i in Enumerable.Range(0, lastMatchingIndex)
-                 from len in Enumerable.Range(4, Math.Min(5, lastMatchingIndex - i))
-                 let dateMatch = DateNoSeparator.Match(password, i, len)
-                 where dateMatch.Success
+            return from i in Enumerable.Range(0, lastMatchingIndex)
+                   from len in Enumerable.Range(4, Math.Min(5, lastMatchingIndex - i))
+                   let dateMatch = DateNoSeparator.Match(password, i, len)
+                   where dateMatch.Success
 
-                 from split in DateSplits[dateMatch.Length]
-                 let date = MapIntsToDate(dateMatch.Value.Substring(0, split.k).ToInt(),
-                                          dateMatch.Value.Substring(split.k, split.l).ToInt(),
-                                          dateMatch.Value.Substring(split.k + split.l, split.m).ToInt())
-                 where date != (0, 0, 0)
-                 select (dateMatch: new Lazy<DateMatch>(() =>
-                     new DateMatch
-                     {
-                         Pattern = Pattern.Date,
-                         Token = dateMatch.Value,
-                         i = i,
-                         j = i + len - 1,
-                         Separator = string.Empty,
-                         Year = date.year,
-                         Month = date.month,
-                         Day = date.day,
-                         Entropy = CalculateEntropy(date.year, false)
-                     }), distance: Metric(date.year, date.month, date.day))
+                   let candidate = GetDate(dateMatch)
+                   where candidate != CandidateSeed.date
 
-                  // At this point: different possible date mappings for the same i, j substring (token).
-                  // Match the candidate date that likely takes the fewest guesses:
-                  //  a date closest to the current date.
-                ).Aggregate((dateMatch: new Lazy<DateMatch>(), distance: int.MaxValue),
-                            (best, next) => next.distance < best.distance ? next : best,
-                            (best) => best.dateMatch.Value);
-            */
+                   select new DateMatch
+                   {
+                       Pattern = Pattern.Date,
+                       Token = dateMatch.Value,
+                       i = i,
+                       j = i + len - 1,
+                       Separator = string.Empty,
+                       Year = candidate.year,
+                       Month = candidate.month,
+                       Day = candidate.day,
+                       Entropy = CalculateEntropy(candidate.year, false)
+                   };
             #endregion
 
             #region index for loop
+            /*
             int lastMatchingIndex = password.Length - 4;
             for (int i = 0; i <= lastMatchingIndex; i++)
             {
@@ -174,8 +179,8 @@ namespace Zxcvbn.Matcher
                     var candidates =
                         from split in DateSplits[dateMatch.Length]
                         let date = MapIntsToDate(dateMatch.Value.Substring(0, split.k).ToInt(),
-                                                 dateMatch.Value.Substring(split.k, split.l).ToInt(),
-                                                 dateMatch.Value.Substring(split.k + split.l, split.m).ToInt())
+                                                    dateMatch.Value.Substring(split.k, split.l).ToInt(),
+                                                    dateMatch.Value.Substring(split.k + split.l, split.m).ToInt())
                         where date != (0, 0, 0)
                         select (date, distance: Metric(date.year, date.month, date.day));
                     if (!candidates.Any()) continue;
@@ -185,8 +190,8 @@ namespace Zxcvbn.Matcher
                     //  a date closest to the current date.
                     (int year, int month, int day) =
                         candidates.Aggregate((date: (year: 0, month: 0, day: 0), distance: int.MaxValue),
-                                             (best, next) => next.distance < best.distance ? next : best,
-                                             (best) => (best.date.year, best.date.month, best.date.day));
+                                                (best, next) => next.distance < best.distance ? next : best,
+                                                (best) => (best.date.year, best.date.month, best.date.day));
 
                     yield return new DateMatch
                     {
@@ -202,45 +207,62 @@ namespace Zxcvbn.Matcher
                     };
                 }//for
             }//for
+            */
             #endregion
+
+            (int year, int month, int day) GetDate(System.Text.RegularExpressions.Match dateMatch)
+            {
+                return (from split in DateSplits[dateMatch.Length]
+                        let date = MapIntsToDate(dateMatch.Value.Substring(0, split.k).ToInt(),
+                                                 dateMatch.Value.Substring(split.k, split.l).ToInt(),
+                                                 dateMatch.Value.Substring(split.k + split.l, split.m).ToInt())
+                        where date != (0, 0, 0)
+                        select (date, distance: Metric(date.year, date.month, date.day))
+
+                         // At this point: different possible date mappings for the same i, j substring (token).
+                         // Match the candidate date that likely takes the fewest guesses:
+                         //  a date closest to the current date.
+                       ).Aggregate(CandidateSeed,
+                                   (best, next) => next.distance < best.distance ? next : best,
+                                   (best) => best.date);
+            }//GetDate
         }//SlashLessDateMatch
 
         private IEnumerable<DateMatch> DelimitedDateMatch(string password)
         {
             int lastMatchingIndex = password.Length - 5;
 
-            return
-                 from i in Enumerable.Range(0, lastMatchingIndex)
-                 from len in Enumerable.Range(6, Math.Min(5, lastMatchingIndex - i))
+            return from i in Enumerable.Range(0, lastMatchingIndex)
+                   from len in Enumerable.Range(6, Math.Min(5, lastMatchingIndex - i))
 
-                 from dateWithSeprRegex in dateWithSeparatorRegexes
-                 let dateMatch = dateWithSeprRegex.Match(password, i, len)
-                 where dateMatch.Success
+                   from dateWithSeprRegex in dateWithSeparatorRegexes
+                   let dateMatch = dateWithSeprRegex.Match(password, i, len)
+                   where dateMatch.Success
 
-                 // Match the candidate date that likely takes the fewest guesses:
-                 //  a date closest to the current date.
-                 let date = SwapDayMonthByMetric(dateMatch.Groups["year"].Value.ToInt(),
-                                                 dateMatch.Groups["month_or_day"].Value.ToInt(),
-                                                 dateMatch.Groups["day_or_month"].Value.ToInt())
-                 where IsDateInRange(date.year, date.month, date.day)
-                 select new DateMatch
-                 {
-                     Pattern = Pattern.Date,
-                     Token = dateMatch.Value,
-                     i = i,
-                     j = i + len - 1,
-                     Separator = dateMatch.Groups["separator"].Value,
-                     Year = date.year,
-                     Month = date.month,
-                     Day = date.day,
-                     Entropy = CalculateEntropy(date.year, true)
-                 };
+                   // Match the candidate date that likely takes the fewest guesses:
+                   //  a date closest to the current date.
+                   let date = SwapDayMonthByMetric(dateMatch.Groups["year"].Value.ToInt(),
+                                                   dateMatch.Groups["month_or_day"].Value.ToInt(),
+                                                   dateMatch.Groups["day_or_month"].Value.ToInt())
+                   where IsDateInRange(date.year, date.month, date.day)
+                   select new DateMatch
+                   {
+                       Pattern = Pattern.Date,
+                       Token = dateMatch.Value,
+                       i = i,
+                       j = i + len - 1,
+                       Separator = dateMatch.Groups["separator"].Value,
+                       Year = date.year,
+                       Month = date.month,
+                       Day = date.day,
+                       Entropy = CalculateEntropy(date.year, true)
+                   };
         }//DelimitedDateMatch
 
         // True if the values of the day and the month require a swap (e.g. 30/11 -> 11/30); otherwise False.
         private static bool IsNeedSwapDayMonth(int day, int month) => (12 < month && day <= 12);
 
-        private static int Metric(int candidateYear) => Math.Abs(calendar.ToFourDigitYear(candidateYear) - Scoring.ReferenceYear);
+        private static int Metric(int candidateYear) => Math.Abs(calendar.ToFourDigitYear(candidateYear) - Guessing.ReferenceYear);
 
         private static int Metric(int year, int month, int day) =>
             IsNeedSwapDayMonth(day, month) ? int.MaxValue
@@ -330,5 +352,23 @@ namespace Zxcvbn.Matcher
 
         /// <value>The detected day</value>
         public int Day { get; set; }
+
+        public override bool Equals(object obj) => obj is DateMatch match
+            && base.Equals(match)
+            && Separator == match.Separator
+            && Year == match.Year
+            && Month == match.Month
+            && Day == match.Day;
+
+        public override int GetHashCode()
+        {
+            var hashCode = 1558458600;
+            hashCode = hashCode * -1521134295 + base.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Separator);
+            hashCode = hashCode * -1521134295 + Year.GetHashCode();
+            hashCode = hashCode * -1521134295 + Month.GetHashCode();
+            hashCode = hashCode * -1521134295 + Day.GetHashCode();
+            return hashCode;
+        }//GetHashCode
     }
 }

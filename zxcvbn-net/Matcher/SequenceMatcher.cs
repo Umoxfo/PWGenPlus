@@ -40,27 +40,26 @@ namespace Zxcvbn.Matcher
             int lastDelta = password[1] - password[0];
             for (int k = 2; k <= password.Length; k++)
             {
-                int delta = 0;
                 int j = k - 1;
+                int delta = password[k] - password[j];
 
-                if (k != password.Length && (delta = password[k] - password[j]) == lastDelta) continue;
+                if (k != password.Length && delta == lastDelta) continue;
 
                 Match match = Update(password, i, j, lastDelta);
                 if (match != null) yield return match;
 
                 i = j;
                 lastDelta = delta;
-            }
+            }//for
         }
 
-        private static Match Update(string password, int i, int j, int delta)
+        private static SequenceMatch Update(string password, int i, int j, int delta)
         {
             if ((j - i) > 1 || Math.Abs(delta) == 1)
             {
-                string token;
-                if (Math.Abs(delta) > 0 && Math.Abs(delta) <= MaxDelta)
+                if (0 < Math.Abs(delta) && Math.Abs(delta) <= MaxDelta)
                 {
-                    token = password.Substring(i, j - i + 1);
+                    string token = password.Substring(i, j - i + 1);
 
                     string sequenceName;
                     int sequenceSpace;
