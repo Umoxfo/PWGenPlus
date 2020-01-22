@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
-namespace Zxcvbn.Matcher
+namespace Umoxfo.Zxcvbn.Matcher
 {
     /// <summary>
     /// This matcher detects lexicographical sequences (and in reverse) e.g. abcd, 4567, PONML etc.
@@ -11,6 +10,9 @@ namespace Zxcvbn.Matcher
     public class SequenceMatcher : IMatcher
     {
         private const int MaxDelta = 5;
+
+        // Lower guesses for obvious starting points
+        private const string StartPoints = "aAzZ019";
 
         /// <summary>
         /// Find matching sequences in <paramref name="password"/>
@@ -34,11 +36,11 @@ namespace Zxcvbn.Matcher
             // [(i, j, delta), ...] = [(0, 3, 1), (5, 7, -2), (8, 9, 1)]
 
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
-            if (password.Length <= 1) yield return new Match();
+            if (password.Length <= 1) yield break;
 
             int i = 0;
             int lastDelta = password[1] - password[0];
-            for (int k = 2; k <= password.Length; k++)
+            for (int k = 2; k < password.Length; k++)
             {
                 int j = k - 1;
                 int delta = password[k] - password[j];
@@ -86,13 +88,16 @@ namespace Zxcvbn.Matcher
                     else
                     {
                         sequenceName = "unicode";
-                        // Maximum possible Unicode size excluding lowercase and uppercase alphabets (52), digits (10), and symbols (33).
-                        sequenceSpace = char.MaxValue - 95;
+                        // Unicode printable characters other than ASCII characters (U+0000 to U+007F):
+                        //  Line and paragraph separate characters (U+2028 and U+2029)
+                        //  Control code characters in the range U+0080 through U+009F
+                        //  Format character belonging to "Cf" (other, format) in Unicode (161)
+                        sequenceSpace = PasswordScoring.UnicodePrintableCharacters;
                     }//if - else if - else
 
                     bool ascending = delta > 0;
 
-                    return new SequenceMatch
+                    return new SequenceMatch(token.Length, password.Length)
                     {
                         Pattern = Pattern.Sequence,
                         i = i,
@@ -102,13 +107,31 @@ namespace Zxcvbn.Matcher
                         SequenceSize = sequenceSpace,
                         Ascending = ascending,
 
-                        Entropy = CalculateEntropy(token, ascending)
+                        Entropy = CalculateEntropy(token, ascending),
+                        Guesses = CalculateGuesses(token, ascending)
                     };
                 }//if
             }//if
 
             return null;
         }//Update
+
+        private static double CalculateGuesses(string match, bool ascending)
+        {
+            char firstChar = match[0];
+
+            double baseGuesses;
+            if (StartPoints.IndexOf(firstChar) != -1) baseGuesses = 4;
+            else if (char.IsDigit(firstChar)) baseGuesses = 10;
+            // Could give a higher base for uppercase,
+            // assigning 26 to both upper and lower sequences is more conservative.
+            else baseGuesses = 26;
+
+            // Need to try a descending sequence in addition to every ascending sequence -> 2x guesses
+            if (!ascending) baseGuesses *= 2;
+
+            return baseGuesses * match.Length;
+        }//CalculateGuesses
 
         private static double CalculateEntropy(string match, bool ascending)
         {
@@ -133,6 +156,10 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class SequenceMatch : Match
     {
+        public SequenceMatch(int tokenLength, int passwordLength) : base(tokenLength, passwordLength)
+        {
+        }
+
         /// <summary>
         /// The name of the sequence that the match was found in (e.g. 'lower', 'upper', 'digits')
         /// </summary>

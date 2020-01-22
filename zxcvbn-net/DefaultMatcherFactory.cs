@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Zxcvbn.Matcher;
 
-namespace Zxcvbn
+using Umoxfo.Zxcvbn.Matcher;
+
+namespace Umoxfo.Zxcvbn
 {
     /// <summary>
     /// <para>This matcher factory will use all of the default password matchers.</para>
@@ -18,23 +18,23 @@ namespace Zxcvbn
     /// <para>See <see cref="IMatcher"/> and the classes that implement it
     /// for more information on each kind of pattern matcher.</para>
     /// </summary>
-    internal class DefaultMatcherFactory : Matching, IMatcherFactory
+    internal class DefaultMatcherFactory : Matching
     {
         private static readonly IEnumerable<(string Key, IEnumerable<string> Value)> BaseRankedDictionaries =
-            new KeyValuePair<string, string>[]
+            new[]
             {
-                new KeyValuePair<string, string>("password", Properties.Resources.Passwords),
-                new KeyValuePair<string, string>("english", Properties.Resources.English),
-                new KeyValuePair<string, string>("male_names", Properties.Resources.MaleNames),
-                new KeyValuePair<string, string>("female_names", Properties.Resources.FemaleNames),
-                new KeyValuePair<string, string>("surnames", Properties.Resources.Surnames)
-            }.Select(dict => (dict.Key, Value: dict.Value.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries).AsEnumerable()));
+                (Key: "password", Value: Properties.Resources.Passwords),
+                (Key: "english", Value: Properties.Resources.English),
+                (Key: "male_names", Value: Properties.Resources.MaleNames),
+                (Key: "female_names", Value: Properties.Resources.FemaleNames),
+                (Key: "surnames", Value: Properties.Resources.Surnames)
+            }.Select(dict => (dict.Key, Value: Utility.GetDictionaryResourceLines(dict.Value)));
 
         private static readonly ReadOnlyDictionary<string, RegexMatcherInfo> Regexen =
-            new ReadOnlyDictionary<string, RegexMatcherInfo>(new Dictionary<string, RegexMatcherInfo>()
+            new ReadOnlyDictionary<string, RegexMatcherInfo>(new Dictionary<string, RegexMatcherInfo>
             {
                 ["digits"] = new RegexMatcherInfo(new Regex(@"\d{3,}", RegexOptions.Compiled), 10, true),
-                ["recent_year"] = new RegexMatcherInfo(new Regex(@"19\d{2}|20[0-2]\d", RegexOptions.Compiled), 119, false),
+                ["recent_year"] = new RegexMatcherInfo(new Regex(@"19[1-9]\d|20[0-2]\d", RegexOptions.Compiled), 119, false),
             });
 
         private readonly List<IMatcher> matchers;
@@ -46,7 +46,8 @@ namespace Zxcvbn
         {
             DictionaryMatcher dictionaryMatcher = new DictionaryMatcher(RankedDictionaries);
 
-            matchers = new List<IMatcher> {
+            matchers = new List<IMatcher>
+            {
                 dictionaryMatcher,
                 new ReversedDictionaryMatcher(dictionaryMatcher),
                 new L33tMatcher(dictionaryMatcher),
@@ -64,7 +65,7 @@ namespace Zxcvbn
         /// </summary>
         /// <param name="password">The password to match</param>
         /// <returns>An enumerable of combine matches</returns>
-        public IEnumerable<Match> Omnimatch(string password) =>
-            matchers.SelectMany(matcher => matcher.MatchPassword(password)).OrderBy(m => m);
+        public override IEnumerable<Match> Omnimatch(string password) =>
+            matchers.AsParallel().SelectMany(matcher => matcher.MatchPassword(password)).OrderBy(m => m);
     }
 }

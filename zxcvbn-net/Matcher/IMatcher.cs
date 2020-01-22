@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Zxcvbn.Matcher
+namespace Umoxfo.Zxcvbn.Matcher
 {
     /// <summary>
     /// All pattern matchers must implement the IMatcher interface.

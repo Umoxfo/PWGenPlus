@@ -1,32 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Linq;
 using System.Globalization;
-using Zxcvbn.Utils;
-using Zxcvbn.Report;
+using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace Zxcvbn.Matcher
+using Umoxfo.Zxcvbn.Report;
+
+namespace Umoxfo.Zxcvbn.Matcher
 {
     /// <summary>
     /// A "date" is recognized as:
     /// <list type="bullet">
-    ///     <item>
-    ///         <description>Any 3-tuple that starts or ends with a 2- or 4-digit year</description>
-    ///         <list type="bullet">
-    ///             <item><description>With 2 or 0 separator chars (1.1.91 or 1191)</description></item>
-    ///             <item><description>Maybe zero-padded (01-01-91 vs 1-1-91)</description></item>
-    ///         </list>
-    ///     </item>
-    ///     <item>
-    ///         <description>A year is from 1 to the current year and is represented by 2 or 4 digits</description>
-    ///     </item>
-    ///     <item>
-    ///         <description>A month between 1 and 12</description>
-    ///     </item>
-    ///     <item>
-    ///         <description>A day between 1 and 31</description>
-    ///     </item>
+    ///  <item>
+    ///   <description>Any 3-tuple that starts or ends with a 2- or 4-digit year</description>
+    ///   <list type="bullet">
+    ///     <item><description>With 2 or 0 separator chars (1.1.91 or 1191)</description></item>
+    ///     <item><description>Maybe zero-padded (01-01-91 vs 1-1-91)</description></item>
+    ///   </list>
+    ///  </item>
+    ///  <item>
+    ///   <description>A year is from 1 to the current year and is represented by 2 or 4 digits</description>
+    ///  </item>
+    ///  <item>
+    ///   <description>A month between 1 and 12</description>
+    ///  </item>
+    ///  <item>
+    ///   <description>A day between 1 and 31</description>
+    ///  </item>
     /// </list>
     ///
     /// The detected dates are verified based on the Gregorian calendar.
@@ -128,19 +128,22 @@ namespace Zxcvbn.Matcher
                    select match;
 
             #region Full LINQ
-            /*            return from match in matches
+            /*
+                        return from match in matches
                                where (from otherMatch in matches
                                       where match.Equals(otherMatch) || otherMatch.i > match.i || otherMatch.j < match.j
                                       select otherMatch).Any()
                                orderby match
-                               select match;*/
-            #endregion
+                               select match;
+            */
+            #endregion Full LINQ
         }//MatchPassword
 
         private IEnumerable<DateMatch> SeparatorLessDateMatch(string password)
         {
             #region LINQ
             int lastMatchingIndex = password.Length - 3;
+            lastMatchingIndex = lastMatchingIndex > 0 ? lastMatchingIndex : 0;
 
             return from i in Enumerable.Range(0, lastMatchingIndex)
                    from len in Enumerable.Range(4, Math.Min(5, lastMatchingIndex - i))
@@ -150,7 +153,8 @@ namespace Zxcvbn.Matcher
                    let candidate = GetDate(dateMatch)
                    where candidate != CandidateSeed.date
 
-                   select new DateMatch
+                   let variations = CalculateVariations(candidate.year, false)
+                   select new DateMatch(len, password.Length)
                    {
                        Pattern = Pattern.Date,
                        Token = dateMatch.Value,
@@ -160,55 +164,59 @@ namespace Zxcvbn.Matcher
                        Year = candidate.year,
                        Month = candidate.month,
                        Day = candidate.day,
-                       Entropy = CalculateEntropy(candidate.year, false)
+                       Entropy = variations.Entropy,
+                       Guesses = variations.Guesses
                    };
-            #endregion
+            #endregion LINQ
 
             #region index for loop
             /*
-            int lastMatchingIndex = password.Length - 4;
-            for (int i = 0; i <= lastMatchingIndex; i++)
-            {
-                for (int len = 4; len <= 8; len++)
-                {
-                    if ((i + len) > password.Length) break;
+                        int lastMatchingIndex = password.Length - 4;
+                        for (int i = 0; i <= lastMatchingIndex; i++)
+                        {
+                            for (int len = 4; len <= 8; len++)
+                            {
+                                if ((i + len) > password.Length) break;
 
-                    System.Text.RegularExpressions.Match dateMatch = DateNoSeparator.Match(password, i, len);
-                    if (!dateMatch.Success) continue;
+                                System.Text.RegularExpressions.Match dateMatch = DateNoSeparator.Match(password, i, len);
+                                if (!dateMatch.Success) continue;
 
-                    var candidates =
-                        from split in DateSplits[dateMatch.Length]
-                        let date = MapIntsToDate(dateMatch.Value.Substring(0, split.k).ToInt(),
-                                                    dateMatch.Value.Substring(split.k, split.l).ToInt(),
-                                                    dateMatch.Value.Substring(split.k + split.l, split.m).ToInt())
-                        where date != (0, 0, 0)
-                        select (date, distance: Metric(date.year, date.month, date.day));
-                    if (!candidates.Any()) continue;
+                                var candidates =
+                                    from split in DateSplits[dateMatch.Length]
+                                    let date = MapIntsToDate(dateMatch.Value.Substring(0, split.k).ToInt(),
+                                                             dateMatch.Value.Substring(split.k, split.l).ToInt(),
+                                                             dateMatch.Value.Substring(split.k + split.l, split.m).ToInt())
+                                    where date != (0, 0, 0)
+                                    select (date, distance: Metric(date.year, date.month, date.day));
+                                if (!candidates.Any()) continue;
 
-                    // At this point: different possible date mappings for the same i, j substring (token).
-                    // Match the candidate date that likely takes the fewest guesses:
-                    //  a date closest to the current date.
-                    (int year, int month, int day) =
-                        candidates.Aggregate((date: (year: 0, month: 0, day: 0), distance: int.MaxValue),
-                                                (best, next) => next.distance < best.distance ? next : best,
-                                                (best) => (best.date.year, best.date.month, best.date.day));
+                                // At this point: different possible date mappings for the same i, j substring (token).
+                                // Match the candidate date that likely takes the fewest guesses:
+                                //  a date closest to the current date.
+                                (int year, int month, int day) =
+                                    candidates.Aggregate((date: (year: 0, month: 0, day: 0), distance: int.MaxValue),
+                                                            (best, next) => next.distance < best.distance ? next : best,
+                                                            (best) => (best.date.year, best.date.month, best.date.day));
 
-                    yield return new DateMatch
-                    {
-                        Pattern = Pattern.Date,
-                        Token = dateMatch.Value,
-                        i = i,
-                        j = i + len - 1,
-                        Separator = string.Empty,
-                        Year = year,
-                        Month = month,
-                        Day = day,
-                        Entropy = CalculateEntropy(year, false)
-                    };
-                }//for
-            }//for
+                                (double Entropy, double Guesses) = CalculateVariations(year, false);
+
+                                yield return new DateMatch(len, password.Length)
+                                {
+                                    Pattern = Pattern.Date,
+                                    Token = dateMatch.Value,
+                                    i = i,
+                                    j = i + len - 1,
+                                    Separator = string.Empty,
+                                    Year = year,
+                                    Month = month,
+                                    Day = day,
+                                    Entropy = Entropy,
+                                    Guesses = Guesses
+                                };
+                            }//for
+                        }//for
             */
-            #endregion
+            #endregion index for loop
 
             (int year, int month, int day) GetDate(System.Text.RegularExpressions.Match dateMatch)
             {
@@ -219,9 +227,9 @@ namespace Zxcvbn.Matcher
                         where date != (0, 0, 0)
                         select (date, distance: Metric(date.year, date.month, date.day))
 
-                         // At this point: different possible date mappings for the same i, j substring (token).
-                         // Match the candidate date that likely takes the fewest guesses:
-                         //  a date closest to the current date.
+                       // At this point: different possible date mappings for the same i, j substring (token).
+                       // Match the candidate date that likely takes the fewest guesses:
+                       //  a date closest to the current date.
                        ).Aggregate(CandidateSeed,
                                    (best, next) => next.distance < best.distance ? next : best,
                                    (best) => best.date);
@@ -231,6 +239,7 @@ namespace Zxcvbn.Matcher
         private IEnumerable<DateMatch> DelimitedDateMatch(string password)
         {
             int lastMatchingIndex = password.Length - 5;
+            lastMatchingIndex = lastMatchingIndex > 0 ? lastMatchingIndex : 0;
 
             return from i in Enumerable.Range(0, lastMatchingIndex)
                    from len in Enumerable.Range(6, Math.Min(5, lastMatchingIndex - i))
@@ -245,7 +254,9 @@ namespace Zxcvbn.Matcher
                                                    dateMatch.Groups["month_or_day"].Value.ToInt(),
                                                    dateMatch.Groups["day_or_month"].Value.ToInt())
                    where IsDateInRange(date.year, date.month, date.day)
-                   select new DateMatch
+
+                   let variations = CalculateVariations(date.year, true)
+                   select new DateMatch(len, password.Length)
                    {
                        Pattern = Pattern.Date,
                        Token = dateMatch.Value,
@@ -255,17 +266,16 @@ namespace Zxcvbn.Matcher
                        Year = date.year,
                        Month = date.month,
                        Day = date.day,
-                       Entropy = CalculateEntropy(date.year, true)
+                       Entropy = variations.Entropy,
+                       Guesses = variations.Guesses
                    };
         }//DelimitedDateMatch
 
-        // True if the values of the day and the month require a swap (e.g. 30/11 -> 11/30); otherwise False.
-        private static bool IsNeedSwapDayMonth(int day, int month) => (12 < month && day <= 12);
-
-        private static int Metric(int candidateYear) => Math.Abs(calendar.ToFourDigitYear(candidateYear) - Guessing.ReferenceYear);
+        private static int Metric(int candidateYear) => Math.Abs(calendar.ToFourDigitYear(candidateYear) - Scoring.ReferenceYear);
 
         private static int Metric(int year, int month, int day) =>
-            IsNeedSwapDayMonth(day, month) ? int.MaxValue
+            // True if the values of the day and the month require a swap (e.g. 30/11 -> 11/30); otherwise False.
+            (12 < month && day <= 12) ? int.MaxValue
                 : (new DateTime(calendar.ToFourDigitYear(year), month, day) - Scoring.ReferenceDate).Duration().Days;
 
         // Takes the fewest guesses: a date closest to the current date.
@@ -300,11 +310,23 @@ namespace Zxcvbn.Matcher
 
             // Match the candidate date that likely takes the fewest guesses:
             //  a date closest to the current date.
-            (int year, int month, int day) = Metric(left) < Metric(right)   // (year first) < (year last)
-                ? SwapDayMonthByMetric(left, middle, right)     // Year-Month-Day
-                : SwapDayMonthByMetric(right, middle, left);    // Month-Day-Year
+            int year, month, day;
+            if (Metric(left) < Metric(right))   // (year first) < (year last)
+            {
+                // Year first
+                if (!IsValidDay(right)) return (0, 0, 0);
+                (year, month, day) = SwapDayMonthByMetric(left, middle, right);
+            }
+            else
+            {
+                // Year last
+                if (!IsValidDay(left)) return (0, 0, 0);
+                (year, month, day) = SwapDayMonthByMetric(right, middle, left);
+            }
 
             return IsDateInRange(year, month, day) ? (calendar.ToFourDigitYear(year), month, day) : (0, 0, 0);
+
+            bool IsValidDay(int _day) => (1 <= _day && _day <= 31);
         }//MapIntsToDate
 
         /// <summary>
@@ -322,17 +344,21 @@ namespace Zxcvbn.Matcher
         private static bool IsDateInRange(int year, int month, int day)
         {
             year = calendar.ToFourDigitYear(year);
-            return (DateMinYear <= year && year <= DateMaxYear) && (1 <= month && month <= 12) &&
-                   (1 <= day && day <= DateTime.DaysInMonth(year, month));
+            return (DateMinYear <= year && year <= DateMaxYear)
+                && (1 <= month && month <= 12)
+                && (1 <= day && day <= DateTime.DaysInMonth(year, month));
         }//IsDateInRange
 
-        private static double CalculateEntropy(int year, bool separator)
+        private static (double Entropy, double Guesses) CalculateVariations(int year, bool separator)
         {
             // 100 years (two-digits) or the maximum year - 100 years (four-digit years valid range)
             double entropy = Math.Log(((year < 100) ? 100 : DateMaxYear - 100) * 12 * 31, 2);
 
+            // Base guesses: (year distance from ReferenceYear) * num_days * num_months
+            double guesses = (double)Math.Max(Metric(year), Scoring.MinYearSpace) * 365;
+
             // Extra two bits for separator (/\...)
-            return separator ? entropy + 2 : entropy;
+            return separator ? (Entropy: entropy + 2, Guesses: guesses * 4) : (Entropy: entropy, Guesses: guesses);
         }//CalculateEntropy
     }
 
@@ -341,6 +367,10 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class DateMatch : Match
     {
+        public DateMatch(int tokenLength, int passwordLength) : base(tokenLength, passwordLength)
+        {
+        }
+
         /// <value>Where a date with separators is matched, this will contain the separator that was used (e.g. '/', '-')</value>
         public string Separator { get; set; }
 

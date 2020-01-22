@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Zxcvbn.Utils;
 
-namespace Zxcvbn.Report
+namespace Umoxfo.Zxcvbn.Report
 {
     public static class Scoring
     {
-        public const int MinGuessesBeforeGrowingSequence = 10000;
+        public const int MinSubmatchGuessesSingleChar = 10;
+        public const int MinSubmatchGuessesMultiChar = 50;
 
-        public static DateTime ReferenceDate { get => DateTime.Today; }
+        public const int MinGuessesBeforeGrowingSequence = 10000;
+        public const int BruteforceCardinality = 10;
+
+        public const int MinYearSpace = 20;
+        public static DateTime ReferenceDate => DateTime.Today;
+        public static int ReferenceYear => DateTime.Today.Year;
 
         /// <summary>
         /// Returns a new result structure initialized with a minimum entropy of
@@ -46,14 +51,14 @@ namespace Zxcvbn.Report
         /// <param name="matches">Password being evaluated</param>
         /// <param name="password">List of matches found against the password</param>
         /// <returns>A <see cref="Result"/> object for the lowest entropy and the most guessable match sequences</returns>
-        public static Result FindBestMatchSequences(string password, in IEnumerable<Match> matches, bool excludeAdditive = false)
+        public static Result FindBestMatchSequences(string password, IEnumerable<Match> matches, bool excludeAdditive = false)
         {
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
             int bruteforceCardinality = PasswordScoring.PasswordCardinality(password);
 
             // Partition matches into sublists according to ending index j
-            List<List<Match>> matchesByJ = new List<List<Match>> { new List<Match>() };
+            List<List<Match>> matchesByJ = Enumerable.Repeat<List<Match>>(new List<Match>(), password.Length).ToList();
             foreach (var matchGroup in matches.GroupBy(match => match.j))
             {
                 // Small detail: for deterministic output, sort each sublist by i.
@@ -85,7 +90,7 @@ namespace Zxcvbn.Report
                         // For guesses
                         foreach (int entry in optimal.m[match.i - 1].Keys)
                         {
-                            Update(password, match, entry + 1, ref optimal, excludeAdditive);
+                            Update(match, entry + 1, optimal, excludeAdditive);
                         }
                     }
                     else
@@ -93,7 +98,7 @@ namespace Zxcvbn.Report
                         candidateEntropy = match.Entropy;
 
                         // For guesses
-                        Update(password, match, 1, ref optimal, excludeAdditive);
+                        Update(match, 1, optimal, excludeAdditive);
                     }//if-else
 
                     // For entropy
@@ -105,10 +110,10 @@ namespace Zxcvbn.Report
                 }//foreach matchesByJ[k]
 
                 // For guesses
-                BruteforceUpdate(password, k, bruteforceCardinality, ref optimal, excludeAdditive);
+                BruteforceUpdate(password, k, optimal, excludeAdditive);
             }//for k
 
-            var (matchSequence, optimalMatchSequence) = Unwind(password.Length, bestMatchForIndex , optimal);
+            var (matchSequence, optimalMatchSequence) = Unwind(password.Length, bestMatchForIndex, optimal);
 
             // ToDo: move into for(k) loop
             // The match sequence might have gaps, fill in with brute-force matching
@@ -121,13 +126,13 @@ namespace Zxcvbn.Report
                 {
                     Match m1 = matchSequence[k];
                     // Next match, or a match past the end of the password
-                    Match m2 = (k < matchSequence.Count - 1) ? matchSequence[k + 1] : new Match { i = password.Length };
+                    Match m2 = (k < matchSequence.Count - 1) ? matchSequence[k + 1] : new Match(0, password.Length) { i = password.Length };
 
                     matchSequenceCopy.Add(m1);
                     if (m1.j < m2.i - 1)
                     {
                         // Fill in gap
-                        matchSequenceCopy.Add(MakeBruteforceMatch(password, i: m1.j + 1, j: m2.i - 1, bruteforceCardinality));
+                        matchSequenceCopy.Add(MakeBruteforceMatch(password, i: m1.j + 1, j: m2.i - 1));
                     }
                 }
 
@@ -136,7 +141,7 @@ namespace Zxcvbn.Report
             else
             {
                 // To make things easy, we'll separate out the case where there are no matches so everything is brute-forced
-                matchSequence.Add(MakeBruteforceMatch(password, i: 0, j: password.Length - 1, bruteforceCardinality));
+                matchSequence.Add(MakeBruteforceMatch(password, i: 0, j: password.Length - 1));
             }//if-else
 
             return new Result
@@ -156,12 +161,12 @@ namespace Zxcvbn.Report
         /// <param name="matches">List of matches found against the password</param>
         /// <param name="excludeAdditive"></param>
         /// <returns>A <see cref="Result"/> object for the lowest entropy match sequence</returns>
-        public static Result MostGuessableMatchSequence(string password, in IEnumerable<Match> matches, bool excludeAdditive = false)
+        public static Result MostGuessableMatchSequence(string password, IEnumerable<Match> matches, bool excludeAdditive = false)
         {
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
             // Partition matches into sublists according to ending index j
-            List<List<Match>> matchesByJ = new List<List<Match>> { new List<Match>() };
+            List<List<Match>> matchesByJ = Enumerable.Repeat<List<Match>>(new List<Match>(), password.Length).ToList();
             foreach (var matchGroup in matches.GroupBy(match => match.j))
             {
                 // Small detail: for deterministic output, sort each sublist by i.
@@ -171,22 +176,22 @@ namespace Zxcvbn.Report
             Optimal optimal = new Optimal(password.Length);
             for (int k = 0; k < password.Length; k++)
             {
-                foreach (Match m  in matchesByJ[k])
+                foreach (Match m in matchesByJ[k])
                 {
                     if (m.i > 0)
                     {
                         foreach (int entry in optimal.m[m.i - 1].Keys)
                         {
-                            Update(password, m, entry + 1, ref optimal, excludeAdditive);
+                            Update(m, entry + 1, optimal, excludeAdditive);
                         }
                     }
                     else
                     {
-                        Update(password, m, 1, ref optimal, excludeAdditive);
+                        Update(m, 1, optimal, excludeAdditive);
                     }
                 }
 
-                BruteforceUpdate(password, k, 0, ref optimal, excludeAdditive);
+                BruteforceUpdate(password, k, optimal, excludeAdditive);
             }
 
             var (_, optimalMatchSequence) = Unwind(password.Length, null, optimal: optimal);
@@ -201,11 +206,13 @@ namespace Zxcvbn.Report
 
         // Helper: considers whether a length-l sequence ending at match m is better (fewer guesses)
         // than previously encountered sequences, updating state if so.
-        private static void Update(string password, Match m, int l, ref Optimal optimal, bool excludeAdditive)
+        private static void Update(Match m, int l, Optimal optimal, bool excludeAdditive)
         {
             int k = m.j;
 
-            double pi = Guessing.EstimateGuess(ref m, password);
+            double pi = m.Guesses;
+
+            // l = optimal.m[m.i - 1] + 1 or 1 if m <= 0
             // We're considering a length-l sequence ending with match m:
             // obtain the product term in the minimization function by multiplying m's guesses
             // by the product of the length-(l-1) sequence ending just before m, at m.i - 1.
@@ -230,9 +237,9 @@ namespace Zxcvbn.Report
             }
 
             // This sequence might be part of the final optimal sequence.
-            optimal.g[k].Add(l, g);
-            optimal.m[k].Add(l, m);
-            optimal.pi[k].Add(l, pi);
+            optimal.g[k][l] = g;
+            optimal.m[k][l] = m;
+            optimal.pi[k][l] = pi;
         }//Update
 
         // Unoptimized, called only on small n
@@ -246,7 +253,7 @@ namespace Zxcvbn.Report
 
         // Helper: step backwards through optimal.m starting at the end,
         // constructing the final optimal match sequence.
-        private static (List<Match> Entropy, List<Match> Guesses) Unwind(int n, in Match[] bestMatches, in Optimal optimal)
+        private static (List<Match> Entropy, List<Match> Guesses) Unwind(int n, Match[] bestMatches, Optimal optimal)
         {
             #region Entropy
             List<Match> entropyMatchSequence = null;
@@ -283,16 +290,16 @@ namespace Zxcvbn.Report
         }//Unwind
 
         // Helper: evaluate brute-force matches ending at k.
-        private static void BruteforceUpdate(string password, int k, int cardinality, ref Optimal optimal, bool excludeAdditive)
+        private static void BruteforceUpdate(string password, int k, Optimal optimal, bool excludeAdditive)
         {
             // See if a single brute-force match spanning the k-prefix is optimal.
-            Match m = MakeBruteforceMatch(password, 0, k, cardinality);
-            Update(password, m, 1, ref optimal, excludeAdditive);
+            Match m = MakeBruteforceMatch(password, 0, k);
+            Update(m, 1, optimal, excludeAdditive);
             for (int i = 1; i <= k; i++)
             {
                 // Generate k brute-force matches, spanning from (i = 1, j = k) up to (i = k, j = k).
                 // See if adding these new matches to any of the sequences in optimal[i - 1] leads to new bests.
-                m = MakeBruteforceMatch(password, i, k, cardinality);
+                m = MakeBruteforceMatch(password, i, k);
                 foreach (var entry in optimal.m[i - 1])
                 {
                     int l = entry.Key;
@@ -305,24 +312,41 @@ namespace Zxcvbn.Report
                     if (last_m.Pattern == Pattern.Bruteforce) continue;
 
                     // Try adding m to this length - l sequence.
-                    else Update(password, m, l + 1, ref optimal, excludeAdditive);
+                    else Update(m, l + 1, optimal, excludeAdditive);
                 }//foreach
             }//for
         }//BruteforceUpdate
 
         // Helper: make brute-force match objects spanning i to j, inclusive.
-        private static Match MakeBruteforceMatch(string password, int i, int j, int cardinality)
+        private static Match MakeBruteforceMatch(string password, int i, int j)
         {
-            return new Match
+            int tokenLength = j - i + 1;
+            string token = password.Substring(i, tokenLength);
+            var (entropy, guesses) = CalculateBruteforceVariations(token, tokenLength);
+
+            return new Match(tokenLength, password.Length)
             {
                 Pattern = Pattern.Bruteforce,
                 i = i,
                 j = j,
-                Token = password.Substring(i, j - i + 1),
-                Cardinality = cardinality,
-                Entropy = Math.Log(Math.Pow(cardinality, j - i + 1), 2)
+                Token = token,
+                Cardinality = BruteforceCardinality,
+                Entropy = entropy,
+                Guesses = guesses
             };
-        }
+        }//MakeBruteforceMatch
+
+        private static (double Entropy, double Guesses) CalculateBruteforceVariations(string token, int tokenLength)
+        {
+            double guesses = Math.Pow(PasswordScoring.PasswordCardinality(token), tokenLength);
+            if (double.IsPositiveInfinity(guesses)) guesses = double.MaxValue;
+
+            // Small detail: make brute-force matches at minimum one guess bigger than smallest allowed
+            // sub-match guesses, such that non-brute-force sub-matches over the same [i..j] take precedence.
+            double minGuesses = (tokenLength == 1 ? MinSubmatchGuessesSingleChar : MinSubmatchGuessesMultiChar) + 1;
+
+            return (Entropy: Math.Log(guesses, 2), Guesses: Math.Max(guesses, minGuesses));
+        }//CalculateBruteforceVariations
 
         private class Optimal
         {

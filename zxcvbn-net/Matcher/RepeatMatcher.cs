@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Zxcvbn.Report;
 
-namespace Zxcvbn.Matcher
+using Umoxfo.Zxcvbn.Report;
+
+namespace Umoxfo.Zxcvbn.Matcher
 {
     /// <summary>
     /// Match repeated characters in the password (repeats must be more than two characters long to count)
@@ -59,8 +60,9 @@ namespace Zxcvbn.Matcher
                 int i = match.Index;
                 int j = match.Index + (match.Length - 1);
                 Result baseAnalysis = Scoring.MostGuessableMatchSequence(baseToken, new DefaultMatcherFactory().Omnimatch(baseToken));
+                int repeatCount = match.Value.Length / baseToken.Length;
 
-                yield return new RepeatMatch
+                yield return new RepeatMatch(match.Value.Length, password.Length)
                 {
                     Pattern = Pattern.Repeat,
                     i = i,
@@ -69,9 +71,10 @@ namespace Zxcvbn.Matcher
                     BaseToken = baseToken,
                     BaseGuesses = baseAnalysis.Guesses,
                     BaseMatches = baseAnalysis.GuessesSequence,
-                    RepeatCount = match.Value.Length / baseToken.Length,
+                    RepeatCount = repeatCount,
 
                     Entropy = CalculateEntropy(password.Substring(i, j - i + 1)),
+                    Guesses = baseAnalysis.Guesses * repeatCount
                 };
 
                 lastIndex = i + j;
@@ -86,6 +89,10 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class RepeatMatch : Match
     {
+        public RepeatMatch(int tokenLength, int passwordLength) : base(tokenLength, passwordLength)
+        {
+        }
+
         public string BaseToken { get; set; }
 
         public double BaseGuesses { get; set; }
@@ -95,6 +102,7 @@ namespace Zxcvbn.Matcher
         /// <summary>
         /// The number of repeated
         /// </summary>
+        /// <value>The number of repeated</value>
         public int RepeatCount { get; set; }
     }
 }

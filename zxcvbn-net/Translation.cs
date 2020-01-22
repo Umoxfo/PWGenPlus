@@ -1,4 +1,4 @@
-﻿namespace Zxcvbn
+﻿namespace Umoxfo.Zxcvbn
 {
     /// <summary>
     /// The supported languages.

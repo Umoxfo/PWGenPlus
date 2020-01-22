@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Zxcvbn.Matcher
+namespace Umoxfo.Zxcvbn.Matcher
 {
     /// <summary>
     /// <para>This matcher reads in a list of words (in frequency order) and matches substrings of the password against that dictionary.</para>
@@ -25,7 +25,7 @@ namespace Zxcvbn.Matcher
     {
         private readonly Dictionary<string, Dictionary<string, int>> rankedDictionaries;
 
-        public DictionaryMatcher(in Dictionary<string, Dictionary<string, int>> rankedDictionaries = null) =>
+        public DictionaryMatcher(Dictionary<string, Dictionary<string, int>> rankedDictionaries = null) =>
             this.rankedDictionaries = rankedDictionaries ?? new Dictionary<string, Dictionary<string, int>>();
 
         /// <summary>
@@ -42,14 +42,13 @@ namespace Zxcvbn.Matcher
 
                    from i in Enumerable.Range(0, password.Length)
                    from j in Enumerable.Range(i, password.Length - i)
-                   let word = password.ToLowerInvariant().Substring(i, j - i + 1)
+                   let word = password.Substring(i, j - i + 1)
                    where dictionary.Value.ContainsKey(word)
 
                    let token = password.Substring(i, j - i + 1) // Could have different case so pull from password
                    let rank = dictionary.Value[word]
-                   let baseEntropy = Math.Log(rank, 2)
-                   let uppercaseEntropy = PasswordScoring.CalculateUppercaseEntropy(token)
-                   select new DictionaryMatch
+                   let uppercaseVariations = PasswordScoring.CalculateUppercaseVariations(token)
+                   select new DictionaryMatch(token.Length, password.Length)
                    {
                        Pattern = Pattern.Dictionary,
                        i = i,
@@ -63,9 +62,8 @@ namespace Zxcvbn.Matcher
                        Cardinality = dictionary.Value.Count,
 
                        //Calculate entropy
-                       BaseEntropy = baseEntropy,
-                       UppercaseEntropy = uppercaseEntropy,
-                       Entropy = baseEntropy + uppercaseEntropy
+                       UppercaseEntropy = uppercaseVariations.Entropy,
+                       Guesses = rank * uppercaseVariations.Guesses
                    } into dm
 
                    orderby dm
@@ -81,7 +79,7 @@ namespace Zxcvbn.Matcher
     {
         private readonly DictionaryMatcher dictionaryMatcher;
 
-        public ReversedDictionaryMatcher(in DictionaryMatcher dictionaryMatcher = null) =>
+        public ReversedDictionaryMatcher(DictionaryMatcher dictionaryMatcher = null) =>
             this.dictionaryMatcher = dictionaryMatcher ?? new DictionaryMatcher();
 
         /// <summary>
@@ -94,16 +92,17 @@ namespace Zxcvbn.Matcher
         {
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
-            IEnumerable<DictionaryMatch> matches = dictionaryMatcher.MatchPassword(string.Join("", password.Reverse())).OfType<DictionaryMatch>();
+            IEnumerable<DictionaryMatch> matches = dictionaryMatcher.MatchPassword(string.Concat(password.Reverse())).OfType<DictionaryMatch>();
             foreach (var match in matches)
             {
-                match.Token = string.Join("", match.Token.Reverse()); // Reverse back
-                match.Reversed = true;
                 // Map coordinates back to original string
                 (match.i, match.j) = (password.Length - 1 - match.j, password.Length - 1 - match.i);
+                match.Token = string.Concat(match.Token.Reverse()); // Reverse back
+                match.Reversed = true;
+                match.Guesses = match.Rank * PasswordScoring.CalculateUppercaseVariations(match.Token).Guesses * 2;
             }
 
-            return matches.OrderBy(m => m).ToList();
+            return matches.OrderBy(m => m);
         }//MatchPassword
     }//ReversedDictionaryMatcher
 
@@ -113,6 +112,10 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class DictionaryMatch : Match
     {
+        public DictionaryMatch(int tokenLength, int passwordLength) : base(tokenLength, passwordLength)
+        {
+        }
+
         /// <summary>
         /// The dictionary word matched
         /// </summary>
@@ -132,10 +135,13 @@ namespace Zxcvbn.Matcher
 
         public bool L33t { get; set; } = false;
 
+        public override double Entropy => BaseEntropy + UppercaseEntropy;
+
         /// <summary>
         /// The base entropy of the match, calculated from frequency rank
         /// </summary>
-        public double BaseEntropy { get; set; }
+        /// <value>The base entropy of the match, calculated from frequency rank</value>
+        public double BaseEntropy => Math.Log(Rank, 2);
 
         /// <summary>
         /// Additional entropy for this match from the use of mixed case

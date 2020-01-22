@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Zxcvbn.Matcher;
 
-namespace Zxcvbn.Report
+using Umoxfo.Zxcvbn.Matcher;
+
+namespace Umoxfo.Zxcvbn.Report
 {
-    public readonly struct Feedback
+    /// <summary>
+    /// Verbal feedback to help choose better passwords.
+    /// </summary>
+    public class Feedback
     {
         /// <summary>
-        /// Warning on this password
+        /// Explains what's wrong, not always set.
         /// </summary>
-        /// <value>Warning on this password</value>
+        /// <value>Explains what's wrong, e.g. 'this is a top-10 common password'.
+        /// Not always set -- sometimes an empty string</value>
         public string Warning { get; }
 
         /// <summary>
-        /// Suggestion on how to improve the password
+        /// A possibly-empty list of suggestions to help choose a less guessable password.
         /// </summary>
-        /// <value>Suggestion on how to improve the password</value>
+        /// <value>A possibly-empty list of suggestions to help
+        /// choose a less guessable password. e.g. 'Add another word or two'</value>
         public IReadOnlyCollection<string> Suggestions { get; }
 
         public Feedback(string warning, params string[] suggestions)
@@ -28,7 +34,7 @@ namespace Zxcvbn.Report
 
     internal class PasswordFeedback
     {
-        internal static Feedback GetFeedback(int score, in IEnumerable<Match> sequence, in Translation translation = Translation.English)
+        internal static Feedback GetFeedback(int score, IEnumerable<Match> sequence, in Translation translation = Translation.English)
         {
             Utility.SetTranslation(translation);
 
@@ -48,7 +54,7 @@ namespace Zxcvbn.Report
             return GetMatchFeedback(longestMatch, sequence.Count() == 1);
         }//GetFeedback
 
-        private static Feedback GetMatchFeedback(in Match match, bool isSoleMatch, in Translation translation = Translation.English)
+        private static Feedback GetMatchFeedback(Match match, bool isSoleMatch, in Translation translation = Translation.English)
         {
             Utility.SetTranslation(translation);
 

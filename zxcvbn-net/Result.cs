@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Zxcvbn.Report;
 
-namespace Zxcvbn
+using Umoxfo.Zxcvbn.Report;
+
+namespace Umoxfo.Zxcvbn
 {
     /// <summary>
     /// The results of zxcvbn's password analysis
@@ -21,26 +22,34 @@ namespace Zxcvbn
         /// <value>A calculated estimate of how many bits of entropy the password covers.</value>
         public double Entropy { get; protected internal set; }
 
+        /// <summary>
+        /// Estimated guesses needed to crack password
+        /// </summary>
+        /// <value>Estimated guesses needed to crack password</value>
         public double Guesses { get; protected internal set; }
 
+        /// <summary>
+        /// Order of <see cref="Guesses"/>
+        /// </summary>
+        /// <value>Order of <see cref="Guesses"/></value>
         public double GuessesLog10 => Math.Log10(Guesses);
 
         /// <summary>
-        /// The sequence of matches that were used to create the entropy calculation.
+        /// The list of matches that were used to create the entropy calculation.
         /// </summary>
-        /// <value>The sequence of matches that were used to create the entropy calculation.</value>
+        /// <value>The list of matches that were used to create the entropy calculation.</value>
         public IEnumerable<Match> EntropySequence { get; protected internal set; }
 
         /// <summary>
-        /// The sequence of matches that were used to create the guesses calculation.
+        /// The list of matches that were used to create the guesses calculation.
         /// </summary>
-        /// <value>The sequence of matches that were used to create the guesses calculation.</value>
+        /// <value>The list of matches that were used to create the guesses calculation.</value>
         public IEnumerable<Match> GuessesSequence { get; protected internal set; }
 
         /// <summary>
-        /// The sequence of matches that were used to create the entropy calculation.
+        /// The list of matches that were used to create the entropy calculation.
         /// </summary>
-        /// <value>The sequence of matches that were used to create the entropy calculation.</value>
+        /// <value>The list of matches that were used to create the entropy calculation.</value>
         public IEnumerable<Match> MatchSequence => EntropySequence;
 
         /// <summary>
@@ -53,7 +62,7 @@ namespace Zxcvbn
         /// An estimation of the crack time for this password in seconds.
         /// </summary>
         /// <value>An estimation of the crack time for this password in seconds.</value>
-        public CrackTimeSeconds CrackTime { get; protected internal set; }
+        public CrackTimeSeconds CrackTimeSeconds { get; protected internal set; }
 
         /// <summary>
         /// A friendly string for the crack time (like "centuries", "instant", "7 minutes", "14 hours" etc.).
@@ -62,18 +71,21 @@ namespace Zxcvbn
         public CrackTimeDisplay CrackTimeDisplay { get; protected internal set; }
 
         /// <summary>
-        /// A score from 0 to 6 (inclusive), with 0 being least secure and 6 being most secure calculated from crack time:
-        /// [0,1,2,3,4,5,6] if crack time is less than [10^3, 10^6, 10^8, 10^10, 10^11, 10^12, Infinity] seconds.
-        /// Useful for implementing a strength meter
+        /// A score from 0 to 6 (inclusive), with 0 being least secure
+        /// and 6 being most secure calculated from <see cref="Guesses">guesses</see>
         /// </summary>
-        /// <value>A score from 0 to 6 (inclusive), with 0 being least secure and 6 being most secure calculated from crack time:
-        /// [0,1,2,3,4,5,6] if crack time is less than [10^3, 10^6, 10^8, 10^10, 10^11, 10^12, Infinity] seconds.</value>
+        /// <value>[0,1,2,3,4,5,6] if crack time is less than
+        /// [10^3, 10^6, 10^8, 10^10, 10^11, 10^12, Infinity] seconds.// </value>
         public int Score { get; protected internal set; }
 
+        /// <summary>
+        /// Verbal feedback to help choose better passwords. set when score <= 2.
+        /// </summary>
+        /// <value>Verbal feedback to help choose better passwords. set when score <= 2.</value>
         public Feedback Feedback { get; protected internal set; }
     }
 
-    public readonly struct Pattern
+    public static class Pattern
     {
         public const string Bruteforce = "bruteforce";
         public const string Dictionary = "dictionary";
@@ -95,29 +107,32 @@ namespace Zxcvbn
     /// </summary>
     public class Match : IComparable<Match>
     {
+        private readonly int minGuesses;
+        private double guesses;
+
         /// <summary>
         /// The name of the pattern matcher used to generate this match
         /// </summary>
         /// <value>The name of the pattern matcher used to generate this match</value>
-        public string Pattern { get; protected internal set; }
+        public string Pattern { get; set; }
 
         /// <summary>
         /// The start index in the password string of the matched token.
         /// </summary>
         /// <value>The start index in the password string of the matched token</value>
-        public int i { get; protected internal set; }
+        public int i { get; set; }
 
         /// <summary>
         /// The end index in the password string of the matched token.
         /// </summary>
         /// <value>The end index in the password string of the matched token</value>
-        public int j { get; protected internal set; }
+        public int j { get; set; }
 
         /// <summary>
         /// The portion of the password that was matched
         /// </summary>
         /// <value>The portion of the password that was matched</value>
-        public string Token { get; protected internal set; }
+        public string Token { get; set; }
 
         // The following are more internal measures, but may be useful to consumers
 
@@ -126,17 +141,26 @@ namespace Zxcvbn
         /// the entropy calculation is derived from. Not all matchers provide a value for cardinality.
         /// </summary>
         /// <value>The cardinality of the set of possible matches that the entropy calculation is derived from</value>
-        public int Cardinality { get; protected internal set; }
+        public int Cardinality { get; set; }
 
         /// <summary>
         /// The entropy that this portion of the password covers using the current pattern matching technique
         /// </summary>
         /// <value>The entropy that this portion of the password covers using the current pattern matching technique</value>
-        public double Entropy { get; protected internal set; }
+        public virtual double Entropy { get; set; }
 
-        public double Guesses { get; protected internal set; } = double.NaN;
+        public double Guesses { get => guesses; set => guesses = Math.Max(value, minGuesses); }
 
         public double GuessesLog10 => Math.Log10(Guesses);
+
+        public Match(int tokenLength, int passwordLength)
+        {
+            minGuesses = (tokenLength < passwordLength)
+                ? tokenLength == 1 ? Scoring.MinSubmatchGuessesSingleChar : Scoring.MinSubmatchGuessesMultiChar
+                : 1;
+
+            guesses = Math.Max(0, minGuesses);
+        }
 
         public int CompareTo(Match other)
         {
@@ -144,7 +168,7 @@ namespace Zxcvbn
 
             // Sort on i primary, j secondary
             int i = this.i - other.i;
-            return (i != 0) ? i : (this.j - other.j);
+            return (i != 0) ? i : (j - other.j);
         }
 
         public override bool Equals(object obj) => obj is Match match
@@ -156,18 +180,7 @@ namespace Zxcvbn
             && Entropy == match.Entropy
             && Guesses == match.Guesses;
 
-        public override int GetHashCode()
-        {
-            var hashCode = -1501421569;
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Pattern);
-            hashCode = hashCode * -1521134295 + i.GetHashCode();
-            hashCode = hashCode * -1521134295 + j.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Token);
-            hashCode = hashCode * -1521134295 + Cardinality.GetHashCode();
-            hashCode = hashCode * -1521134295 + Entropy.GetHashCode();
-            hashCode = hashCode * -1521134295 + Guesses.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Pattern, i, j, Token, Cardinality, Entropy, Guesses);
 
         public static bool operator ==(Match left, Match right) => (left is null) ? (right is null) : left.Equals(right);
 

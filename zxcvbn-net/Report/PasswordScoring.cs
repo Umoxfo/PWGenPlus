@@ -1,21 +1,23 @@
 using System;
 using System.Linq;
 
-namespace Zxcvbn
+namespace Umoxfo.Zxcvbn
 {
     /// <summary>
     /// Some useful shared functions used for evaluating passwords
     /// </summary>
-    static class PasswordScoring
+    internal static class PasswordScoring
     {
         // Named characters in the Unicode standard version 8.0
         private const int UnicodeCharacters = 120_672;
 
-        // The number of control characters with assigned
-        // code points from \U0000 to \U001F, \U007F, and from \U0080 to \U009F.
-        private const int ControlCharacters = 65;
+        // Unicode printable characters other than ASCII characters (U+0000 to U+007F):
+        //  Line and paragraph separate characters (U+2028 and U+2029)
+        //  Control code characters in the range U+0080 through U+009F
+        //  Format character belonging to "Cf" (other, format) in Unicode (161)
+        internal const int UnicodePrintableCharacters = UnicodeCharacters - (128 + 2 + 32 + 161);
 
-        protected internal struct Score
+        private readonly struct Score
         {
             private const int DELTA = 7;
 
@@ -41,7 +43,7 @@ namespace Zxcvbn
             if (k == 0) return 1;
 
             long r = 1;
-            for (int d = 1; d <= k; ++d)
+            for (int d = 1; d <= k; d++)
             {
                 r *= n;
                 r /= d;
@@ -78,30 +80,45 @@ namespace Zxcvbn
             if (uppercase) cl += 26; // Uppercase
             if (digits) cl += 10; // Digits
             if (symbols) cl += 33; // Symbols
-            if (unicode) cl += UnicodeCharacters - ControlCharacters; // 'Unicode 8.0'
+            if (unicode) cl += UnicodePrintableCharacters; // 'Unicode 8.0'
 
             return cl;
         }//PasswordCardinality
 
         /// <summary>
-        /// Estimate the extra entropy in a token that comes from mixing upper and lowercase letters.
-        /// This has been moved to a static function so that it can be used in multiple entropy calculations.
+        /// Estimate the extra entropy and "guesses" in a token that comes from mixing upper and lowercase letters.
         /// </summary>
-        /// <param name="word">The word to calculate uppercase entropy for</param>
-        /// <returns>An estimation of the entropy gained from casing in <paramref name="word"/></returns>
-        public static double CalculateUppercaseEntropy(string word)
+        /// <param name="word">The word to calculate uppercase entropy and "guesses" for</param>
+        /// <returns>An estimation of the entropy and "guesses" gained from casing in <paramref name="word"/></returns>
+        public static (double Entropy, long Guesses) CalculateUppercaseVariations(string word)
         {
-            if (word == word.ToLowerInvariant()) return 0;
+            if (word == word.ToLowerInvariant()) return (Entropy: 0, Guesses: 1);
 
-            // If the word is all uppercase adds only one bit of entropy, add only one bit for initial/end single cap only
-            if (new[] { word.FirstOrDefault(), word.LastOrDefault() }.Any(c => c >= 'A' && c <= 'Z') || word == word.ToUpperInvariant()) return 1;
+            // A capitalized word is the most common capitalization scheme,
+            // so it only doubles the search space (uncapitalized + capitalized).
+            // All caps and end-capitalized are common enough too, underestimate as 2x factor to be safe.
+            // For entropy, adding only one bit
+            if (new[] { word.FirstOrDefault(), word.LastOrDefault() }.Any(c => c >= 'A' && c <= 'Z')
+                || word == word.ToUpperInvariant()) return (Entropy: 1, Guesses: 2);
 
-            int lowers = word.Count(c => c >= 'a' && c <= 'z');
-            int uppers = word.Count(c => c >= 'A' && c <= 'Z');
+            // Otherwise, calculate the number of ways to capitalize on whole letters
+            // with the number of uppercase letters or less.
+            // If there's more uppercase than lower (e.g. PASSwORD),
+            // calculate the number of ways to lowercase whole letters with the number of lowercase letters or less.
+            int uppers = 0;
+            int lowers = 0;
+            foreach (char c in word)
+            {
+                if (c >= 'A' && c <= 'Z') uppers++;
+                if (c >= 'a' && c <= 'z') lowers++;
+            }
 
-            // Calculate number of ways to capitalize (or inverse if there are fewer lowercase chars) and return log for entropy
-            return Math.Log(Enumerable.Range(0, Math.Min(uppers, lowers) + 1).Sum(i => Binomial(uppers + lowers, i)), 2);
-        }//CalculateUppercaseEntropy
+            // Calculate the number of ways to capitalize (or inverse if there are fewer lowercase chars)
+            long guesses = Enumerable.Range(1, Math.Min(uppers, lowers)).Sum(i => Binomial(uppers + lowers, i));
+
+            // log for entropy
+            return (Entropy: Math.Log(guesses + 1, 2), Guesses: guesses);
+        }//CalculateUppercaseVariations
 
         /// <summary>
         /// Returns a score for password strength from the <see cref="Result.Guesses"/>.

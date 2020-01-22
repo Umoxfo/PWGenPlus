@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 
-namespace Zxcvbn.Matcher
+using Umoxfo.Zxcvbn.Report;
+
+namespace Umoxfo.Zxcvbn.Matcher
 {
     /// <summary>
     /// <para>Use a regular expression to match against the password.
@@ -48,7 +50,7 @@ namespace Zxcvbn.Matcher
         ///   Since this is not able to be calculated from a pattern it must be provided.
         ///   It could be given per-match-character or per-match.</param>
         /// <param name="perCharCardinality">True if cardinality is given as per-matched-character</param>
-        public void SetRegexn(string matcherName, in Regex matchRegex, int cardinality, bool perCharCardinality) =>
+        public void SetRegexn(string matcherName, Regex matchRegex, int cardinality, bool perCharCardinality) =>
             regexen[matcherName] = new RegexMatcherInfo(matchRegex, cardinality, perCharCardinality);
 
         /// <summary>
@@ -62,41 +64,63 @@ namespace Zxcvbn.Matcher
             {
                 int cardinality = rx.Value.Cardinality;
 
-                return rx.Value.MatcherRegex.Matches(password).Cast<System.Text.RegularExpressions.Match>()
-                .Select(rem => new RegexMatch
+                return rx.Value.MatcherRegex.Matches(password).Cast<System.Text.RegularExpressions.Match>().Select(rem =>
                 {
-                    Pattern = Pattern.Regex,
-                    i = rem.Index,
-                    j = rem.Index + rem.Length - 1,
-                    Token = password.Substring(rem.Index, rem.Length),
-                    RxName = rx.Key,
-                    RxMatch = rem,
-                    Cardinality = cardinality,
-                    // Raise cardinality to length when giver per character
-                    Entropy = Math.Log(rx.Value.PerCharCardinality ? Math.Pow(cardinality, rem.Length) : cardinality, 2)
+                    var (entropy, guesses) = CalculateVariations(rx.Key, rem.Value, cardinality, rem.Length, rx.Value.PerCharCardinality);
+
+                    return new RegexMatch(rem.Length, password.Length)
+                    {
+                        Pattern = Pattern.Regex,
+                        i = rem.Index,
+                        j = rem.Index + (rem.Length - 1),
+                        Token = password.Substring(rem.Index, rem.Length),
+                        RxName = rx.Key,
+                        RxMatch = rem,
+                        Cardinality = cardinality,
+
+                        Entropy = entropy,
+                        Guesses = guesses
+                    };
                 });
             }).OrderBy(rm => rm);
         }//MatchPassword
+
+        private static (double Entropy, double Guesses) CalculateVariations(string regexName, string regexValue, int cardinality, int tokenLength, bool perCharCardinality)
+        {
+            double guesses;
+            switch (regexName)
+            {
+                case "recent_year":
+                    // Conservative estimate of year space: number years from ReferenceYear.
+                    // if year is close to ReferenceYear, estimate a year space of MinYearSpace.
+                    guesses = Math.Max(Math.Abs(regexValue.ToInt() - Scoring.ReferenceYear), Scoring.MinYearSpace); break;
+                default: guesses = Math.Pow(cardinality, tokenLength); break;
+            }
+
+            // Entropy: Raise cardinality to length when giver per character
+            return (Entropy: Math.Log(perCharCardinality ? guesses : cardinality, 2), Guesses: guesses);
+        }//CalculateGuesses
     }//RegexMatcher
 
     /// <summary>
     /// Regular expression (RegEx) pattern information that consists:
-    ///   <list type="bullet">
-    ///     <item>
-    ///       <term><see cref="MatcherRegex"/></term>
-    ///       <description>A <see cref="Regex"/> object</description>
-    ///     </item>
-    ///     <item>
-    ///       <term><see cref="Cardinality"/></term>
-    ///       <description>Cardinality of this match</description>
-    ///     </item>
-    ///     <item>
-    ///       <term><see cref="PerCharCardinality"/></term>
-    ///       <description>Whether cardinality is given for each matched character.</description>
-    ///     </item>
-    ///   </list>
+    /// <list type="bullet">
+    ///  <item>
+    ///   <term><see cref="MatcherRegex"/></term>
+    ///   <description>A <see cref="Regex"/> object</description>
+    ///  </item>
+    ///  <item>
+    ///   <term><see cref="Cardinality"/></term>
+    ///   <description>Cardinality of this match</description>
+    ///  </item>
+    ///  <item>
+    ///   <term><see cref="PerCharCardinality"/></term>
+    ///   <description>Whether cardinality is given for each matched character.</description>
+    ///  </item>
+    /// </list>
     /// </summary>
-    public readonly struct RegexMatcherInfo : IEquatable<RegexMatcherInfo>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1815:equals および operator equals を値型でオーバーライドします", Justification = "<保留中>")]
+    public readonly struct RegexMatcherInfo
     {
         /// <summary>
         /// The <see cref="Regex"/> object used to perform matching
@@ -119,28 +143,8 @@ namespace Zxcvbn.Matcher
         /// <value><c>true</c> if cardinality is given as per-matched-character</value>
         public bool PerCharCardinality { get; }
 
-        public RegexMatcherInfo(in Regex matchRegex, int cardinality, bool perCharCardinality) =>
+        public RegexMatcherInfo(Regex matchRegex, int cardinality, bool perCharCardinality) =>
             (MatcherRegex, Cardinality, PerCharCardinality) = (matchRegex, cardinality, perCharCardinality);
-
-        public override bool Equals(object obj) => (obj is RegexMatcherInfo info) && Equals(info);
-
-        public bool Equals(RegexMatcherInfo other) =>
-            EqualityComparer<Regex>.Default.Equals(MatcherRegex, other.MatcherRegex)
-            && Cardinality == other.Cardinality
-            && PerCharCardinality == other.PerCharCardinality;
-
-        public override int GetHashCode()
-        {
-            var hashCode = 699185899;
-            hashCode = hashCode * -1521134295 + EqualityComparer<Regex>.Default.GetHashCode(MatcherRegex);
-            hashCode = hashCode * -1521134295 + Cardinality.GetHashCode();
-            hashCode = hashCode * -1521134295 + PerCharCardinality.GetHashCode();
-            return hashCode;
-        }
-
-        public static bool operator ==(RegexMatcherInfo left, RegexMatcherInfo right) => left.Equals(right);
-
-        public static bool operator !=(RegexMatcherInfo left, RegexMatcherInfo right) => !(left == right);
     }//RegexMatcherInfo
 
     /// <summary>
@@ -149,6 +153,10 @@ namespace Zxcvbn.Matcher
     /// </summary>
     public class RegexMatch : Match
     {
+        public RegexMatch(int tokenLength, int passwordLength) : base(tokenLength, passwordLength)
+        {
+        }
+
         public string RxName { get; set; }
 
         public System.Text.RegularExpressions.Match RxMatch { get; set; }

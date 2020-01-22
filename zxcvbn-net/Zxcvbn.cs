@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-using Zxcvbn.Matcher;
-using Zxcvbn.Report;
+using Umoxfo.Zxcvbn.Matcher;
+using Umoxfo.Zxcvbn.Report;
 
-namespace Zxcvbn
+namespace Umoxfo.Zxcvbn
 {
     /// <summary>
     /// <para>Zxcvbn is used to estimate the strength of passwords. </para>
@@ -13,7 +12,7 @@ namespace Zxcvbn
     /// <para>This implementation is a port of the Zxcvbn JavaScript library by Dan Wheeler:
     /// https://github.com/lowe/zxcvbn </para>
     ///
-    /// <para>To quickly evaluate a password, use the <see cref="MatchPassword"/> static function.</para>
+    /// <para>To quickly evaluate a password, use the <see cref="MeasurePassword"/> static function.</para>
     ///
     /// <para>To evaluate a number of passwords, create an instance of this object and repeatedly call
     /// the <see cref="EvaluatePassword"/> function.
@@ -22,9 +21,7 @@ namespace Zxcvbn
     /// </summary>
     public class Zxcvbn
     {
-        private const string BruteforcePattern = "bruteforce";
-
-        private readonly IMatcherFactory matcherFactory;
+        private readonly Matching matcherFactory;
         private readonly Translation translation;
 
         /// <summary>
@@ -41,7 +38,7 @@ namespace Zxcvbn
         /// </summary>
         /// <param name="matcherFactory">The factory used to create the pattern matchers used</param>
         /// <param name="translation">The language in which the strings are returned</param>
-        public Zxcvbn(IMatcherFactory matcherFactory, Translation translation = Translation.English)
+        public Zxcvbn(Matching matcherFactory, Translation translation = Translation.English)
         {
             this.matcherFactory = matcherFactory;
             this.translation = translation;
@@ -53,11 +50,11 @@ namespace Zxcvbn
         ///
         /// <para>Supplied user data will be treated as another kind of dictionary matching.</para>
         /// </summary>
-        /// <param name="password">the password to test</param>
-        /// <param name="userInputs">optionally, the user inputs list</param>
+        /// <param name="password">A password string to test</param>
+        /// <param name="userInputs">Optionally, the user inputs list</param>
         /// <returns>The results of the password evaluation</returns>
         public static Result MeasurePassword(string password, IEnumerable<string> userInputs = null) =>
-            new Zxcvbn(new DefaultMatcherFactory()).EvaluatePassword(password, userInputs);
+            new Zxcvbn(new DefaultMatcherFactory(userInputs)).EvaluatePassword(password);
 
         /// <summary>
         /// <para>Perform the password matching on the given password and user inputs,
@@ -66,36 +63,63 @@ namespace Zxcvbn
         /// <para>User data will be treated as another kind of dictionary matching,
         /// but can be different for each password being evaluated.</para>
         /// </summary>
-        /// <param name="password">Password</param>
+        /// <param name="password">A password string to test</param>
         /// <param name="userInputs">Optionally, an enumerable of user data</param>
-        /// <returns>Result for lowest entropy match</returns>
+        /// <returns>Result for the lowest entropy match</returns>
         public Result EvaluatePassword(string password, IEnumerable<string> userInputs = null)
         {
-            userInputs = userInputs ?? Array.Empty<string>();
-
-            // Reset the user inputs matcher on a per-request basis to keep things stateless
-            IEnumerable<string> sanitizedInputs = userInputs.Select(sanitizedInput => sanitizedInput.ToLowerInvariant());
-            matcherFactory.CreateMatchers(sanitizedInputs);
-
-            IEnumerable<Match> matches = new List<Match>();
-            foreach (IMatcher matcher in matcherFactory.CreateMatchers(userInputs))
-            {
-                matches = matches.Union(matcher.MatchPassword(password));
-            }
-
+            //userInputs = userInputs ?? Array.Empty<string>();
             System.Diagnostics.Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
+
+            if (userInputs != null) matcherFactory.SetUserInputDictionary(userInputs);
+
+            var matches = matcherFactory.Omnimatch(password);
 
             Result result = Scoring.FindBestMatchSequences(password, matches);
 
             timer.Stop();
             result.CalcTime = timer.ElapsedMilliseconds;
 
-            (result.CrackTime, result.CrackTimeDisplay) = TimeEstimates.EstimateAttackTimes(result.Guesses, translation);
+            (result.CrackTimeSeconds, result.CrackTimeDisplay) = TimeEstimates.EstimateAttackTimes(result.Guesses, translation);
             result.Score = PasswordScoring.GuessesToScore(result.Guesses);
 
             result.Feedback = PasswordFeedback.GetFeedback(result.Score, result.GuessesSequence, translation);
 
             return result;
-        }
+        }//EvaluatePassword
+
+        /// <summary>
+        /// Returns a password score for password matching.
+        /// </summary>
+        /// <param name="password">A password string to test</param>
+        /// <param name="userInputs">Optionally, an enumerable of user data</param>
+        /// <returns>Password score of 0-6, 0 is minimum</returns>
+        public int CalculatePasswordScore(string password, IEnumerable<string> userInputs = null)
+        {
+            if (userInputs != null) matcherFactory.SetUserInputDictionary(userInputs);
+
+            Result result = Scoring.FindBestMatchSequences(password, matcherFactory.Omnimatch(password));
+
+            return PasswordScoring.GuessesToScore(result.Guesses);
+        }//CalculatePasswordScore
+
+        /// <summary>
+        /// Returns a password score for brute-force matching.
+        /// </summary>
+        /// <param name="password">A password string to test</param>
+        /// <returns>Password score of 0-6, 0 is minimum</returns>
+        public static int CalculateBruteforcePasswordScore(string password)
+        {
+            if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
+
+            double guesses = Math.Pow(PasswordScoring.PasswordCardinality(password), password.Length);
+            if (double.IsPositiveInfinity(guesses)) guesses = double.MaxValue;
+
+            // Small detail: make brute-force matches at minimum one guess bigger than smallest allowed
+            // sub-match guesses, such that non-brute-force sub-matches over the same [i..j] take precedence.
+            double minGuesses = (password.Length == 1 ? Scoring.MinSubmatchGuessesSingleChar : Scoring.MinSubmatchGuessesMultiChar) + 1;
+
+            return PasswordScoring.GuessesToScore(Math.Max(guesses, minGuesses));
+        }//CalculateBruteforcePasswordScore
     }
 }

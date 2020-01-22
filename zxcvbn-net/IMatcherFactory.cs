@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using Zxcvbn.Matcher;
-
-namespace Zxcvbn
+namespace Umoxfo.Zxcvbn
 {
     /// <summary>
     /// Interface that matcher factories must implement. Matcher factories return a list of the matchers

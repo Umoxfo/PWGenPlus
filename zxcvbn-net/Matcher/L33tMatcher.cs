@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Zxcvbn.Utils;
+using System.Text;
 
-namespace Zxcvbn.Matcher
+namespace Umoxfo.Zxcvbn.Matcher
 {
     /// <summary>
     /// This matcher applies some known l33t character substitutions and then attempts to match against passed in dictionary matchers.
@@ -61,25 +61,29 @@ namespace Zxcvbn.Matcher
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
 
             var matches =
-                from subDict in EnumerateSubtitutions(GetRelevantSubstitutions(password))
-                let sub_password = TranslateString(password, subDict)
+                from subDict in EnumerateL33tSubs(GetRelevantSubstitutions(password))
+                from sub_password in TranslateString(password, subDict)
                 from match in dictionaryMatcher.MatchPassword(sub_password).OfType<DictionaryMatch>()
                 let token = password.Substring(match.i, match.j - match.i + 1)
-                let matchSub = subDict.Where(kv => token.Contains(kv.Key)) // Count subs used in matched token
+                let matchSub = subDict.Where(kv => token.Contains(kv.Key, StringComparison.OrdinalIgnoreCase)) // Count subs used in matched token
 
                 // Matches only when substitution is used and
                 // filters single-letter l33t matches to reduce noise
                 // from very common English words with low dictionary rank
                 // (e.g. '1' matches 'i', '4' matches 'a').
                 where matchSub.Any() && (token.Length > 1)
-                select new L33tDictionaryMatch(match)
+                let uppercaseVariations = PasswordScoring.CalculateUppercaseVariations(token)
+                let l33tVariations = CalculateL33tVariations(matchSub, token)
+                select new L33tDictionaryMatch(match, password.Length)
                 {
                     Token = token,
-                    Subs = matchSub.ToDictionary(kv => kv.Key, kv => kv.Value),
-                    SubDisplay = string.Join(", ", matchSub.Select(kv => $"{kv.Key} -> {kv.Value}"))
-                };
+                    Subs = new ReadOnlyDictionary<char, char>(matchSub.ToDictionary(kv => kv.Key, kv => kv.Value)),
+                    SubDisplay = string.Join(", ", matchSub.Select(kv => $"{kv.Key} -> {kv.Value}")),
 
-            foreach (L33tDictionaryMatch match in matches) CalulateL33tEntropy(match);
+                    UppercaseEntropy = uppercaseVariations.Entropy,
+                    L33tEntropy = l33tVariations.Entropy,
+                    Guesses = match.Rank * uppercaseVariations.Guesses * l33tVariations.Guesses
+                };
 
             return matches.OrderBy(m => m);
         }//MatchPassword
@@ -95,100 +99,183 @@ namespace Zxcvbn.Matcher
             return (from t in table ?? L33tTable
                     let relevantSubs = t.Value.Intersect(password)
                     where relevantSubs.Any()
-                    select (t.Key, Value: string.Join("", relevantSubs))
+                    select (t.Key, Value: string.Concat(relevantSubs))
                    ).ToDictionary(st => st.Key, st => st.Value);
         }//GetRelevantSubstitutions
 
-        private List<Dictionary<char, char>> EnumerateSubtitutions(Dictionary<char, string> table)
+        private List<Dictionary<char, char>> EnumerateL33tSubs(Dictionary<char, string> table)
         {
             // Produce a list of maps from l33t character to normal character.
             // Some substitutions can be more than one normal character though,
             // so we have to produce an entry that maps from the l33t char to both possibilities
 
-            // Note: The original zxcvbn is used a list, but we use a dictionary.
-            List<Dictionary<char, char>> subs = new List<Dictionary<char, char>>
+            CompareSub compareSub = new CompareSub();
+            List<List<char[]>> subs = new List<List<char[]>> { new List<char[]>() };
+
+            Helper(table.Keys);
+
+            return subs.Select(sub => sub.ToDictionary(refr => refr[0], refr => refr[1])).ToList();
+
+            IEnumerable<List<char[]>> Dedup(List<List<char[]>> tmpSubs)
             {
-                new Dictionary<char, char>() // Must be at least one mapping dictionary to work
-            };
-
-            //XXX: This function produces different combinations to the original in zxcvbn.
-            // It may require some more work to get identical.
-
-            //XXX: The function is also limited in that it only ever considers one substitution for each l33t character
-            // (e.g. ||ke could feasibly match 'like' but this method would never show this).
-            // My understanding is that this is also a limitation in zxcvbn and so I feel no need to correct it here :(.
-
-            foreach (var mapPair in table)
-            {
-                char normalChar = mapPair.Key;
-
-                foreach (char l33tChar in mapPair.Value)
+                HashSet<string> members = new HashSet<string>();
+                foreach (var sub in tmpSubs)   //[l33tChr, firstKey] of "sub" array
                 {
-                    // Can't add while enumerating so store here
-                    List<Dictionary<char, char>> addedSubs = new List<Dictionary<char, char>>();
+                    var assoc = sub.Select((val, i) => (Key: val, Value: i))
+                                   .OrderBy(kv => kv, compareSub)
+                                   .Select((kv, i) => $"{string.Join(",", kv.Key)},{kv.Value},{i}");
+                    string label = string.Join("-", assoc);
 
-                    foreach (Dictionary<char, char> subDict in subs)
+                    #region original
+                    //Dictionary<int, char[]> assoc = new Dictionary<int, char[]>();
+                    //for (int i = 0; i < sub.Count; i++)
+                    //{
+                    //    assoc[i] = sub[i];
+                    //}
+
+                    //List<string> strings = new List<string>();
+                    //foreach (var entry in assoc)
+                    //{
+                    //    strings.Add($"{string.Concat( entry.Value)},{entry.Key}");
+                    //}
+
+                    //StringBuilder builder = new StringBuilder();
+                    //foreach (string str in strings)
+                    //{
+                    //    builder.Append(str).Append("-");
+                    //}
+                    //string label = builder.ToString().Substring(0, builder.Length - 1);
+                    #endregion
+
+                    if (members.Add(label)) yield return sub;
+                }//foreach subs
+            }//Dedup
+
+            void Helper(IEnumerable<char> keys)
+            {
+                if (!keys.Any()) return;
+
+                char firstKey = keys.FirstOrDefault();
+                List<char> restKeys = keys.Skip(1).ToList();
+
+                List<List<char[]>> nextSubs = new List<List<char[]>>();
+                foreach (var l33tChr in table.TryGetValue(firstKey, out string str) ? str : string.Empty)
+                {
+                    foreach (var sub in subs)
                     {
-                        // Use Lookup...
-                        if (subDict.ContainsKey(l33tChar))
+                        int dupL33tIndex = -1;
+                        for (int i = 0; i < sub.Count; i++)
                         {
-                            // This mapping already contains a corresponding normal character for this character,
-                            // so keep the existing one as is but add a duplicate with
-                            // the mapping replaced with this normal character
-                            addedSubs.Add(new Dictionary<char, char>(subDict)
+                            if (sub[i][0] == l33tChr)
                             {
-                                [l33tChar] = normalChar
-                            });
+                                dupL33tIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (dupL33tIndex == -1)
+                        {
+                            List<char[]> subExtension = new List<char[]>(sub)
+                            {
+                                new char[] { l33tChr, firstKey }
+                            };
+                            nextSubs.Add(subExtension);
                         }
                         else
                         {
-                            subDict.Add(l33tChar, normalChar);
-                            addedSubs.Add(subDict);
+                            List<char[]> subAlternative = new List<char[]>(sub);
+                            subAlternative.RemoveAt(dupL33tIndex);
+                            subAlternative.Add(new char[] { l33tChr, firstKey });
+                            nextSubs.Add(sub);
+                            nextSubs.Add(subAlternative);
                         }//if-else
                     }//foreach subs
+                }//foreach table[firstKey]
 
-                    subs.AddRange(addedSubs);
-                }//foreach mapPair.Value
-            }//foreach table
+                subs = Dedup(nextSubs).ToList();
 
-            return subs;
-        }//EnumerateSubtitutions
+                Helper(restKeys.ToArray());
+            }//Helper
+        }//EnumerateL33tSubs
 
         // Make substitutions from the character map wherever possible
-        private string TranslateString(string str, Dictionary<char, char> charMap) =>
-            string.Join("", str.Select(c => charMap.TryGetValue(c, out char cv) ? cv : c));
-
-        private void CalulateL33tEntropy(in L33tDictionaryMatch match)
+        private IEnumerable<string> TranslateString(string str, Dictionary<char, char> charMap)
         {
-            int possibilities = 0;
+            var repTable = str.Select((c, index) => (index, ltCh: c, rpCh: charMap.TryGetValue(c, out char cv) ? cv : c))
+                              .Where(c => c.ltCh != c.rpCh).ToList();
 
-            foreach (var kvp in match.Subs)
+            int i = 1;
+            foreach (var (index, ltCh, rpCh) in repTable)
+            {
+                StringBuilder sb = new StringBuilder(str);
+                yield return sb.Replace(ltCh, rpCh, index, 1).ToString();
+
+                for (int j = i; j < repTable.Count; j++)
+                {
+                    var sbNew = new StringBuilder(sb.ToString(), sb.Length);
+                    foreach (var rep in repTable.Skip(j))
+                    {
+                        yield return sbNew.Replace(rep.ltCh, rep.rpCh, rep.index, 1).ToString();
+                    }
+                }//for
+
+                i++;
+            }//foreach repTable (Whole)
+        }//TranslateString
+
+        private (double Entropy, long Guesses) CalculateL33tVariations(IEnumerable<KeyValuePair<char, char>> matchSubs, string token)
+        {
+            long possibilities = 0;
+            long variations = 1;
+
+            foreach (var subRef in matchSubs)
             {
                 int subbedChars = 0;
                 int unsubbedChars = 0;
                 // Lowercase match.Token before calculating: capitalization shouldn't affect l33t calculate
-                foreach (char chr in match.Token.ToLowerInvariant())
+                foreach (char chr in token.ToLowerInvariant())
                 {
-                    if (chr == kvp.Key) subbedChars++;
-                    if (chr == kvp.Value) unsubbedChars++;
+                    if (chr == subRef.Key) subbedChars++;
+                    if (chr == subRef.Value) unsubbedChars++;
                 }
 
-                possibilities += Enumerable.Range(0, Math.Min(subbedChars, unsubbedChars) + 1)
-                                           .Sum(i => (int)PasswordScoring.Binomial(subbedChars + unsubbedChars, i));
-            }
+                long tmp = Enumerable.Range(1, Math.Min(unsubbedChars, subbedChars))
+                                     .Sum(i => PasswordScoring.Binomial(unsubbedChars + subbedChars, i));
+
+                // Entropy
+                possibilities += tmp + 1;
+
+                // Guesses
+                if (subbedChars == 0 || unsubbedChars == 0)
+                {
+                    // For this sub, password is either fully subbed (444) or fully unsubbed (aaa)
+                    // treat that as doubling the space (attacker needs to try fully subbed chars
+                    // in addition to unsubbed.)
+                    variations *= 2;
+                }
+                else
+                {
+                    // This case is similar to capitalization:
+                    // with aa44a, U = 3, S = 2, attacker needs to try unsubbed + one sub + two subs
+                    variations *= tmp;
+                }
+            }//foreach
 
             double entropy = Math.Log(possibilities, 2);
 
-            // In the case of only a single substitution (e.g. 4pple) this would otherwise come out as zero, so give it one bit
-            match.L33tEntropy = (entropy < 1 ? 1 : entropy);
-            match.Entropy += match.L33tEntropy;
+            return (Entropy: (entropy < 1) ? 1 : entropy, Guesses: variations);
+        }//CalculateL33tVariations
 
-            // We have to recalculate the uppercase entropy
-            // - the password matcher will have used the subbed password not the original text
-            match.Entropy -= match.UppercaseEntropy;
-            match.UppercaseEntropy = PasswordScoring.CalculateUppercaseEntropy(match.Token);
-            match.Entropy += match.UppercaseEntropy;
-        }
+        private class CompareSub : IComparer<(char[] Key, int Value)>
+        {
+            public int Compare((char[] Key, int Value) x, (char[] Key, int Value) y)
+            {
+                int compL33tChr = x.Key[0].CompareTo(y.Key[0]);
+                int compFirstKey = x.Key[1].CompareTo(y.Key[1]);
+
+                return compL33tChr != 0 ? compL33tChr : compFirstKey;
+            }
+        }//CompareSub
     }
 
     /// <summary>
@@ -201,9 +288,12 @@ namespace Zxcvbn.Matcher
         /// <summary>
         /// The character mappings that are in use for this match
         /// </summary>
-        public Dictionary<char, char> Subs { get; set; }
+        /// <value>The character mappings that are in use for this match</value>
+        public IReadOnlyDictionary<char, char> Subs { get; set; }
 
         public string SubDisplay { get; set; } = string.Empty;
+
+        public override double Entropy => BaseEntropy + UppercaseEntropy + L33tEntropy;
 
         /// <summary>
         /// The extra entropy from using l33t substitutions
@@ -214,9 +304,10 @@ namespace Zxcvbn.Matcher
         /// Create a new l33t match from a dictionary match
         /// </summary>
         /// <param name="dm">The dictionary match to initialize the l33t match from</param>
-        public L33tDictionaryMatch(DictionaryMatch dm)
+        public L33tDictionaryMatch(DictionaryMatch dm, int passwordLength)
+            : base(PassThroughNonNull(dm).Token.Length, passwordLength)
         {
-            if (dm is null) dm = new DictionaryMatch();
+            if (dm == null) dm = new DictionaryMatch(0, passwordLength);
 
             Pattern = dm.Pattern;
             i = dm.i;
@@ -229,9 +320,13 @@ namespace Zxcvbn.Matcher
             L33t = true;
 
             Cardinality = dm.Cardinality;
-            BaseEntropy = dm.BaseEntropy;
-            UppercaseEntropy = dm.UppercaseEntropy;
-            Entropy = dm.Entropy;
         }
+
+        // Null check method
+        private static DictionaryMatch PassThroughNonNull(DictionaryMatch dm)
+        {
+            if (dm == null) throw new ArgumentNullException(nameof(dm));
+            return dm;
+        }//PassThroughNonNull
     }
 }

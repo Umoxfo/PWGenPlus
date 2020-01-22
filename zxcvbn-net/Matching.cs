@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Zxcvbn.Matcher
+namespace Umoxfo.Zxcvbn.Matcher
 {
-    public abstract class Matching
+    public abstract class Matching : IMatcherFactory
     {
         protected Dictionary<string, Dictionary<string, int>> RankedDictionaries { get; }
 
-        protected Matching(IEnumerable<(string Key, IEnumerable<string> Value)> dictionaries, in IEnumerable<string> orderedList = null)
+        protected Matching(IEnumerable<(string Key, IEnumerable<string> Value)> dictionaries, IEnumerable<string> orderedList = null)
         {
             if (orderedList != null && orderedList.Any())
             {
-               dictionaries = dictionaries.Concat(new[] { (Key: "user_inputs", Value: orderedList) });
+                dictionaries = dictionaries.Concat(new[] { (Key: "user_inputs", Value: orderedList) });
             }
 
             RankedDictionaries = dictionaries.ToDictionary(dict => dict.Key, dict => BuildRankedDictionary(dict.Value));
-        }//Matching(IEnumerable<(string Key, IEnumerable<string> Value)> dictionaries, in IEnumerable<string> orderedList)
+        }//Matching(IEnumerable<(string Key, IEnumerable<string> Value)> dictionaries, IEnumerable<string> orderedList)
 
-        protected Matching(Dictionary<string, Dictionary<string, int>> rankedDictionaries, in IEnumerable<string> orderedList)
+        protected Matching(Dictionary<string, Dictionary<string, int>> rankedDictionaries, IEnumerable<string> orderedList)
         {
             // Null check for rankedDictionaries
             RankedDictionaries = rankedDictionaries ?? new Dictionary<string, Dictionary<string, int>>();
@@ -42,21 +42,22 @@ namespace Zxcvbn.Matcher
         /// Set (or add if not exist) a new dictionary from the passed in word list.
         /// If there is any frequency order then they should be in decreasing frequency order.
         /// </summary>
-        public void SetDictionary(string name, in IEnumerable<string> wordList)
+        public void SetDictionary(string name, IEnumerable<string> wordList)
         {
-            if (wordList == null || !wordList.Any()) throw new ArgumentNullException(nameof(wordList));
+            if (wordList == null) throw new ArgumentNullException(nameof(wordList));
             RankedDictionaries[name] = BuildRankedDictionary(wordList);
         }//SetDictionary(string name, in IEnumerable<string> wordList)
 
-        public void SetUserInputDictionary(in IEnumerable<string> orderedList) => SetDictionary("user_inputs", orderedList);
+        public void SetUserInputDictionary(IEnumerable<string> orderedList) => SetDictionary("user_inputs", orderedList);
 
-        protected static Dictionary<string, int> BuildRankedDictionary(in IEnumerable<string> wordList)
+        public abstract IEnumerable<Match> Omnimatch(string password);
+
+        protected static Dictionary<string, int> BuildRankedDictionary(IEnumerable<string> wordList)
         {
             // The word list is assumed to be in increasing frequency order
-            // Must ensure that the dictionary is using lowercase words only
             return wordList.AsParallel()
-                           .Select((word, i) => (Key: word.ToLowerInvariant(), Value: i + 1))  // Rank starts at 1, not 0
-                           .ToDictionary(kv => kv.Key, kv => kv.Value);
+                           .Select((word, i) => (Key: word, Value: i + 1))  // Rank starts at 1, not 0
+                           .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.InvariantCultureIgnoreCase);
         }//BuildRankedDictionary
     }
 }
