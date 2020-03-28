@@ -1,0 +1,3 @@
+[submodule "zxcvbn-net"]
+	path = zxcvbn-net
+	url = git@github.com:Umoxfo/zxcvbn-net.git
